@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+/* :root {
+    --orange-hot: #f04e0f;
+    --orange-mid: #f97316;
+    --orange-light: #fb923c;
+    --green-deep: #16a34a;
+    --green-mid: #22c55e;
+    --blue-trust: #1e40af;
+    --blue-mid: #2563eb;
+    --cream: #fffbf5;
+    --sand: #fef3e2;
+} */
+
+.hori-menu a {
+    background: none;
+}
+.hori-menu a:hover {
+    color: var(--orange-hot);
+    opacity: 1;
+}
