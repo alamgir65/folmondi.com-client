@@ -1,10 +1,10 @@
 import React from 'react';
 import logo from '../../assets/logo.png';
 
-const Logo = () => {
+const Logo = ({width,height}) => {
     return (
         <div>
-            <img width={130} src={logo}></img>
+            <img width={width} src={logo}></img>
         </div>
     );
 };

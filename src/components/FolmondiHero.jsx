@@ -51,7 +51,7 @@ export default function FolmondiHero() {
     },
     bn: {
       badge: "🌿 বাগান থেকে আপনার দরজায়",
-      headline1: "বাংলাদেশের সবচেয়ে তাজা",
+      headline1: "দেশের সবচেয়ে তাজা",
       headline2: "ফলমূল, পৌঁছে যায়",
       headline3: "নিরাপদ ও বিশ্বস্ত",
       sub: "পাকা আম থেকে তাজা আপেল — আমরা বাগান সরাসরি আপনার ঘরে নিয়ে আসি। প্রতিটি ফল বাছাই করা, মান যাচাই করা, তাজা পরিবেশন করা।",
@@ -59,7 +59,7 @@ export default function FolmondiHero() {
       cta2: "ফলমূল দেখুন",
       trust1: "১০০% তাজা",
       trust2: "নিরাপদ ডেলিভারি",
-      trust3: "খামার থেকে সরাসরি",
+      trust3: "বাগান থেকে সরাসরি",
       langToggle: "English",
     },
   };
@@ -90,7 +90,7 @@ export default function FolmondiHero() {
           backgroundImage: "radial-gradient(circle, #d1d5db 1px, transparent 1px)",
           backgroundSize: "28px 28px",
         }} />
-        
+
         {/* Hero Body */}
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "20px 32px 60px", position: "relative", zIndex: 5 }}>
           <div className="hero-split" style={{ display: "flex", alignItems: "center", gap: 32, minHeight: "78vh" }}>
@@ -122,16 +122,16 @@ export default function FolmondiHero() {
 
               {/* CTA Buttons */}
               <div className="reveal-4" style={{ marginTop: 32, display: "flex", gap: 14, flexWrap: "wrap" }}>
-                <button className="btn-primary">
+                <button className="btn-primary w-full sm:w-auto">
                   {t.cta1} →
                 </button>
-                <button className="btn-secondary">
+                <button className="btn-secondary w-full sm:w-auto">
                   {t.cta2}
                 </button>
               </div>
 
               {/* Trust chips */}
-              <div className="reveal-5" style={{ marginTop: 36, display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <div className="reveal-5 mt-9 hidden sm:flex gap-3 flex-wrap" >
                 <div className="trust-chip">
                   <span style={{ fontSize: "1.1rem" }}>✅</span>
                   {t.trust1}
@@ -147,7 +147,7 @@ export default function FolmondiHero() {
               </div>
 
               {/* Stats */}
-              <div className="reveal-5" style={{ marginTop: 36, display: "flex", gap: 32 }}>
+              <div className="reveal-5 mt-9 flex gap-8">
                 {[
                   { num: "10K+", label: "সুখী গ্রাহক" },
                   { num: "50+", label: "ফলের ধরন" },
@@ -210,7 +210,7 @@ export default function FolmondiHero() {
                   🥭
                 </div>
                 <div style={{
-                  marginTop: 16,
+                  marginTop: 1,
                   background: "white",
                   borderRadius: 16,
                   padding: "12px 24px",
@@ -258,7 +258,7 @@ export default function FolmondiHero() {
         </div>
 
         {/* Bottom strip */}
-        <div style={{
+        {/* <div style={{
           background: "linear-gradient(90deg, #f04e0f 0%, #f97316 50%, #eab308 100%)",
           padding: "14px 32px",
           display: "flex",
@@ -280,8 +280,31 @@ export default function FolmondiHero() {
               <span>{item.text}</span>
             </div>
           ))}
+        </div> */}
+
+        <div className="marquee-container">
+            <div className="marquee-track">
+                {[
+                { icon: "🚚", text: "৳৫০০ এর উপরে ফ্রি ডেলিভারি" },
+                { icon: "🌿", text: "১০০% প্রাকৃতিক" },
+                { icon: "📦", text: "ঢাকায় একই দিনে ডেলিভারি" },
+                { icon: "🔄", text: "সহজ রিটার্ন" },
+                ]
+                .concat([
+                    { icon: "🚚", text: "৳৫০০ এর উপরে ফ্রি ডেলিভারি" },
+                    { icon: "🌿", text: "১০০% প্রাকৃতিক" },
+                    { icon: "📦", text: "ঢাকায় একই দিনে ডেলিভারি" },
+                    { icon: "🔄", text: "সহজ রিটার্ন" },
+                ]) // duplicate for smooth loop
+                .map((item, i) => (
+                    <div className="marquee-item" key={i}>
+                    <span>{item.icon}</span>
+                    <span>{item.text}</span>
+                    </div>
+                ))}
+            </div>
+            </div>
         </div>
-      </div>
     </>
   );
 }

@@ -28,7 +28,7 @@ const Navbar = () => {
                     </ul>
                 </div>
                 {/* <a className="btn btn-ghost text-xl">daisyUI</a> */}
-                <Logo/>
+                <Logo width={130} />
             </div>
             <div className="navbar-center hidden lg:flex">
                 <ul className="menu font-semibold opacity-70 menu-horizontal hori-menu px-1">
