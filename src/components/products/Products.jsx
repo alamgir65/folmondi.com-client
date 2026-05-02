@@ -98,40 +98,49 @@ const products = [
   },
 ];
 
-
 export default function Products() {
   const categories = ["All", "আম", "খেজুর", "খেজুরের গুড়", "ঘি", "তেল", "মধু"];
   const [activeCategory, setActiveCategory] = useState("আম");
 
   return (
-    <div className="min-h-screen bg-gray-50 max-w-7xl mx-auto m-[5px_8px_12px]  sm:m-[20px_32px_60px]">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-         <div className="mx-auto px-4 flex justify-center mb-8">
-             <Category categories={categories} activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
-         </div>
+    <div className="bg-gray-50 max-w-7xl mx-auto px-2 sm:px-4">
+
+      {/* CATEGORY (Sticky inside this section only) */}
+      <div className="sticky top-20 z-30  py-3 mb-4">
+        <div className="flex justify-center">
+          <Category
+            categories={categories}
+            activeCategory={activeCategory}
+            setActiveCategory={setActiveCategory}
+          />
+        </div>
+      </div>
+
+      {/* CONTENT */}
+      <div className="px-2 sm:px-4 pb-10">
+
         {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-4 mb-4">
           <h1 className="text-2xl font-black text-base-content">
-            {activeCategory === "All" ? "সব পণ্য" : `${activeCategory} — Shop`}
+            {activeCategory === "All"
+              ? "সব পণ্য"
+              : `${activeCategory} — Shop`}
           </h1>
           <span className="text-sm text-base-content/50 font-medium">
             {products.length} products
           </span>
         </div>
 
-
         {/* Grid */}
-        <div id="products" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div
+          id="products"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+        >
           {products.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>
 
-        <div className="flex justify-center mt-10">
-            <button className="btn-primary w-full sm:w-auto">
-          View All Products →
-        </button>
-        </div>
       </div>
     </div>
   );

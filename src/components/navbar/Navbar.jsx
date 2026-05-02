@@ -25,7 +25,7 @@ const Navbar = () => {
     ];
 
     return (
-        <div className="navbar bg-base-100 shadow-sm px-2 md:px-10">
+        <div className="navbar bg-base-100 shadow-sm px-2 md:px-10 sticky top-0 z-50">
 
             {/* LEFT */}
             <div className="navbar-start">

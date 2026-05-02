@@ -11,9 +11,14 @@ import ReviewSection from '../../components/review/ReviewSection';
 const Home = () => {
     return (
         <div>
-            <FolmondiHero/>
-            <Products/>
-            <ReviewSection/>
+            <FolmondiHero />
+            <Products />
+            <div className="flex justify-center mb-2 sm:mb-4">
+                <button className="btn-primary w-full sm:w-auto">
+                    View All Products →
+                </button>
+            </div>
+            <ReviewSection />
         </div>
     );
 };
