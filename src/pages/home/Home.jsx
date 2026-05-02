@@ -4,6 +4,7 @@ import Logo from '../../components/logo/Logo';
 import FolmondiHero from '../../components/FolmondiHero';
 import PrimaryButton from '../../components/buttons/primary-button/PrimaryButton';
 import Footer from '../../components/footer/Footer';
+import MobileMenuBar from '../../components/mobile-menu/MobileMenuBar';
 
 const Home = () => {
     return (
@@ -11,6 +12,7 @@ const Home = () => {
             <Navbar></Navbar>
             <FolmondiHero/>
             <Footer/>
+            <MobileMenuBar/>
         </div>
     );
 };

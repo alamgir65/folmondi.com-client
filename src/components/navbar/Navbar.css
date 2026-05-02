@@ -19,3 +19,7 @@
     color: var(--orange-hot);
     opacity: 1;
 }
+.mobile-menu a:hover {
+    background: var(--orange-light);
+    color: var(--cream);
+}
