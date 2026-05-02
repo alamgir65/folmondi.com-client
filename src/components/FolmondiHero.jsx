@@ -77,7 +77,6 @@ export default function FolmondiHero() {
 
   return (
     <>
-
       <div className="hero-root">
         {/* Background mesh blobs */}
         <div className="mesh-blob" style={{ width: 500, height: 500, background: "rgba(251,146,60,0.12)", top: -100, right: -100 }} />
