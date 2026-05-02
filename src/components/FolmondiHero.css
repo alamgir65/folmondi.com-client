@@ -10,6 +10,7 @@
     --blue-mid: #2563eb;
     --cream: #fffbf5;
     --sand: #fef3e2;
+    --blue-light: #bfdbfe;
 }
 
 @keyframes floatBob {
@@ -126,7 +127,7 @@
 .btn-primary {
     background: linear-gradient(135deg, #f04e0f 0%, #f97316 60%, #fb923c 100%);
     color: white;
-    padding: 14px 34px;
+    padding: 10px 24px;
     border-radius: 50px;
     font-weight: 600;
     font-size: 1rem;
@@ -155,7 +156,7 @@
 .btn-secondary {
     background: white;
     color: var(--blue-trust);
-    padding: 14px 34px;
+    padding: 10px 24px;
     border-radius: 50px;
     font-weight: 600;
     font-size: 1rem;

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "./FolmondiHero.css";
+import Marque from "./marque/Marque";
 
 const FloatingFruit = ({ emoji, style, delay }) => (
   <div
@@ -77,7 +78,8 @@ export default function FolmondiHero() {
 
   return (
     <>
-      <div className="hero-root">
+      <div className="hero-root ">
+        <Marque/>
         {/* Background mesh blobs */}
         <div className="mesh-blob" style={{ width: 500, height: 500, background: "rgba(251,146,60,0.12)", top: -100, right: -100 }} />
         <div className="mesh-blob" style={{ width: 400, height: 400, background: "rgba(34,197,94,0.10)", bottom: -50, left: -80 }} />
@@ -91,7 +93,7 @@ export default function FolmondiHero() {
         }} />
 
         {/* Hero Body */}
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "20px 32px 60px", position: "relative", zIndex: 5 }}>
+        <div className="max-w-7xl mx-auto m-[5px_8px_12px]  sm:m-[20px_32px_60px] px-4 sm:px-10 py-6 sm:py-10">
           <div className="hero-split" style={{ display: "flex", alignItems: "center", gap: 32, minHeight: "78vh" }}>
 
             {/* Left: Text Column */}
@@ -121,9 +123,9 @@ export default function FolmondiHero() {
 
               {/* CTA Buttons */}
               <div className="reveal-4" style={{ marginTop: 32, display: "flex", gap: 14, flexWrap: "wrap" }}>
-                <button className="btn-primary w-full sm:w-auto">
+                <a href="#products" className="btn-primary w-full sm:w-auto">
                   {t.cta1} →
-                </button>
+                </a>
                 <button className="btn-secondary w-full sm:w-auto">
                   {t.cta2}
                 </button>
@@ -281,28 +283,7 @@ export default function FolmondiHero() {
           ))}
         </div> */}
 
-        <div className="marquee-container">
-            <div className="marquee-track">
-                {[
-                { icon: "🚚", text: "৳৫০০ এর উপরে ফ্রি ডেলিভারি" },
-                { icon: "🌿", text: "১০০% প্রাকৃতিক" },
-                { icon: "📦", text: "ঢাকায় একই দিনে ডেলিভারি" },
-                { icon: "🔄", text: "সহজ রিটার্ন" },
-                ]
-                .concat([
-                    { icon: "🚚", text: "৳৫০০ এর উপরে ফ্রি ডেলিভারি" },
-                    { icon: "🌿", text: "১০০% প্রাকৃতিক" },
-                    { icon: "📦", text: "ঢাকায় একই দিনে ডেলিভারি" },
-                    { icon: "🔄", text: "সহজ রিটার্ন" },
-                ]) // duplicate for smooth loop
-                .map((item, i) => (
-                    <div className="marquee-item" key={i}>
-                    <span>{item.icon}</span>
-                    <span>{item.text}</span>
-                    </div>
-                ))}
-            </div>
-            </div>
+        {/* <Marque/> */}
         </div>
     </>
   );
