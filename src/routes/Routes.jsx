@@ -5,6 +5,8 @@ import ErrorPage from "../pages/error-page/ErrorPage";
 import Products from "../components/products/Products";
 import ProductDetails from "../pages/product-details/ProductDetails";
 import ReviewsPage from "../pages/review-page/ReviewsPage";
+import ContactUs from "../pages/contact-us/ContactUs";
+import FolmondiSpinner from "../components/snipnner/FolmondiSpinner";
 
 export const router = createBrowserRouter([
     {
@@ -26,6 +28,17 @@ export const router = createBrowserRouter([
             {
                 path: 'reviews',
                 element: <ReviewsPage/>
+            },
+            {
+                path: 'contact-us',
+                element: <ContactUs/>
+            },
+            {
+                path: 'spinner',
+                element: <div>
+                    <FolmondiSpinner variant="dots"  size="md"/> <br/>
+                    <FolmondiSpinner variant="pulse" size="sm" text="অপেক্ষা করুন"/>
+                </div>
             }
         ]
     },

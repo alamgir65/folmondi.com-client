@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router";
 
 export default function ProductCard({ product }) {
     const [selectedVariant, setSelectedVariant] = useState(0);
@@ -11,7 +12,7 @@ export default function ProductCard({ product }) {
     };
 
     return (
-        <div className="card bg-base-100 shadow-sm hover:shadow-lg transition-shadow duration-300 border border-base-200 overflow-hidden">
+        <Link to={`/product-details`} className="card bg-base-100 shadow-sm hover:shadow-lg transition-shadow duration-300 border border-base-200 overflow-hidden">
             {/* Product Image */}
             <figure className="relative overflow-hidden" style={{ height: 220 }}>
                 <img
@@ -95,6 +96,6 @@ export default function ProductCard({ product }) {
                     </button>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 }
