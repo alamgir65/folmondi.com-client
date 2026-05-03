@@ -11,6 +11,7 @@ import AdminDashboard from "../layouts/AdminDashboard";
 import DashboardLayout from "../layouts/DashboardLayout";
 import AdminStatistics from "../components/Dashboard/statistics/AdminStatistics";
 import AddProductForm from "../components/Dashboard/product/AddProductForm";
+import AllProducts from "../components/Dashboard/inventory/AllProducts";
 
 export const router = createBrowserRouter([
     {
@@ -65,6 +66,10 @@ export const router = createBrowserRouter([
             {
                 path: 'add-product',
                 element: <AddProductForm/>
+            },
+            {
+                path: 'all-products',
+                element: <AllProducts/>
             }
         ]
     }

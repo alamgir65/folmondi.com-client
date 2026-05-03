@@ -17,6 +17,9 @@ import {
 } from "react-icons/hi2";
 import Field from "../../../utils/Field";
 import ImageUploader from "../../../utils/ImageUploader";
+import { cloudinary_image_upload } from "../../../utils";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 const CATEGORIES = [
   "Mango", "Apple", "Pineapple", "Lychee", "Orange",
@@ -32,13 +35,7 @@ const CATEGORIES = [
 export default function AddProductForm() {
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    reset,
-    watch,
-    formState: { errors, isSubmitting },
+  const { register,handleSubmit,control,reset,watch,formState: { errors, isSubmitting },
   } = useForm({
     mode: "onTouched",
     defaultValues: {
@@ -49,6 +46,22 @@ export default function AddProductForm() {
     },
   });
 
+  const {isPending, isError, mutateAsync, reset: mutationReset} = useMutation({
+    mutationFn: async(product_data) => {
+        await axios.post(`${import.meta.env.VITE_API_BASE_URL}/products`, product_data);
+    },
+    onSuccess: (data) => {
+        console.log('Product added successfully:', data);
+        setIsSuccess(true);
+        mutationReset();
+    },
+    onError: (error) => {
+        console.error('Error adding product:', error);
+        alert('Failed to add product. Please try again.');
+    }
+
+  })
+
   const price    = watch("price");
   const discount = watch("discount");
   const finalPrice = price && discount
@@ -56,9 +69,27 @@ export default function AddProductForm() {
     : price || "";
 
   const onSubmit = async (data) => {
-    // await new Promise((r) => setTimeout(r, 1200));
-    console.log("Product data:", data);
+    // console.log("Product data:", data);
+
+    const images = await Promise.all(data.images.map(async (image) => {
+      return await cloudinary_image_upload(image?.file);
+    }));
+
+    const product_data = {
+        name : data.name,
+        category : data.category,
+        origin : data.origin,
+        price : data.price,
+        discount : data.discount,
+        quantity : data.quantity,
+        short_description : data.short_description,
+        description : data.description,
+        images : images,
+        price_after_discount : finalPrice,
+    };
     // setIsSuccess(true);
+    await mutateAsync(product_data);
+
   };
 
   const handleAddAnother = () => {

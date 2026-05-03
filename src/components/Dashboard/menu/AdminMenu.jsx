@@ -12,11 +12,21 @@ const AdminMenu = () => {
         label='Add Product'
         address='add-product'
       />
-      <MenuItem icon={MdHomeWork} label='My Inventory' address='my-inventory' />
+      <MenuItem icon={MdHomeWork} label='My Inventory' address='all-products' />
       <MenuItem
         icon={MdOutlineManageHistory}
         label='Manage Orders'
         address='manage-orders'
+      />
+      <MenuItem
+        icon={BsFillHouseAddFill}
+        label='Add Category'
+        address='add-category'
+      />
+      <MenuItem
+        icon={MdOutlineManageHistory}
+        label='Manage Categories'
+        address='manage-categories'
       />
     </>
   )
