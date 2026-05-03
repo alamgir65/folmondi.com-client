@@ -7,6 +7,9 @@ import ProductDetails from "../pages/product-details/ProductDetails";
 import ReviewsPage from "../pages/review-page/ReviewsPage";
 import ContactUs from "../pages/contact-us/ContactUs";
 import FolmondiSpinner from "../components/snipnner/FolmondiSpinner";
+import AdminDashboard from "../layouts/AdminDashboard";
+import DashboardLayout from "../layouts/DashboardLayout";
+import AdminStatistics from "../components/Dashboard/statistics/AdminStatistics";
 
 export const router = createBrowserRouter([
     {
@@ -45,5 +48,19 @@ export const router = createBrowserRouter([
     {
         path: "*",
         element: <ErrorPage/>
+    },
+    {
+        path: 'dashboard',
+        element: <AdminDashboard/>
+    },
+    {
+        path: 'dashboard1',
+        element: <DashboardLayout/>,
+        children: [
+            {
+                index: true,
+                element: <AdminStatistics/>
+            }
+        ]
     }
 ])
