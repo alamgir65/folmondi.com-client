@@ -23,9 +23,9 @@ const Sidebar = () => {
       {/* Small Screen Navbar, only visible till md breakpoint */}
       <div className='bg-gray-100 text-gray-800 flex justify-between md:hidden'>
         <div>
-          <div className='block cursor-pointer p-4 font-bold'>
+          <div className='block cursor-pointer p-2 font-bold'>
             <Link to='/'>
-                <Logo width={100}/>
+                <Logo width={120}/>
             </Link>
           </div>
         </div>
@@ -63,7 +63,7 @@ const Sidebar = () => {
               <MenuItem
                 icon={BsGraphUp}
                 label='Statistics'
-                address='/dashboard1'
+                address='/dashboard'
               />
               <AdminMenu/> 
             </nav>

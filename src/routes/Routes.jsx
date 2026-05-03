@@ -10,6 +10,7 @@ import FolmondiSpinner from "../components/snipnner/FolmondiSpinner";
 import AdminDashboard from "../layouts/AdminDashboard";
 import DashboardLayout from "../layouts/DashboardLayout";
 import AdminStatistics from "../components/Dashboard/statistics/AdminStatistics";
+import AddProductForm from "../components/Dashboard/product/AddProductForm";
 
 export const router = createBrowserRouter([
     {
@@ -50,16 +51,20 @@ export const router = createBrowserRouter([
         element: <ErrorPage/>
     },
     {
-        path: 'dashboard',
+        path: 'dashboard1',
         element: <AdminDashboard/>
     },
     {
-        path: 'dashboard1',
+        path: 'dashboard',
         element: <DashboardLayout/>,
         children: [
             {
                 index: true,
                 element: <AdminStatistics/>
+            },
+            {
+                path: 'add-product',
+                element: <AddProductForm/>
             }
         ]
     }
