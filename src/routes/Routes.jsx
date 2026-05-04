@@ -13,6 +13,7 @@ import AdminStatistics from "../components/Dashboard/statistics/AdminStatistics"
 import AddProductForm from "../components/Dashboard/product/AddProductForm";
 import AllProducts from "../components/Dashboard/inventory/AllProducts";
 import AddCategoryForm from "../components/Dashboard/category/AddCategoryForm";
+import Categories from "../components/Dashboard/category/Categories";
 
 export const router = createBrowserRouter([
     {
@@ -75,6 +76,10 @@ export const router = createBrowserRouter([
             {
                 path: 'add-category',
                 element: <AddCategoryForm/>
+            },
+            {
+                path: 'manage-categories',
+                element: <Categories/>
             }
         ]
     }

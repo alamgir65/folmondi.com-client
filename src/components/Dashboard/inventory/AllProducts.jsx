@@ -7,28 +7,14 @@ import {
   HiOutlineTrash,
   HiOutlineXMark,
 } from "react-icons/hi2";
+import { Modal } from "../../../utils/Modal";
+import EditProductForm from "../product/EditProductForm";
 
 const API = import.meta.env.VITE_API_BASE_URL;
 
 
 const fmt = (n) => `৳${n.toLocaleString()}`;
 
-// ── Modal ─────────────────
-function Modal({ title, onClose, children }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-2xl w-full max-w-md">
-        <div className="flex justify-between p-4 border-b">
-          <h3 className="font-bold">{title}</h3>
-          <button onClick={onClose}>
-            <HiOutlineXMark size={20} />
-          </button>
-        </div>
-        <div className="p-4">{children}</div>
-      </div>
-    </div>
-  );
-}
 
 const AllProducts = () => {
   const queryClient = useQueryClient();
@@ -36,6 +22,7 @@ const AllProducts = () => {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
   const [deleteId, setDeleteId] = useState(null);
+  const [editRow, setEditRow] = useState(null);
 
   // ── Products Query ─────────
   const {
@@ -83,6 +70,11 @@ const AllProducts = () => {
       .includes(search.toLowerCase());
     return matchCat && matchSearch;
   });
+
+
+  const handleSave = () => {
+    
+  }
 
   if (isLoading) return <p className="text-center mt-10">Loading...</p>;
   if (isError)
@@ -187,12 +179,14 @@ const AllProducts = () => {
 
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-2">
-                        <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-blue-200">
+                        <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-blue-200"
+                          onClick={()=>setEditRow(p._id)}
+                          >
                           <HiOutlinePencilSquare size={16} />
                         </button>
 
                         <button
-                          onClick={() => setDeleteId(p.id)}
+                          onClick={() => setDeleteId(p._id)}
                           className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-200"
                           style={{ color: "#ef4444" }}
                         >
@@ -212,17 +206,28 @@ const AllProducts = () => {
         </div>
       </div>
 
-      {/* Delete Modal */}
+      {/* Edit Modal */}
+      {editRow && (
+        <Modal title="Edit Product" onClose={() => setEditRow(null)}>
+          <EditProductForm product={editRow} onSave={handleSave} onCancel={() => setEditRow(null)} />
+        </Modal>
+      )}
+      {/* Delete Confirm Modal */}
       {deleteId && (
         <Modal title="Confirm Delete" onClose={() => setDeleteId(null)}>
-          <p className="mb-4">Are you sure you want to delete this product?</p>
-          <div className="flex justify-end gap-3">
-            <button onClick={() => setDeleteId(null)} className="btn">
+          <p className="text-sm text-gray-600 mb-6">
+            Are you sure you want to delete <strong>{products.find(p => p.id === deleteId)?.name}</strong>? This action cannot be undone.
+          </p>
+          <div className="flex gap-3 justify-end">
+            <button
+              onClick={() => setDeleteId(null)}
+              className="px-5 py-2 text-sm font-bold rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+            >
               Cancel
             </button>
             <button
               onClick={() => handleDelete(deleteId)}
-              className="btn btn-error"
+              className="px-5 py-2 text-sm font-bold rounded-xl text-white transition-all hover:brightness-110 bg-(--orange-hot)"
             >
               Delete
             </button>
