@@ -12,3 +12,9 @@ export const cloudinary_image_upload = async (image_data) => {
     // console.log('Cloudinary response:', data);
     return data?.secure_url || null;
 }
+
+
+export const fetchData = async (url) => {
+  const res = await axios.get(url);
+  return res.data;
+};

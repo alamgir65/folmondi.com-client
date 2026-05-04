@@ -11,6 +11,8 @@
     --cream: #fffbf5;
     --sand: #fef3e2;
     --blue-light: #bfdbfe;
+    --base-color: #6b7280;
+    --base-color-light: #f3f4f6;
 }
 
 @keyframes floatBob {

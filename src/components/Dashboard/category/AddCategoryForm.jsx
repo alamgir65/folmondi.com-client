@@ -9,6 +9,8 @@ import {
 import Field from "../../../utils/Field";
 import { Link } from "react-router";
 import { cloudinary_image_upload } from "../../../utils";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 export default function AddCategoryForm() {
   const [isSuccess, setIsSuccess] = useState(false);
@@ -29,6 +31,23 @@ export default function AddCategoryForm() {
   });
 
 
+  const {isPending, isError, mutateAsync, reset: mutationReset} = useMutation({
+      mutationFn: async(category_data) => {
+          await axios.post(`${import.meta.env.VITE_API_BASE_URL}/categories`, category_data);
+      },
+      onSuccess: (data) => {
+          console.log('Category added successfully from onsuccess:', data);
+          setIsSuccess(true);
+          mutationReset();
+      },
+      onError: (error) => {
+          console.error('Error adding category:', error);
+          alert('Failed to add category. Please try again.');
+      }
+  
+    })
+
+
   const onSubmit = async (data) => {
     console.log(data);
 
@@ -41,8 +60,7 @@ export default function AddCategoryForm() {
     };
 
     console.log(category_data);
-
-    setIsSuccess(true);
+    await mutateAsync(category_data);
   };
 
   const handleAddAnother = () => {
