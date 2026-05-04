@@ -21,12 +21,9 @@ const Categories = () => {
   });
   console.log('Categories', categories);
 
-  const handleSave = () => {
-
-  }
 
   const handleDelete = () => {
-    
+
   }
 
     return (
@@ -44,7 +41,7 @@ const Categories = () => {
                     <table className="w-full text-sm">
                         <thead>
                             <tr style={{ background: "#f9fafb" }}>
-                                {["No.", "Image", "Name", "Description", "Actions"].map((h,i) => (
+                                {["No.", "Image", "Name", "Description","", "Actions"].map((h) => (
                                     <th
                                         key={h}
                                         className="px-5 py-3.5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap"
@@ -70,7 +67,7 @@ const Categories = () => {
                                             <img src={p.image} alt={p.name} className="w-10 h-10 rounded-lg object-cover" />
                                         </td>
                                         <td className="px-5 py-3.5 text-gray-500">{p.name}</td>
-                                        <td className="px-5 py-3.5 font-bold text-gray-800">{(p.description)}</td>
+                                        <td colSpan="2" className="px-5 py-3.5 font-bold text-gray-800">{(p.description)}</td>
                                         <td className="px-5 py-3.5">
                                             <div className="flex items-center gap-2">
                                                 <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-blue-200"
@@ -102,13 +99,13 @@ const Categories = () => {
 
             {/* Edit Modal */}
       {edit_id && (
-        <Modal title="Edit Product" onClose={() => set_edit_id(null)}>
-          <EditCategoryForm product={edit_id} onSave={handleSave} onCancel={() => set_edit_id(null)} />
+        <Modal title="Edit Category" size='lg' onClose={() => set_edit_id(null)}>
+          <EditCategoryForm product_id={edit_id} onCancel={() => set_edit_id(null)} />
         </Modal>
       )}
       {/* Delete Confirm Modal */}
       {delete_id && (
-        <Modal title="Confirm Delete" onClose={() => set_delete_id(null)}>
+        <Modal title="Confirm Delete" size={'md'} onClose={() => set_delete_id(null)}>
           <p className="text-sm text-gray-600 mb-6">
             Are you sure you want to delete <strong>{categories.find(p => p.id === delete_id)?.name}</strong>? This action cannot be undone.
           </p>
