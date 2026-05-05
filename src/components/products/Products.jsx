@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Category from "../category/Category";
 import ProductCard from "./ProductCard";
 import './Products.css';
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 // ─── Product Data ──────────────────────────────────────────────────────
 const products = [
@@ -99,8 +101,17 @@ const products = [
 ];
 
 export default function Products() {
-  const categories = ["All", "আম", "খেজুর", "খেজুরের গুড়", "ঘি", "তেল", "মধু"];
-  const [activeCategory, setActiveCategory] = useState("আম");
+  const [activeCategory, setActiveCategory] = useState("All");
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["all_categories"],
+    queryFn: async () => {
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/categories`);
+      return res.data;
+    }
+  });
+
+  const all_categories = ["All", ...categories.map(c => c.name)];
 
   return (
     <div className="bg-gray-50 max-w-7xl mx-auto px-2 sm:px-4">
@@ -109,7 +120,7 @@ export default function Products() {
       <div className="sticky top-20 z-30  py-3 mb-4">
         <div className="flex justify-center">
           <Category
-            categories={categories}
+            categories={all_categories}
             activeCategory={activeCategory}
             setActiveCategory={setActiveCategory}
           />
