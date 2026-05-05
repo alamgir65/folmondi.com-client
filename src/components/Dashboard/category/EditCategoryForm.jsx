@@ -10,10 +10,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { cloudinary_image_upload } from "../../../utils";
 import { Link } from "react-router";
+import { Modal } from "../../../utils/Modal";
 
 const API = import.meta.env.VITE_API_BASE_URL;
 
-const EditCategoryForm = ({ onClose, category_id, onCancel }) => {
+const EditCategoryForm = ({  category_id,onClose, onCancel }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const queryClient = useQueryClient();
 
@@ -57,8 +58,9 @@ const EditCategoryForm = ({ onClose, category_id, onCancel }) => {
       return res.data;
     },
     onSuccess: () => {
+      onClose()
       setIsSuccess(true);
-      queryClient.invalidateQueries(["categories"]); // 🔥 refresh list
+      queryClient.invalidateQueries(["categories"]);
     },
     onError: (error) => {
       console.error("Error updating category:", error);
@@ -91,29 +93,26 @@ const EditCategoryForm = ({ onClose, category_id, onCancel }) => {
   // ── Success UI ──
   if (isSuccess) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-5 text-center px-4">
-        <div className="w-20 h-20 rounded-full flex items-center justify-center bg-green-100">
-          <HiOutlineCheckCircle size={46} className="text-green-600" />
-        </div>
+      <Modal size={'md'}>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-5 text-center px-4">
+          <div className="w-20 h-20 rounded-full flex items-center justify-center bg-green-100">
+            <HiOutlineCheckCircle size={46} className="text-green-600" />
+          </div>
 
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-1">
-            Category Updated!
-          </h2>
-          <p className="text-sm text-gray-400">
-            Your category has been updated successfully.
-          </p>
-        </div>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-1">
+              Category Updated!
+            </h2>
+            <p className="text-sm text-gray-400">
+              Your category has been updated successfully.
+            </p>
+          </div>
 
-        <div className="flex gap-3">
-          <Link
-            to="/categories"
-            className="px-6 py-2.5 rounded-xl text-sm font-bold border border-gray-200 text-gray-600 hover:bg-gray-50"
-          >
-            Go to Categories
-          </Link>
+          <div className="flex justify-center gap-3">
+            <button onClick={() => setIsSuccess(false)} className='btn-primary'>ok</button>
+          </div>
         </div>
-      </div>
+      </Modal>
     );
   }
 
@@ -128,9 +127,8 @@ const EditCategoryForm = ({ onClose, category_id, onCancel }) => {
           <Field label="Category Name" required error={errors.name}>
             <input
               type="text"
-              className={`input input-bordered w-full rounded-xl ${
-                errors.name ? "border-red-400" : ""
-              }`}
+              className={`input input-bordered w-full rounded-xl ${errors.name ? "border-red-400" : ""
+                }`}
               {...register("name", {
                 required: "Category name is required",
                 minLength: { value: 3, message: "Minimum 3 characters" },
@@ -142,9 +140,8 @@ const EditCategoryForm = ({ onClose, category_id, onCancel }) => {
             <textarea
               rows={2}
               maxLength={160}
-              className={`textarea textarea-bordered w-full rounded-xl ${
-                errors.description ? "border-red-400" : ""
-              }`}
+              className={`textarea textarea-bordered w-full rounded-xl ${errors.description ? "border-red-400" : ""
+                }`}
               {...register("description", {
                 required: "Description is required",
                 minLength: { value: 10, message: "Minimum 10 characters" },

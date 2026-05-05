@@ -94,7 +94,7 @@ export default function AddCategoryForm() {
           </button>
 
           <Link
-            to="/categories"
+            to="/dashboard/manage-categories"
             className="px-6 py-2.5 rounded-xl text-sm font-bold border border-gray-200 text-gray-600 hover:bg-gray-50"
           >
             Go to Categories
