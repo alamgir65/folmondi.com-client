@@ -99,8 +99,8 @@ const Categories = () => {
 
             {/* Edit Modal */}
       {edit_id && (
-        <Modal title="Edit Category" size='lg' onClose={() => set_edit_id(null)}>
-          <EditCategoryForm product_id={edit_id} onCancel={() => set_edit_id(null)} />
+        <Modal title="Edit Category" size='md' onClose={() => set_edit_id(null)}>
+          <EditCategoryForm category_id={edit_id} onCancel={() => set_edit_id(null)} />
         </Modal>
       )}
       {/* Delete Confirm Modal */}
