@@ -9,8 +9,10 @@ import {
 } from "react-icons/hi2";
 import { Modal } from "../../../utils/Modal";
 import EditProductForm from "../product/EditProductForm";
+import toast, { Toaster } from "react-hot-toast";
 
 const API = import.meta.env.VITE_API_BASE_URL;
+const notify = () => toast.success('Product Deleted!');
 
 
 const fmt = (n) => `৳${n.toLocaleString()}`;
@@ -48,8 +50,9 @@ const AllProducts = () => {
 
   // ── Delete Mutation ────────
   const deleteMutation = useMutation({
-    mutationFn: (id) => axios.delete(`${API}/products/${id}`),
+    mutationFn: (id) => axios.delete(`${API}/product/${id}`),
     onSuccess: () => {
+      notify()
       queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
@@ -72,17 +75,13 @@ const AllProducts = () => {
   });
 
 
-  const handleSave = () => {
-    
-  }
-
   if (isLoading) return <p className="text-center mt-10">Loading...</p>;
   if (isError)
     return <p className="text-center mt-10 text-red-500">Error loading data</p>;
 
   return (
     <div className="space-y-6">
-
+      <Toaster/>
       {/* Header */}
       <div className="flex justify-between items-center flex-wrap gap-4">
         <div>
@@ -208,15 +207,15 @@ const AllProducts = () => {
 
       {/* Edit Modal */}
       {editRow && (
-        <Modal title="Edit Product" onClose={() => setEditRow(null)}>
-          <EditProductForm product={editRow} onSave={handleSave} onCancel={() => setEditRow(null)} />
+        <Modal title="Edit Product" size='md' onClose={() => setEditRow(null)}>
+          <EditProductForm product_id={editRow} setEditRow={setEditRow} onCancel={() => setEditRow(null)} />
         </Modal>
       )}
       {/* Delete Confirm Modal */}
       {deleteId && (
-        <Modal title="Confirm Delete" onClose={() => setDeleteId(null)}>
+        <Modal title="Confirm Delete" size={'md'} onClose={() => setDeleteId(null)}>
           <p className="text-sm text-gray-600 mb-6">
-            Are you sure you want to delete <strong>{products.find(p => p.id === deleteId)?.name}</strong>? This action cannot be undone.
+            Are you sure you want to delete <strong>{products.find(p => p._id === deleteId)?.name}</strong>? This action cannot be undone.
           </p>
           <div className="flex gap-3 justify-end">
             <button

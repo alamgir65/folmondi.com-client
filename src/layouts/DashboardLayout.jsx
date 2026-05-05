@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router'
 import Sidebar from '../components/Dashboard/Sidebar/Sidebar'
+import { ToastIcon } from 'react-hot-toast'
 
 const DashboardLayout = () => {
   return (

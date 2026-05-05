@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   HiOutlineTag,
@@ -18,22 +18,14 @@ import {
 import Field from "../../../utils/Field";
 import ImageUploader from "../../../utils/ImageUploader";
 import { cloudinary_image_upload } from "../../../utils";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-
-const CATEGORIES = [
-  "Mango", "Apple", "Pineapple", "Lychee", "Orange",
-  "Date", "Honey", "Ghee", "Oil", "Other",
-];
-
-
-
-// ── Image Upload Preview ───────────────────────────────────────────────────
 
 
 // ── Main Component ─────────────────────────────────────────────────────────
 export default function AddProductForm() {
   const [isSuccess, setIsSuccess] = useState(false);
+  const [categoryList,setCategoryList] = useState([]);
 
   const { register,handleSubmit,control,reset,watch,formState: { errors, isSubmitting },
   } = useForm({
@@ -45,6 +37,24 @@ export default function AddProductForm() {
       images: [],
     },
   });
+
+  const {data: categories = []} = useQuery({
+    queryKey: ['categories'],
+    queryFn: async() => {
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/categories`);
+      return res.data;
+    }
+  })
+  // console.log('Categories ------>', categories);
+
+  useEffect(()=>{
+    if(categories){
+      const c_list = categories.map(c => c.name);
+      setCategoryList(c_list);
+    }
+  },[categories,setCategoryList]);
+
+  console.log('Category LIst', categoryList);
 
   const {isPending, isError, mutateAsync, reset: mutationReset} = useMutation({
     mutationFn: async(product_data) => {
@@ -61,6 +71,8 @@ export default function AddProductForm() {
     }
 
   })
+
+  
 
   const price    = watch("price");
   const discount = watch("discount");
@@ -170,7 +182,7 @@ export default function AddProductForm() {
                 {...register("category", { required: "Please select a category" })}
               >
                 <option value="">Select category</option>
-                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                {categoryList.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </Field>
 
