@@ -111,7 +111,15 @@ export default function Products() {
     }
   });
 
-  const all_categories = ["All", ...categories.map(c => c.name)];
+  const { data: Products = [], isLoading } = useQuery({
+    queryKey: ["Products"],
+    queryFn: async () => {
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/products`);
+      return res.data;
+    }
+  });
+
+  const all_categories = [{_id:-1,name : "All"}, ...categories];
 
   return (
     <div className="bg-gray-50 max-w-7xl mx-auto px-2 sm:px-4">
@@ -138,7 +146,7 @@ export default function Products() {
               : `${activeCategory} — Shop`}
           </h1>
           <span className="text-sm text-base-content/50 font-medium">
-            {products.length} products
+            {Products.length} products
           </span>
         </div>
 
@@ -147,7 +155,7 @@ export default function Products() {
           id="products"
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
         >
-          {products.map((p) => (
+          {Products.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>

@@ -182,7 +182,8 @@ export default function AddProductForm() {
                 {...register("category", { required: "Please select a category" })}
               >
                 <option value="">Select category</option>
-                {categoryList.map((c) => <option key={c} value={c}>{c}</option>)}
+                {/* {categoryList.map((c) => <option key={c} value={c}>{c}</option>)} */}
+                {categories.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
               </select>
             </Field>
 

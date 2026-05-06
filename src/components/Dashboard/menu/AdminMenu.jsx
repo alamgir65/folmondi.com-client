@@ -28,6 +28,11 @@ const AdminMenu = () => {
         label='Manage Categories'
         address='manage-categories'
       />
+      <MenuItem
+        icon={BsFillHouseAddFill}
+        label='Add Package'
+        address='add-package'
+      />
     </>
   )
 }

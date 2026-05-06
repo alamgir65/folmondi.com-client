@@ -14,6 +14,8 @@ import AddProductForm from "../components/Dashboard/product/AddProductForm";
 import AllProducts from "../components/Dashboard/inventory/AllProducts";
 import AddCategoryForm from "../components/Dashboard/category/AddCategoryForm";
 import Categories from "../components/Dashboard/category/Categories";
+import AddPackage from "../components/Dashboard/packages/AddPackage";
+import ManagePackages from "../components/Dashboard/packages/ManagePackages";
 
 export const router = createBrowserRouter([
     {
@@ -80,6 +82,14 @@ export const router = createBrowserRouter([
             {
                 path: 'manage-categories',
                 element: <Categories/>
+            },
+            {
+                path: 'add-package',
+                element: <AddPackage/>
+            },
+            {
+                path: 'manage-packages',
+                element: <ManagePackages/>
             }
         ]
     }
