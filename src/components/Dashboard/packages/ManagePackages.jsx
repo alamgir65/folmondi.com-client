@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { HiOutlineCheckCircle, HiOutlinePencilSquare, HiOutlineTrash } from 'react-icons/hi2';
 import { Modal } from '../../../utils/Modal';
-import { Link } from 'react-router';
+import EditPackage from './EditPackage';
 
 const API = import.meta.env.VITE_API_BASE_URL;
 
@@ -12,11 +12,11 @@ const ManagePackages = () => {
     const [edit_id, set_edit_id] = useState(null);
     const [isSuccess, setIsSuccess] = useState(null);
 
-    // ── Categories Query ───────
-    const { data: categories = [] } = useQuery({
-        queryKey: ["categories"],
+    // ── packages Query ───────
+    const { data: packages = [] } = useQuery({
+        queryKey: ["packages"],
         queryFn: async () => {
-            const res = await axios.get(`${API}/categories`);
+            const res = await axios.get(`${API}/packages`);
             return res.data;
         },
     });
@@ -24,14 +24,14 @@ const ManagePackages = () => {
 
     const { mutateAsync, isPending } = useMutation({
         mutationFn: async (id) => {
-            const res = await axios.delete(`${API}/category/${id}`);
+            const res = await axios.delete(`${API}/package/${id}`);
             return res.data;
         },
 
         onSuccess: () => {
             setIsSuccess(true);
             set_delete_id(null);
-            QueryClient.invalidateQueries({ queryKey: ["categories"] });
+            QueryClient.invalidateQueries({ queryKey: ["packages"] });
         },
         onError: (error) => {
             console.error("Error deleting category:", error);
@@ -48,10 +48,10 @@ const ManagePackages = () => {
 
                     <div>
                         <h2 className="text-2xl font-bold text-gray-800 mb-1">
-                            Category Deleted!
+                            Package Deleted!
                         </h2>
                         <p className="text-sm text-gray-400">
-                            Your category has been deleted successfully.
+                            Your package has been deleted successfully.
                         </p>
                     </div>
                 </div>
@@ -62,9 +62,6 @@ const ManagePackages = () => {
         );
     }
 
-    //   console.log('Categories', categories);
-
-
     const handleDelete = (delete_id) => {
         mutateAsync(delete_id);
     }
@@ -74,8 +71,8 @@ const ManagePackages = () => {
             {/* Header */}
             <div className="flex justify-between items-center flex-wrap gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold">Categories</h1>
-                    <p className="text-sm text-gray-400">{categories.length} categories</p>
+                    <h1 className="text-2xl font-bold">Packages</h1>
+                    <p className="text-sm text-gray-400">{packages.length} packages</p>
                 </div>
             </div>
             {/* Table */}
@@ -96,21 +93,19 @@ const ManagePackages = () => {
                         </thead>
 
                         <tbody>
-                            {categories.length === 0 ? (
+                            {packages.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="px-5 py-10 text-center text-sm text-gray-400">
-                                        No Categories found.
+                                        No Packages found.
                                     </td>
                                 </tr>
                             ) : (
-                                categories.map((p, i) => (
-                                    <tr key={p.id} className="border-t border-gray-50 hover:bg-gray-50 transition-colors">
+                                packages.map((p, i) => (
+                                    <tr key={p._id} className="border-t border-gray-50 hover:bg-gray-50 transition-colors">
                                         <td className="px-5 py-3.5 text-gray-500">{i + 1}</td>
-                                        <td className="px-5 py-3.5">
-                                            <img src={p.image} alt={p.name} className="w-10 h-10 rounded-lg object-cover" />
-                                        </td>
-                                        <td className="px-5 py-3.5 text-gray-500">{p.name}</td>
-                                        <td colSpan="2" className="px-5 py-3.5 font-bold text-gray-800">{(p.description)}</td>
+                                        <td className="px-5 py-3.5 text-gray-500">{p?.product_name}</td>
+                                        <td className="px-5 py-3.5 font-bold text-gray-800">{(p.price)}</td>
+                                        <td className="px-5 py-3.5 font-bold text-gray-800">{(p.quantity)}</td>
                                         <td className="px-5 py-3.5">
                                             <div className="flex items-center gap-2">
                                                 <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-blue-200"
@@ -136,21 +131,21 @@ const ManagePackages = () => {
                 </div>
 
                 <div className="px-5 py-3 border-t text-xs text-gray-400">
-                    Showing {categories.length} of {categories.length} products
+                    Showing {packages.length} of {packages.length} packages
                 </div>
             </div>
 
             {/* Edit Modal */}
             {edit_id && (
-                <Modal title="Edit Category" size='md' onClose={() => set_edit_id(null)}>
-                    {/* <EditCategoryForm category_id={edit_id} onClose={() => set_edit_id(null)} onCancel={() => set_edit_id(null)} /> */}
+                <Modal title="Edit Package" size='md' onClose={() => set_edit_id(null)}>
+                    <EditPackage package_id={edit_id} onClose={() => set_edit_id(null)} onCancel={() => set_edit_id(null)} />
                 </Modal>
             )}
             {/* Delete Confirm Modal */}
             {delete_id && (
                 <Modal title="Confirm Delete" size={'md'} onClose={() => set_delete_id(null)}>
                     <p className="text-sm text-gray-600 mb-6">
-                        Are you sure you want to delete <strong>{categories.find(p => p._id === delete_id)?.name}</strong>? This action cannot be undone.
+                        Are you sure you want to delete <strong>{packages.find(p => p._id === delete_id)?.product_name} Package</strong>? This action cannot be undone.
                     </p>
                     <div className="flex gap-3 justify-end">
                         <button

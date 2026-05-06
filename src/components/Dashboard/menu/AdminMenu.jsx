@@ -33,6 +33,11 @@ const AdminMenu = () => {
         label='Add Package'
         address='add-package'
       />
+      <MenuItem
+        icon={MdOutlineManageHistory}
+        label='Manage Packages'
+        address='manage-packages'
+      />
     </>
   )
 }

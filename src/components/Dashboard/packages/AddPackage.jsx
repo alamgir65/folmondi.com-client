@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
     HiOutlineTag,
@@ -59,10 +59,13 @@ export default function AddPackage() {
     const onSubmit = async (data) => {
         console.log(data);
 
+        const p = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/product/${data?.product_id}`);
+
         const category_data = {
-            product: data.product,
+            product_id: data.product_id,
             price: data.price,
-            quantity: data.quantity
+            quantity: data.quantity,
+            product_name: p? p?.data?.name : ""
         };
 
         console.log(category_data);
@@ -144,7 +147,7 @@ export default function AddPackage() {
                             <select
                                 className={`select select-bordered w-full text-sm rounded-xl bg-white focus:outline-none ${errors.product ? "border-red-400" : "focus:border-(--orange-mid)"}`}
                                 style={{ borderColor: errors.product ? "#f87171" : "#e5e7eb", height: "44px" }}
-                                {...register("product", { required: "Please select a product" })}
+                                {...register("product_id", { required: "Please select a product" })}
                             >
                                 <option value="">Select product</option>
                                 {products.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}

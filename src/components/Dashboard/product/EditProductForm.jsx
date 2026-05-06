@@ -76,7 +76,7 @@ export default function EditProductForm({ product_id,setEditRow, onCancel }) {
     }
   },[categories,setCategoryList]);
 
-  console.log('Category LIst', categoryList);
+  // console.log('Category LIst', categoryList);
 
   const { isPending, isError, mutateAsync, reset: mutationReset } = useMutation({
     mutationFn: async (product_data) => {
