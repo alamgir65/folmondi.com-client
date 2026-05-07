@@ -1,0 +1,5 @@
+tab-underline{
+    border-bottom: 3px solid var(--orange-hot);
+    color : var(--orange-hot);
+    font-weight: 600
+}

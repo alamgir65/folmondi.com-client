@@ -7,21 +7,6 @@ export default function ProductCard({ product }) {
     const [selectedVariant, setSelectedVariant] = useState(0);
     const [cartAdded, setCartAdded] = useState(false);
 
-    const {data: packages = []} = useQuery({
-        queryKey: ['packages', product._id],
-        queryFn: async()=>{
-            const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/packages/by-product/${product._id}`)
-            return res?.data;
-        },
-        enabled: !!product._id,
-    })
-
-    if(!packages){
-        packages = [{price: product?.price, quantity: product?.quantity}]
-    }
-
-    console.log('Packages : ',product._id, packages);
-
     const handleAddToCart = () => {
         if (!product.inStock) return;
         setCartAdded(true);
@@ -122,7 +107,7 @@ export default function ProductCard({ product }) {
                     <button className="btn-secondary w-full">
                         Add to Cart
                     </button>
-                    <Link to={`/product-details`} className="btn-primary text-center w-full">
+                    <Link to={`/product-details/${product._id}`} className="btn-primary text-center w-full">
                         View Details
                     </Link>
                 </div>
