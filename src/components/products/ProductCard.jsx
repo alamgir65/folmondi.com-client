@@ -1,3 +1,5 @@
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { useState } from "react";
 import { Link } from "react-router";
 
@@ -5,20 +7,36 @@ export default function ProductCard({ product }) {
     const [selectedVariant, setSelectedVariant] = useState(0);
     const [cartAdded, setCartAdded] = useState(false);
 
+    const {data: packages = []} = useQuery({
+        queryKey: ['packages', product._id],
+        queryFn: async()=>{
+            const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/packages/by-product/${product._id}`)
+            return res?.data;
+        },
+        enabled: !!product._id,
+    })
+
+    if(!packages){
+        packages = [{price: product?.price, quantity: product?.quantity}]
+    }
+
+    console.log('Packages : ',product._id, packages);
+
     const handleAddToCart = () => {
         if (!product.inStock) return;
         setCartAdded(true);
         setTimeout(() => setCartAdded(false), 2000);
     };
 
-    const variants = [
-      { label: "১২ কেজি", price: 1440 },
-      { label: "২৪ কেজি", price: 2880 },
-    ];
+    // const variants = [
+    //   { label: "১২ কেজি", price: 1440 },
+    //   { label: "২৪ কেজি", price: 2880 },
+    //   { label: "২৪ কেজি", price: 2880 },
+    // ];
     return (
-        <Link to={`/product-details`} className="card bg-base-100 shadow-sm hover:shadow-lg transition-shadow duration-300 border border-base-200 overflow-hidden">
+        <div  className="card bg-base-100 shadow-sm hover:shadow-lg transition-shadow duration-300 border border-base-200 overflow-hidden">
             {/* Product Image */}
-            <figure className="relative overflow-hidden" style={{ height: 220 }}>
+            <Link to={`/product-details`} className="relative overflow-hidden" style={{ height: 220 }}>
                 <img
                     src={product.images[0]}
                     alt={product.name}
@@ -29,17 +47,18 @@ export default function ProductCard({ product }) {
                 >
                     -{product.discount}%
                 </div>
-            </figure>
+            </Link>
 
             <div className="card-body p-4 gap-3">
                 {/* Name */}
-                <h3 className="font-bold text-base text-base-content leading-tight">
+                <h3 className="font-bold text-lg text-base-content leading-tight">
                     {product.name}
                 </h3>
 
                 {/* Price */}
                 <div className="flex items-center gap-2">
-                    <span className="text-lg font-bold">Per Kg - </span>
+                    {/* <span className="text-base font-bold">
+                            প্রতি কেজি - </span> */}
                     <span className="font-bold text-lg text-(--orange-hot)">
                         ৳{product?.price_after_discount}
                         {/* ৳{product.variants[selectedVariant].price.toLocaleString()} */}
@@ -48,9 +67,15 @@ export default function ProductCard({ product }) {
                         ৳{product?.price}
                     </span>
                 </div>
+                {/* Price */}
+                <div className="flex items-center gap-2">
+                    <span className="text-base font-bold text-(--base-color)">
+                            সর্বনিম্ন অর্ডার - {product?.min_order} Kg
+                    </span>
+                </div>
 
                 {/* Variant pills */}
-                <div className="flex gap-2 flex-wrap">
+                {/* <div className="flex gap-2 flex-wrap">
                     {variants.map((v, i) => (
                         <button
                             key={i}
@@ -81,7 +106,7 @@ export default function ProductCard({ product }) {
                             </div>
                         </button>
                     ))}
-                </div>
+                </div> */}
 
                 {/* Out of stock / Delivery */}
                 {!product.quantity ? (
@@ -91,17 +116,17 @@ export default function ProductCard({ product }) {
                 ) : product?.delivery ? (
                     <p className="text-xs text-base-content/50 leading-snug">{product.delivery}</p>
                 ) : null}
-                <p className="text-xs text-base-content/50 leading-snug">ডেলিভারির আনুমানিক সময় ৭ই মে ইনশাআল্লাহ</p>
+                <p className="text-xs text-base-content/50 leading-snug">{product.short_description}</p>
                 {/* Buttons */}
                 <div className="card-actions mt-1 gap-2">
                     <button className="btn-secondary w-full">
                         Add to Cart
                     </button>
-                    <button className="btn-primary w-full">
-                        Order Now
-                    </button>
+                    <Link to={`/product-details`} className="btn-primary text-center w-full">
+                        View Details
+                    </Link>
                 </div>
             </div>
-        </Link>
+        </div>
     );
 }

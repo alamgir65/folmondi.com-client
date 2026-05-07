@@ -65,7 +65,9 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
         origin: product.origin || "",
         price_after_discount: product.price_after_discount || "",
         category: product.category || "",
-        min_order: product?.min_order || ""
+        min_order: product?.min_order || "",
+        unit: product?.unit || "",
+        free_delivery: product?.free_delivery || "",
       });
     }
   }, [product, reset]);
@@ -111,6 +113,8 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
       })
     );
 
+    const select_category = categories.find((c) => c._id === data.category);
+
     const product_data = {
       name: data.name,
       category: data.category,
@@ -122,7 +126,10 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
       description: data.description,
       images,
       price_after_discount: finalPrice ? parseFloat(finalPrice) : data.price,
-      min_order: data.min_order
+      min_order: data.min_order,
+      unit : data.unit,
+      free_delivery: data.free_delivery,
+      category_name: select_category?.name
     };
 
     await mutateAsync(product_data);
@@ -198,11 +205,14 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
               <Field label="Minimum Order" icon={<HiOutlineTag size={15} />} required error={errors.min_order}>
                 <input
                   type="number"
-                  placeholder="e.g. 5 kg"
+                  min="0"
+                  placeholder="e.g. 100"
                   className={`input input-bordered w-full text-sm rounded-xl bg-white h-11 focus:outline-none ${errors.min_order ? "border-red-400" : "focus:border-(--orange-mid)"}`}
                   style={{ borderColor: errors.min_order ? "#f87171" : "#e5e7eb" }}
                   {...register("min_order", {
                     required: "Minimum Order is required",
+                    min: { value: 0, message: "Cannot be negative" },
+                    valueAsNumber: true,
                   })}
                 />
               </Field>
@@ -233,6 +243,30 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
                   minLength: { value: 3, message: "Origin must be at least 3 characters" },
                 })}
               />
+            </Field>
+
+            {/* Unit */}
+            <Field label="Unit" icon={<HiOutlineSquares2X2 size={15} />} required error={errors.unit}>
+              <select
+                className={`select select-bordered w-full text-sm rounded-xl bg-white focus:outline-none ${errors.unit ? "border-red-400" : "focus:border-(--orange-mid)"}`}
+                style={{ borderColor: errors.category ? "#f87171" : "#e5e7eb", height: "44px" }}
+                {...register("unit", { required: "Please select a unit" })}
+              >
+                <option value="">Select Unit</option>
+                {["KG", "Liter", "Piece"].map((c, i) => <option key={i} value={c}>{c}</option>)}
+              </select>
+            </Field>
+
+            {/* Delivery Fee */}
+            <Field label="Free Delivery" icon={<HiOutlineSquares2X2 size={15} />} required error={errors.free_delivery}>
+              <select
+                className={`select select-bordered w-full text-sm rounded-xl bg-white focus:outline-none ${errors.free_delivery ? "border-red-400" : "focus:border-(--orange-mid)"}`}
+                style={{ borderColor: errors.category ? "#f87171" : "#e5e7eb", height: "44px" }}
+                {...register("free_delivery", { required: "Please select Free delivery or Not" })}
+              >
+                <option value="">Free Delivery</option>
+                {["Yes", "No"].map((c, i) => <option key={i} value={c}>{c}</option>)}
+              </select>
             </Field>
           </div>
         </div>
@@ -356,18 +390,18 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
               <div className="relative">
                 <textarea
                   rows={2}
-                  maxLength={160}
+                  maxLength={120}
                   placeholder="e.g. Sweet, chemical-free Himsagar mangoes from Rajshahi..."
                   className={`textarea textarea-bordered w-full text-sm rounded-xl bg-white resize-none leading-relaxed focus:outline-none ${errors.short_description ? "border-red-400" : "focus:border-(--orange-mid)"}`}
                   style={{ borderColor: errors.short_description ? "#f87171" : "#e5e7eb" }}
                   {...register("short_description", {
                     required: "Short description is required",
-                    maxLength: { value: 160, message: "Max 160 characters" },
+                    maxLength: { value: 120, message: "Max 120 characters" },
                     minLength: { value: 10, message: "At least 10 characters" },
                   })}
                 />
                 <span className="absolute bottom-2 right-3 text-xs text-gray-300">
-                  {watch("short_description")?.length || 0}/160
+                  {watch("short_description")?.length || 0}/120
                 </span>
               </div>
             </Field>
