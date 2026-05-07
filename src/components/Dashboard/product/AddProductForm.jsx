@@ -98,6 +98,7 @@ export default function AddProductForm() {
         description : data.description,
         images : images,
         price_after_discount : finalPrice,
+        min_order: data.min_order
     };
     // setIsSuccess(true);
     await mutateAsync(product_data);
@@ -168,7 +169,21 @@ export default function AddProductForm() {
                   style={{ borderColor: errors.name ? "#f87171" : "#e5e7eb" }}
                   {...register("name", {
                     required: "Product name is required",
-                    minLength: { value: 3, message: "Name must be at least 3 characters" },
+                    minLength: { value: 2, message: "Name must be at least 2 characters" },
+                  })}
+                />
+              </Field>
+            </div>
+            {/* Minmum Order */}
+            <div className="md:col-span-2">
+              <Field label="Minimum Order" icon={<HiOutlineTag size={15} />} required error={errors.min_order}>
+                <input
+                  type="number"
+                  placeholder="e.g. 5 kg"
+                  className={`input input-bordered w-full text-sm rounded-xl bg-white h-11 focus:outline-none ${errors.min_order ? "border-red-400" : "focus:border-(--orange-mid)"}`}
+                  style={{ borderColor: errors.min_order ? "#f87171" : "#e5e7eb" }}
+                  {...register("min_order", {
+                    required: "Minimum Order is required",
                   })}
                 />
               </Field>
@@ -182,7 +197,6 @@ export default function AddProductForm() {
                 {...register("category", { required: "Please select a category" })}
               >
                 <option value="">Select category</option>
-                {/* {categoryList.map((c) => <option key={c} value={c}>{c}</option>)} */}
                 {categories.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
               </select>
             </Field>

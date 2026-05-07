@@ -131,7 +131,7 @@ const EditCategoryForm = ({  category_id,onClose, onCancel }) => {
                 }`}
               {...register("name", {
                 required: "Category name is required",
-                minLength: { value: 3, message: "Minimum 3 characters" },
+                minLength: { value: 2, message: "Minimum 2 characters" },
               })}
             />
           </Field>

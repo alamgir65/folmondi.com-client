@@ -19,9 +19,9 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 // ── Main Component ─────────────────────────────────────────────────────────
-export default function EditProductForm({ product_id,setEditRow, onCancel }) {
+export default function EditProductForm({ product_id, setEditRow, onCancel }) {
   const [isSuccess, setIsSuccess] = useState(false);
-  const [categoryList,setCategoryList] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
 
   const { data: product = {}, isLoading } = useQuery({
     queryKey: ["product", product_id],
@@ -43,9 +43,9 @@ export default function EditProductForm({ product_id,setEditRow, onCancel }) {
     formState: { errors, isSubmitting },
   } = useForm({ mode: "onTouched" });
 
-  const {data: categories = []} = useQuery({
+  const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
-    queryFn: async() => {
+    queryFn: async () => {
       const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/categories`);
       return res.data;
     }
@@ -65,16 +65,17 @@ export default function EditProductForm({ product_id,setEditRow, onCancel }) {
         origin: product.origin || "",
         price_after_discount: product.price_after_discount || "",
         category: product.category || "",
+        min_order: product?.min_order || ""
       });
     }
   }, [product, reset]);
 
-  useEffect(()=>{
-    if(categories){
+  useEffect(() => {
+    if (categories) {
       const c_list = categories.map(c => c.name);
       setCategoryList(c_list);
     }
-  },[categories,setCategoryList]);
+  }, [categories, setCategoryList]);
 
   // console.log('Category LIst', categoryList);
 
@@ -121,6 +122,7 @@ export default function EditProductForm({ product_id,setEditRow, onCancel }) {
       description: data.description,
       images,
       price_after_discount: finalPrice ? parseFloat(finalPrice) : data.price,
+      min_order: data.min_order
     };
 
     await mutateAsync(product_data);
@@ -129,7 +131,7 @@ export default function EditProductForm({ product_id,setEditRow, onCancel }) {
     setIsSuccess(false);
     setEditRow(null);
   }
-  
+
   // ── Success screen ─────────────────────────────────────────────────────────
   if (isSuccess) {
     return (
@@ -185,7 +187,22 @@ export default function EditProductForm({ product_id,setEditRow, onCancel }) {
                   style={{ borderColor: errors.name ? "#f87171" : "#e5e7eb" }}
                   {...register("name", {
                     required: "Product name is required",
-                    minLength: { value: 3, message: "Name must be at least 3 characters" },
+                    minLength: { value: 2, message: "Name must be at least 2 characters" },
+                  })}
+                />
+              </Field>
+            </div>
+
+            {/* Minmum Order */}
+            <div className="md:col-span-2">
+              <Field label="Minimum Order" icon={<HiOutlineTag size={15} />} required error={errors.min_order}>
+                <input
+                  type="number"
+                  placeholder="e.g. 5 kg"
+                  className={`input input-bordered w-full text-sm rounded-xl bg-white h-11 focus:outline-none ${errors.min_order ? "border-red-400" : "focus:border-(--orange-mid)"}`}
+                  style={{ borderColor: errors.min_order ? "#f87171" : "#e5e7eb" }}
+                  {...register("min_order", {
+                    required: "Minimum Order is required",
                   })}
                 />
               </Field>

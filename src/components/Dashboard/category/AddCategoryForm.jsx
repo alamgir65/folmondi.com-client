@@ -144,8 +144,8 @@ export default function AddCategoryForm() {
                 {...register("name", {
                   required: "Category name is required",
                   minLength: {
-                    value: 3,
-                    message: "Minimum 3 characters",
+                    value: 2,
+                    message: "Minimum 2 characters",
                   },
                 })}
               />

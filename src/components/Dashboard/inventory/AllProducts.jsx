@@ -5,7 +5,6 @@ import {
   HiOutlineMagnifyingGlass,
   HiOutlinePencilSquare,
   HiOutlineTrash,
-  HiOutlineXMark,
 } from "react-icons/hi2";
 import { Modal } from "../../../utils/Modal";
 import EditProductForm from "../product/EditProductForm";

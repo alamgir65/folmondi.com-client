@@ -1,20 +1,17 @@
-
-import mangoImage from '../../assets/mango.webp';
 import { Link } from 'react-router';
 import './Category.css';
 
 const Category = ({ categories, activeCategory, setActiveCategory }) => {
-    console.log(categories);
     return (
         <div className="rounded-full mx-2 py-2 px-7 max-w-fit bg-white shadow-[0_0_12px_rgba(0,0,0,0.3)] flex items-center justify-center gap-5 overflow-x-auto no-scrollbar">
             {
                 categories.map((cat, index) => {
-                    const isActive = activeCategory === cat.name;
+                    const isActive = activeCategory === cat._id;
 
                     return (
                         <Link
                             key={index}
-                            onClick={() => setActiveCategory(cat.name)}
+                            onClick={() => setActiveCategory(cat._id)}
                             className={`category flex flex-col items-center justify-center min-w-17.5 shrink-0 cursor-pointer transition-colors 
                             ${isActive ? "text-(--orange-hot)" : "text-base-content/80"} hover:text-(--orange-hot)`}
                         >
@@ -23,7 +20,7 @@ const Category = ({ categories, activeCategory, setActiveCategory }) => {
                                 className={`w-15 h-15 shrink-0 rounded-full border-3 
                                 ${isActive ? "border-(--orange-hot)" : "border-white"} 
                                 hover:border-(--orange-hot)`}
-                                src={mangoImage}
+                                src={cat.image}
                                 alt={cat}
                             />
 
