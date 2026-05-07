@@ -18,3 +18,33 @@ export const fetchData = async (url) => {
   const res = await axios.get(url);
   return res.data;
 };
+
+
+export const get_product_from_LS = () => {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  return cart;
+}
+
+export const set_product_to_LS = (product) => {
+  const cart = get_product_from_LS();
+
+  const exists = cart.find((item) => item._id === product._id);
+
+  if (exists) return;
+
+  const new_cart = [...cart, product];
+
+  localStorage.setItem("cart", JSON.stringify(new_cart));
+};
+
+export const remove_product_from_LS = (id) => {
+  const cart = get_product_from_LS();
+
+  const updated = cart.filter((item) => item._id !== id);
+
+  localStorage.setItem("cart", JSON.stringify(updated));
+};
+
+export const clear_cart = () => {
+  localStorage.removeItem("cart");
+};

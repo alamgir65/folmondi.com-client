@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
 import "./ProductDetails.css";
+import { get_product_from_LS, set_product_to_LS } from "../../utils";
 
 // ─── Color tokens ──────────────────────────────────────────────────────────
 const C = {
@@ -195,6 +196,8 @@ export default function ProductDetails() {
 
   const [wishlist, setWishlist] = useState(false);
 
+  console.log(get_product_from_LS());
+
   // ─── Set default package ───────────────────────────────────
   useEffect(() => {
     if (allPackages.length > 0 && !activeWeight) {
@@ -217,13 +220,16 @@ export default function ProductDetails() {
 
   // ─── Add To Cart ───────────────────────────────────────────
   const handleAddToCart = () => {
-    setCartFlash(true);
-
-    setTimeout(() => {
-      setCartFlash(false);
-    }, 2000);
+    const item_details = {
+      product_name: product?.name,
+      free_delivery: product.free_delivery,
+      product_quantity: activeWeight?.quantity || product.min_order,
+      product_price: activeWeight?.price || product.price_after_discount * product.min_order
+    }
+    set_product_to_LS(item_details);
   };
 
+  console.log()
   const TABS = [
     { key: "desc", label: "বিবরণ" },
   ];
@@ -479,17 +485,13 @@ export default function ProductDetails() {
 
                 <button
                   onClick={() =>
-                    setQty((q) => Math.min(5, q + 1))
+                    setQty((q) => Math.min(10, q + 1))
                   }
-                  className="w-9 h-9 rounded-lg border flex items-center justify-center text-lg font-bold text-gray-600 bg-white transition-colors hover:border-orange-400"
+                  className="w-9 h-9 rounded-lg border flex items-center justify-center text-lg font-bold text-gray-600 bg-white transition-colors hover:border-(--orange-hot)"
                   style={{ borderColor: "#e5e7eb" }}
                 >
                   +
                 </button>
-
-                <span className="text-sm text-gray-400 ml-1">
-                  সর্বোচ্চ ৫টি
-                </span>
               </div>
             </div>
 
@@ -500,11 +502,11 @@ export default function ProductDetails() {
                 className={`btn-secondary ${cartFlash ? "scale-105" : ""
                   }`}
               >
-                🛒 কার্টে যোগ করুন
+                🛒 Add to Cart
               </button>
 
               <button className="btn-primary">
-                ⚡ এখনই অর্ডার করুন
+                ⚡ Order Now →
               </button>
             </div>
 
