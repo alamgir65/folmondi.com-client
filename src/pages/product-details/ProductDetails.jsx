@@ -173,19 +173,6 @@ export default function ProductDetails() {
     enabled: !!id,
   });
 
-  // ─── Dynamic Packages ──────────────────────────────────────
-  // const allPackages = useMemo(() => {
-  //   if (packages.length > 0) return packages;
-
-  //   return [
-  //     {
-  //       _id: "default",
-  //       price: product?.price_after_discount * product?.min_order || 0,
-  //       quantity: product?.min_order || 1,
-  //     },
-  //   ];
-  // }, [packages, product]);
-
   // ─── States ────────────────────────────────────────────────
   const [activeImg, setActiveImg] = useState(0);
 
@@ -229,7 +216,8 @@ export default function ProductDetails() {
       product_price: product.price_after_discount,
       package_price: activeWeight?.price || product.price_after_discount * product.min_order,
       product_id: product._id,
-      package_quantity: qty,
+      package_quantity: activeWeight?.quantity || product?.min_order,
+      package_count: qty,
       product_image: product?.images?.[0]
     }
     if(set_product_to_LS(item_details)){

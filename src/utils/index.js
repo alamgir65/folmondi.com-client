@@ -31,7 +31,7 @@ export const set_product_to_LS = (product) => {
   const exists = cart.find((item) => item._id === product._id && item.package_quantity === product.package_quantity);
 
   if (exists) return false;
-
+  product.cart_id = crypto.randomUUID();
   const new_cart = [...cart, product];
 
   localStorage.setItem("cart", JSON.stringify(new_cart));
@@ -41,7 +41,7 @@ export const set_product_to_LS = (product) => {
 export const remove_product_from_LS = (id) => {
   const cart = get_product_from_LS();
 
-  const updated = cart.filter((item) => item._id !== id);
+  const updated = cart.filter((item) => item.cart_id !== id);
 
   localStorage.setItem("cart", JSON.stringify(updated));
 };
