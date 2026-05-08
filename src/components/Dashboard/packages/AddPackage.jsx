@@ -8,16 +8,16 @@ import {
 } from "react-icons/hi2";
 import Field from "../../../utils/Field";
 import { Link } from "react-router";
-import { cloudinary_image_upload } from "../../../utils";
+import { cloudinary_image_upload, discount_calculate } from "../../../utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 export default function AddPackage() {
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const {data: products = []} = useQuery({
+    const { data: products = [] } = useQuery({
         queryKey: ['products'],
-        queryFn: async()=>{
+        queryFn: async () => {
             const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/products`);
             return res.data;
         }
@@ -59,16 +59,25 @@ export default function AddPackage() {
     const onSubmit = async (data) => {
         console.log(data);
 
-        const p = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/product/${data?.product_id}`);
+        const p = await axios.get(
+            `${import.meta.env.VITE_API_BASE_URL}/product/${data?.product_id}`
+        );
+
+        const product = p?.data;
+        const main_amount = Number(data.quantity) * Number(product?.price);
+        const dis_amount = Number(data.price);
+        console.log(main_amount, dis_amount);
+        // return;
 
         const category_data = {
             product_id: data.product_id,
-            price: data.price,
-            quantity: data.quantity,
-            product_name: p? p?.data?.name : ""
+            price: Number(data.price),
+            quantity: Number(data.quantity),
+            product_name: product?.name || "",
+            discount: discount_calculate(main_amount, dis_amount),
         };
-
         console.log(category_data);
+
         await mutateAsync(category_data);
     };
 

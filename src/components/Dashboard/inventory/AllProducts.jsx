@@ -157,7 +157,7 @@ const AllProducts = () => {
                       </div>
                     </td>
 
-                    <td className="px-5 py-3.5 text-gray-500">{p.category}</td>
+                    <td className="px-5 py-3.5 text-gray-500">{p.category_name}</td>
                     <td className="px-5 py-3.5 font-bold text-gray-800">{fmt(p.price)}</td>
                     <td className="px-5 py-3.5 font-bold text-gray-800">{p.discount}%</td>
 

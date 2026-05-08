@@ -28,13 +28,14 @@ export const get_product_from_LS = () => {
 export const set_product_to_LS = (product) => {
   const cart = get_product_from_LS();
 
-  const exists = cart.find((item) => item._id === product._id);
+  const exists = cart.find((item) => item._id === product._id && item.package_quantity === product.package_quantity);
 
-  if (exists) return;
+  if (exists) return false;
 
   const new_cart = [...cart, product];
 
   localStorage.setItem("cart", JSON.stringify(new_cart));
+  return true;
 };
 
 export const remove_product_from_LS = (id) => {
@@ -47,4 +48,8 @@ export const remove_product_from_LS = (id) => {
 
 export const clear_cart = () => {
   localStorage.removeItem("cart");
+};
+
+export const discount_calculate = (mainAmount, disAmount) => {
+  return Math.round(((mainAmount - disAmount) / mainAmount) * 100);
 };

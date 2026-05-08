@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
 import "./ProductDetails.css";
 import { get_product_from_LS, set_product_to_LS } from "../../utils";
+import toast, { Toaster } from "react-hot-toast";
 
 // ─── Color tokens ──────────────────────────────────────────────────────────
 const C = {
@@ -139,6 +140,8 @@ function TabDescription({ product }) {
     </div>
   );
 }
+const notify = () => toast.success("Product added to the Cart!");
+const notify2 = () => toast.success("Product already in the Cart!");
 
 // ─── Main Component ────────────────────────────────────────────────────────
 export default function ProductDetails() {
@@ -171,17 +174,17 @@ export default function ProductDetails() {
   });
 
   // ─── Dynamic Packages ──────────────────────────────────────
-  const allPackages = useMemo(() => {
-    if (packages.length > 0) return packages;
+  // const allPackages = useMemo(() => {
+  //   if (packages.length > 0) return packages;
 
-    return [
-      {
-        _id: "default",
-        price: product?.price || 0,
-        quantity: product?.min_order || 1,
-      },
-    ];
-  }, [packages, product]);
+  //   return [
+  //     {
+  //       _id: "default",
+  //       price: product?.price_after_discount * product?.min_order || 0,
+  //       quantity: product?.min_order || 1,
+  //     },
+  //   ];
+  // }, [packages, product]);
 
   // ─── States ────────────────────────────────────────────────
   const [activeImg, setActiveImg] = useState(0);
@@ -200,14 +203,13 @@ export default function ProductDetails() {
 
   // ─── Set default package ───────────────────────────────────
   useEffect(() => {
-    if (allPackages.length > 0 && !activeWeight) {
-      setActiveWeight(allPackages[0]);
+    if (packages.length > 0 && !activeWeight) {
+      setActiveWeight(packages[0]);
     }
-  }, [allPackages, activeWeight]);
+  }, [packages, activeWeight]);
 
   // ─── Current Price ─────────────────────────────────────────
   const currentPrice = activeWeight?.price || product?.price_after_discount || 0;
-
   const oldPrice =
     (product?.price || 0) * (activeWeight?.quantity || 1);
 
@@ -223,10 +225,17 @@ export default function ProductDetails() {
     const item_details = {
       product_name: product?.name,
       free_delivery: product.free_delivery,
-      product_quantity: activeWeight?.quantity || product.min_order,
-      product_price: activeWeight?.price || product.price_after_discount * product.min_order
+      product_quantity: (activeWeight?.quantity || product?.min_order) * qty,
+      product_price: product.price_after_discount,
+      package_price: activeWeight?.price || product.price_after_discount * product.min_order,
+      product_id: product._id,
+      package_quantity: qty,
+      product_image: product?.images?.[0]
     }
-    set_product_to_LS(item_details);
+    if(set_product_to_LS(item_details)){
+      notify();
+    }
+    else notify2();
   };
 
   console.log()
@@ -253,7 +262,7 @@ export default function ProductDetails() {
       `}</style>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
-
+        <Toaster/>
         {/* Breadcrumb */}
         <div className="text-xs text-gray-400 flex items-center gap-1.5 mb-6 flex-wrap">
           <a href="#" className="hover:underline">
@@ -291,7 +300,7 @@ export default function ProductDetails() {
               {/* Discount */}
               {discount > 0 && (
                 <span className="absolute top-4 left-4 z-10 text-white text-xs font-bold px-3 py-1 rounded-lg nunito bg-(--orange-hot)">
-                  -{discount}%
+                  -{activeWeight?.discount || product?.discount}%
                 </span>
               )}
 
@@ -352,16 +361,12 @@ export default function ProductDetails() {
             <div className="grid grid-cols-3 gap-3">
               {[
                 { icon: "🌿", text: "১০০% অর্গানিক" },
-                { icon: "🚚", text: "ফ্রি ডেলিভারি" },
+                { icon: "🚚", text: `${product?.free_delivery?'ফ্রি':'দ্রুত'} ডেলিভারি`},
                 { icon: "✅", text: "গ্যারান্টিড ফ্রেশ" },
               ].map(({ icon, text }, i) => (
                 <div
                   key={i}
-                  className="rounded-xl p-3 flex flex-col items-center gap-1 text-center border"
-                  style={{
-                    background: C.sand,
-                    borderColor: "#fbd5bb",
-                  }}
+                  className="rounded-xl bg-(--cream-bg) p-3 flex flex-col items-center gap-1 text-center"
                 >
                   <span className="text-xl">{icon}</span>
 
@@ -387,6 +392,9 @@ export default function ProductDetails() {
               <h1 className="text-3xl font-bold text-gray-800 leading-snug mb-1">
                 {product?.name}
               </h1>
+              <h1 className="text-lg text-(--base-color) leading-snug mb-1">
+                সর্বনিম্ন অর্ডার - <span className="text-bold">{product?.min_order} {product?.unit}</span>
+              </h1>
             </div>
 
             {/* Price */}
@@ -395,7 +403,7 @@ export default function ProductDetails() {
                 className="text-4xl font-extrabold nunito"
                 style={{ color: C.orangeHot }}
               >
-                ৳{currentPrice}
+                ৳{activeWeight?.price || product?.price_after_discount}
               </span>
 
               {discount > 0 && (
@@ -403,12 +411,11 @@ export default function ProductDetails() {
                   <span className="text-lg text-gray-400 line-through nunito">
                     ৳{oldPrice}
                   </span>
-
                   <span
                     className="text-xs font-bold px-2.5 py-1 rounded-lg text-white nunito"
                     style={{ background: C.orangeHot }}
                   >
-                    {product.discount}% ছাড়
+                    {activeWeight?.discount || product?.discount}% ছাড়
                   </span>
                 </>
               )}
@@ -417,13 +424,13 @@ export default function ProductDetails() {
             <hr className="border-orange-100" />
 
             {/* Package */}
-            <div>
+            <div className="bg-(--cream-bg) p-6 rounded-xl">
               <p className="text-sm font-semibold text-gray-600 mb-2.5">
                 পরিমাণ নির্বাচন করুন
               </p>
 
               <div className="flex gap-3 flex-wrap">
-                {allPackages.map((pac) => (
+                {packages.map((pac) => (
                   <button
                     key={pac._id}
                     onClick={() => setActiveWeight(pac)}
@@ -451,11 +458,9 @@ export default function ProductDetails() {
                     }}
                   >
                     {pac.quantity} {product.unit}
-
                     <br />
-
                     <span className="text-xs font-bold nunito">
-                      ৳{pac.price.toLocaleString("bn-BD")}
+                      ৳{pac.price}
                     </span>
                   </button>
                 ))}
@@ -512,11 +517,7 @@ export default function ProductDetails() {
 
             {/* Delivery */}
             <div
-              className="rounded-2xl p-4 border"
-              style={{
-                background: C.sand,
-                borderColor: "#fbd5bb",
-              }}
+              className="rounded-2xl p-6 bg-(--cream-bg)"
             >
               <p className="text-sm font-bold text-gray-700 mb-2">
                 ডেলিভারি তথ্য
@@ -532,7 +533,7 @@ export default function ProductDetails() {
                 {
                   bg: "#dcfce7",
                   icon: "🚚",
-                  title: "ফ্রি ডেলিভারি",
+                  title: `${product?.free_delivery?'ফ্রি':'দ্রুত'} ডেলিভারি`,
                   sub: "সারা বাংলাদেশে হোম ডেলিভারি",
                 },
                 {

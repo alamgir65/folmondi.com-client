@@ -12,16 +12,10 @@ export default function ProductCard({ product }) {
         setCartAdded(true);
         setTimeout(() => setCartAdded(false), 2000);
     };
-
-    // const variants = [
-    //   { label: "১২ কেজি", price: 1440 },
-    //   { label: "২৪ কেজি", price: 2880 },
-    //   { label: "২৪ কেজি", price: 2880 },
-    // ];
     return (
         <div  className="card bg-base-100 shadow-sm hover:shadow-lg transition-shadow duration-300 border border-base-200 overflow-hidden">
             {/* Product Image */}
-            <Link to={`/product-details`} className="relative overflow-hidden" style={{ height: 220 }}>
+            <Link to={`/product-details/${product._id}`} className="relative overflow-hidden" style={{ height: 220 }}>
                 <img
                     src={product.images[0]}
                     alt={product.name}

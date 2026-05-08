@@ -16,6 +16,7 @@ import AddCategoryForm from "../components/Dashboard/category/AddCategoryForm";
 import Categories from "../components/Dashboard/category/Categories";
 import AddPackage from "../components/Dashboard/packages/AddPackage";
 import ManagePackages from "../components/Dashboard/packages/ManagePackages";
+import CheckoutPage from "../pages/checkout-page/CheckoutPage";
 
 export const router = createBrowserRouter([
     {
@@ -48,6 +49,10 @@ export const router = createBrowserRouter([
                     <FolmondiSpinner variant="dots"  size="md"/> <br/>
                     <FolmondiSpinner variant="pulse" size="sm" text="অপেক্ষা করুন"/>
                 </div>
+            },
+            {
+                path: 'checkout',
+                element: <CheckoutPage/>
             }
         ]
     },

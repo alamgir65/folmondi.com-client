@@ -55,7 +55,6 @@ export default function AddProductForm() {
     }
   },[categories,setCategoryList]);
 
-  console.log('Category LIst', categoryList);
 
   const {isPending, isError, mutateAsync, reset: mutationReset} = useMutation({
     mutationFn: async(product_data) => {
@@ -85,6 +84,9 @@ export default function AddProductForm() {
     // console.log("Product data:", data);
     const select_category = categories.find((c) => c._id === data.category);
 
+    console.log(categories.find((c) => c._id === data.category)?.name);
+    // return;
+
     const images = await Promise.all(data.images.map(async (image) => {
       return await cloudinary_image_upload(image?.file);
     }));
@@ -103,8 +105,9 @@ export default function AddProductForm() {
         min_order: data.min_order,
         unit: data.unit,
         free_delivery: data.free_delivery,
-        category_name: select_category?.name
+        category_name: categories.find((c) => c._id === data.category)?.name
     };
+    console.log(product_data);
     // setIsSuccess(true);
     await mutateAsync(product_data);
 
