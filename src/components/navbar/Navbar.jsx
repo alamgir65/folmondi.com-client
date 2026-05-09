@@ -70,12 +70,12 @@ const Navbar = () => {
                     <FaSearch className='text-lg' />
                 </button>
 
-                <button
+                <Link to={`/cart`}
                     className="btn-primary"
                     style={{ padding: "10px 22px", fontSize: "0.875rem" }}
                 >
                     🛒 Cart
-                </button>
+                </Link>
             </div>
 
             {/* 🔥 FULLSCREEN MOBILE MENU */}

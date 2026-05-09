@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import "./ProductDetails.css";
 import { get_product_from_LS, set_product_to_LS } from "../../utils";
 import toast, { Toaster } from "react-hot-toast";
@@ -498,9 +498,12 @@ export default function ProductDetails() {
                 🛒 Add to Cart
               </button>
 
-              <button className="btn-primary">
+              <Link 
+                onClick={handleAddToCart}
+                to={`/checkout`}
+               className="btn-primary">
                 ⚡ Order Now →
-              </button>
+              </Link>
             </div>
 
             {/* Delivery */}

@@ -1,16 +1,17 @@
 // const cloudinaryapi = https://api.cloudinary.com/v1_1/demo/image/upload;
 
 import axios from "axios";
+import Swal from "sweetalert2";
 
 export const cloudinary_image_upload = async (image_data) => {
-    // console.log('From function:', image_data);
-    const formData = new FormData();
-    formData.append('file',image_data);
-    formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+  // console.log('From function:', image_data);
+  const formData = new FormData();
+  formData.append('file', image_data);
+  formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
 
-    const {data} = await axios.post(`https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`, formData);
-    // console.log('Cloudinary response:', data);
-    return data?.secure_url || null;
+  const { data } = await axios.post(`https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`, formData);
+  // console.log('Cloudinary response:', data);
+  return data?.secure_url || null;
 }
 
 
@@ -20,8 +21,10 @@ export const fetchData = async (url) => {
 };
 
 
+// cart localstorage operations
+
 export const get_product_from_LS = () => {
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const cart = JSON.parse(localStorage.getItem('folmondi_cart')) || [];
   return cart;
 }
 
@@ -34,7 +37,7 @@ export const set_product_to_LS = (product) => {
   product.cart_id = crypto.randomUUID();
   const new_cart = [...cart, product];
 
-  localStorage.setItem("cart", JSON.stringify(new_cart));
+  localStorage.setItem("folmondi_cart", JSON.stringify(new_cart));
   return true;
 };
 
@@ -43,11 +46,11 @@ export const remove_product_from_LS = (id) => {
 
   const updated = cart.filter((item) => item.cart_id !== id);
 
-  localStorage.setItem("cart", JSON.stringify(updated));
+  localStorage.setItem("folmondi_cart", JSON.stringify(updated));
 };
 
 export const clear_cart = () => {
-  localStorage.removeItem("cart");
+  localStorage.removeItem("folmondi_cart");
 };
 
 export const discount_calculate = (mainAmount, disAmount) => {
@@ -63,11 +66,50 @@ export const get_orders_from_LS = () => {
 }
 
 export const set_orders_to_LS = (trackingId) => {
-  if(!trackingId) return false;
+  if (!trackingId) return false;
   const orders = get_orders_from_LS();
-  const exists = orders.find((item) => item === trackingId);
-  if(exists) return false;
+  const exists = orders.find((item) => item == trackingId);
+  if (exists) return false;
   const new_cart = [...orders, trackingId];
   localStorage.setItem("folmondi_orders", JSON.stringify(new_cart));
   return true;
 };
+
+
+// cart operations
+export const updateQty = (id, delta,setCart) => {
+  setCart((prev) => {
+    const updatedCart = prev.map((item) => {
+      if (item.cart_id === id) {
+        return {
+          ...item,
+          package_count: Math.max(
+            1,
+            (item.package_count || 1) + delta
+          ),
+        };
+      }
+
+      return item;
+    });
+
+    return updatedCart;
+  });
+};
+
+export const removeItem = (id) => {
+        Swal.fire({
+            title: "Do you want to remove this product?",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Remove",
+            denyButtonText: `Don't remove`
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed){
+                remove_product_from_LS(id);
+                Swal.fire("Removed!", "", "success");
+            }
+            else if (result.isDenied) Swal.fire("Product doesn't removed", "", "info");
+        });
+    }

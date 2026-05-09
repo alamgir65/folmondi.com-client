@@ -15,11 +15,12 @@ import {
     HiOutlineShoppingBag,
     HiOutlineGift,
 } from "react-icons/hi2";
-import { get_product_from_LS, remove_product_from_LS, set_orders_to_LS } from "../../utils";
+import { get_product_from_LS, remove_product_from_LS, removeItem, set_orders_to_LS, updateQty } from "../../utils";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { LuCopy } from "react-icons/lu";
 import toast, { Toaster } from "react-hot-toast";
+import { FormField, Section } from "../../utils/FormUtils";
 
 const DELIVERY_OPTIONS = [
     {
@@ -40,66 +41,6 @@ const PAYMENT_METHODS = [
     { id: "cod", label: "Cash on Delivery", icon: "💵" },
     { id: "bkash", label: "bKash", icon: "📱" },
 ];
-
-// ── Step indicator ────────────────────────────────────────────────────────────
-function StepBadge({ number, label, active, done }) {
-    return (
-        <div className="flex items-center gap-2">
-            <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${done
-                        ? "bg-green-500 text-white"
-                        : active
-                            ? "text-white"
-                            : "bg-gray-100 text-gray-400"
-                    }`}
-                style={active && !done ? { backgroundColor: "#f04e0f" } : {}}
-            >
-                {done ? <HiOutlineCheckCircle size={15} /> : number}
-            </div>
-            <span
-                className={`text-sm font-bold ${active || done ? "text-gray-800" : "text-gray-400"
-                    }`}
-            >
-                {label}
-            </span>
-        </div>
-    );
-}
-
-// ── Section card wrapper ──────────────────────────────────────────────────────
-function Section({ step, label, icon, children, done }) {
-    return (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/60">
-                <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                    style={{ backgroundColor: done ? "#22c55e" : "#f04e0f" }}
-                >
-                    {done ? <HiOutlineCheckCircle size={14} /> : step}
-                </div>
-                <span className="flex items-center gap-2 text-sm font-bold text-gray-700">
-                    {icon} {label}
-                </span>
-            </div>
-            <div className="p-6">{children}</div>
-        </div>
-    );
-}
-
-// ── Input wrapper ─────────────────────────────────────────────────────────────
-function FormField({ label, required, error, children, hint }) {
-    return (
-        <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-gray-600">
-                {label}
-                {required && <span style={{ color: "#f04e0f" }}> *</span>}
-            </label>
-            {children}
-            {hint && !error && <p className="text-[11px] text-gray-400">{hint}</p>}
-            {error && <p className="text-[11px] text-red-500">{error.message}</p>}
-        </div>
-    );
-}
 
 const inputCls = (err) =>
     `w-full h-11 px-4 text-sm rounded-xl border bg-white focus:outline-none transition-colors ${err
@@ -163,45 +104,6 @@ export default function CheckoutPage() {
             setThanasByDist([]);
         }
     }, [selectedDistrict, thanas]);
-
-
-    // Update Quantity
-    const updateQty = (id, delta) => {
-        setCart((prev) => {
-            const updatedCart = prev.map((item) => {
-                if (item.cart_id === id) {
-                    return {
-                        ...item,
-                        package_count: Math.max(
-                            1,
-                            (item.package_count || 1) + delta
-                        ),
-                    };
-                }
-
-                return item;
-            });
-
-            return updatedCart;
-        });
-    };
-
-    const removeItem = (id) => {
-        Swal.fire({
-            title: "Do you want to remove this product?",
-            showDenyButton: true,
-            showCancelButton: true,
-            confirmButtonText: "Remove",
-            denyButtonText: `Cancel`
-        }).then((result) => {
-            /* Read more about isConfirmed, isDenied below */
-            if (result.isConfirmed){
-                remove_product_from_LS(id);
-                Swal.fire("Removed!", "", "success");
-            }
-            else if (result.isDenied) Swal.fire("Product doesn't removed", "", "info");
-        });
-    }
 
     // ── Price Calculation ────────────────────────────────────────────────────
     const subtotal = cart.reduce((sum, item) => {
@@ -314,7 +216,7 @@ export default function CheckoutPage() {
     };
     const continueShoppingHandler = () => {
         set_orders_to_LS(trackingId);
-        localStorage.setItem("cart", JSON.stringify([]));
+        localStorage.setItem("folmondi_cart", JSON.stringify([]));
         setCart([]);
         window.location.href = "/shop";
     }
@@ -648,7 +550,7 @@ export default function CheckoutPage() {
                                                     <div className="flex items-center gap-1.5">
                                                         <button
                                                             type="button"
-                                                            onClick={() => updateQty(item.cart_id, -1)}
+                                                            onClick={() => updateQty(item.cart_id, -1,setCart)}
                                                             className="w-6 h-6 rounded-lg border border-gray-200 flex items-center justify-center hover:border-orange-400 hover:text-orange-500 transition-colors text-gray-500"
                                                         >
                                                             <HiMinus size={11} />
@@ -658,7 +560,7 @@ export default function CheckoutPage() {
                                                         </span>
                                                         <button
                                                             type="button"
-                                                            onClick={() => updateQty(item.cart_id, 1)}
+                                                            onClick={() => updateQty(item.cart_id, 1,setCart)}
                                                             className="w-6 h-6 rounded-lg border border-gray-200 flex items-center justify-center hover:border-orange-400 hover:text-orange-500 transition-colors text-gray-500"
                                                         >
                                                             <HiPlus size={11} />

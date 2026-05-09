@@ -18,6 +18,7 @@ import AddPackage from "../components/Dashboard/packages/AddPackage";
 import ManagePackages from "../components/Dashboard/packages/ManagePackages";
 import CheckoutPage from "../pages/checkout-page/CheckoutPage";
 import CartPage from "../pages/cart/Cartpage";
+import ManageOrders from "../components/Dashboard/orders/Manageorders";
 
 export const router = createBrowserRouter([
     {
@@ -100,7 +101,12 @@ export const router = createBrowserRouter([
             {
                 path: 'manage-packages',
                 element: <ManagePackages/>
+            },
+            {
+                path: 'manage-orders',
+                element: <ManageOrders/>
             }
+            
         ]
     }
 ])

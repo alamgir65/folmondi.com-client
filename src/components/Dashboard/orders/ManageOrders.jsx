@@ -1,0 +1,718 @@
+import { useState, useMemo } from "react";
+import {
+  HiOutlineShoppingBag,
+  HiOutlineMagnifyingGlass,
+  HiOutlineFunnel,
+  HiOutlineArrowsUpDown,
+  HiOutlineEye,
+  HiOutlineCheckCircle,
+  HiOutlineXCircle,
+  HiOutlineTruck,
+  HiOutlineCurrencyDollar,
+  HiOutlineBell,
+  HiOutlineArchiveBox,
+  HiOutlineChevronDown,
+  HiOutlineChevronUp,
+  HiOutlineXMark,
+  HiOutlineClipboardDocumentList,
+  HiOutlinePhone,
+  HiOutlineMapPin,
+  HiOutlineArrowPath,
+  HiOutlineInboxArrowDown,
+  HiOutlineExclamationCircle,
+  HiOutlineCalendarDays,
+} from "react-icons/hi2";
+
+// ── Palette ───────────────────────────────────────────────────────────────────
+const PRIMARY = "#f04e0f";
+const GREEN   = "#16a34a";
+const AMBER   = "#d97706";
+const BLUE    = "#2563eb";
+const RED     = "#dc2626";
+const GRAY    = "#6b7280";
+
+// ── Mock data ─────────────────────────────────────────────────────────────────
+const MOCK_ORDERS = [
+  { id: "ORD-1001", customer: "Rafiqul Islam",    phone: "01712345678", address: "Mirpur-10, Dhaka",          items: [{ name: "হিমসাগর আম",    qty: 2, price: 1800 }, { name: "সুন্দরবন মধু", qty: 1, price: 950 }],  status: "pending",    payment: "unpaid",   delivery: "processing", date: "2025-05-08", district: "Dhaka",       total: 4550 },
+  { id: "ORD-1002", customer: "Sumaiya Akter",    phone: "01898765432", address: "Gulshan-2, Dhaka",          items: [{ name: "গোবিন্দভোগ আম", qty: 3, price: 1680 }],                                              status: "confirmed",  payment: "paid",     delivery: "shipped",    date: "2025-05-07", district: "Dhaka",       total: 5040 },
+  { id: "ORD-1003", customer: "Karim Hossain",    phone: "01611223344", address: "Agrabad, Chattogram",       items: [{ name: "আনারস",         qty: 5, price: 400 }],                                               status: "delivered",  payment: "paid",     delivery: "delivered",  date: "2025-05-06", district: "Chattogram",  total: 2000 },
+  { id: "ORD-1004", customer: "Nadia Rahman",     phone: "01755667788", address: "Shaheb Bazar, Rajshahi",   items: [{ name: "লিচু",          qty: 4, price: 600 }, { name: "হিমসাগর আম", qty: 1, price: 1800 }],  status: "processing", payment: "paid",     delivery: "processing", date: "2025-05-07", district: "Rajshahi",    total: 4200 },
+  { id: "ORD-1005", customer: "Tariq Mahmud",     phone: "01833445566", address: "Sonadanga, Khulna",         items: [{ name: "খাঁটি ঘি",      qty: 2, price: 1200 }],                                              status: "cancelled",  payment: "refunded", delivery: "cancelled",  date: "2025-05-05", district: "Khulna",      total: 2400 },
+  { id: "ORD-1006", customer: "Fatema Begum",     phone: "01944332211", address: "Ambarkhana, Sylhet",        items: [{ name: "সুন্দরবন মধু", qty: 3, price: 950 }],                                               status: "pending",    payment: "unpaid",   delivery: "processing", date: "2025-05-08", district: "Sylhet",      total: 2850 },
+  { id: "ORD-1007", customer: "Mizanur Rahman",   phone: "01577889900", address: "Sadar, Mymensingh",         items: [{ name: "আম্রপালি আম",   qty: 2, price: 1500 }, { name: "তালের রস",   qty: 2, price: 300 }],  status: "confirmed",  payment: "paid",     delivery: "shipped",    date: "2025-05-06", district: "Mymensingh",  total: 3600 },
+  { id: "ORD-1008", customer: "Sabrina Chowdhury",phone: "01666554433", address: "GEC Circle, Chattogram",    items: [{ name: "পেয়ারা",        qty: 10, price: 200 }],                                              status: "delivered",  payment: "paid",     delivery: "delivered",  date: "2025-05-04", district: "Chattogram",  total: 2000 },
+  { id: "ORD-1009", customer: "Jamal Uddin",      phone: "01322110099", address: "Jessore Road, Khulna",      items: [{ name: "খেজুর গুড়",    qty: 3, price: 800 }],                                               status: "processing", payment: "unpaid",   delivery: "processing", date: "2025-05-08", district: "Khulna",      total: 2400 },
+  { id: "ORD-1010", customer: "Roksana Parvin",   phone: "01811223355", address: "Uttara Sector 7, Dhaka",   items: [{ name: "হিমসাগর আম",    qty: 1, price: 1800 }, { name: "গোবিন্দভোগ আম", qty: 2, price: 1680 }], status: "confirmed", payment: "paid",    delivery: "shipped",    date: "2025-05-07", district: "Dhaka",       total: 5160 },
+];
+
+// ── Config ────────────────────────────────────────────────────────────────────
+const ORDER_STATUSES   = ["pending","processing","confirmed","delivered","cancelled"];
+const DELIVERY_OPTIONS = ["processing","shipped","out_for_delivery","delivered","cancelled"];
+const PAYMENT_OPTIONS  = ["unpaid","paid","refunded"];
+
+const STATUS_CONFIG = {
+  pending:    { label: "Pending",    bg: "#fff7ed", color: AMBER,  dot: "#fbbf24" },
+  processing: { label: "Processing", bg: "#eff6ff", color: BLUE,   dot: "#60a5fa" },
+  confirmed:  { label: "Confirmed",  bg: "#f0fdf4", color: GREEN,  dot: "#4ade80" },
+  delivered:  { label: "Delivered",  bg: "#f0fdf4", color: GREEN,  dot: GREEN     },
+  cancelled:  { label: "Cancelled",  bg: "#fef2f2", color: RED,    dot: "#f87171" },
+};
+
+const PAYMENT_CONFIG = {
+  unpaid:   { label: "Unpaid",   bg: "#fff7ed", color: AMBER },
+  paid:     { label: "Paid",     bg: "#f0fdf4", color: GREEN },
+  refunded: { label: "Refunded", bg: "#eff6ff", color: BLUE  },
+};
+
+const DELIVERY_CONFIG = {
+  processing:       { label: "Processing",       icon: "📦" },
+  shipped:          { label: "Shipped",           icon: "🚚" },
+  out_for_delivery: { label: "Out for Delivery",  icon: "🛵" },
+  delivered:        { label: "Delivered",         icon: "✅" },
+  cancelled:        { label: "Cancelled",         icon: "❌" },
+};
+
+const fmt = (n) => `৳${Number(n).toLocaleString()}`;
+
+// ── Pill badge ────────────────────────────────────────────────────────────────
+function Badge({ cfg, text }) {
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold whitespace-nowrap"
+      style={{ background: cfg.bg, color: cfg.color }}
+    >
+      {cfg.dot && (
+        <span
+          className="w-1.5 h-1.5 rounded-full inline-block"
+          style={{ backgroundColor: cfg.dot }}
+        />
+      )}
+      {text ?? cfg.label}
+    </span>
+  );
+}
+
+// ── Stat card ─────────────────────────────────────────────────────────────────
+function StatCard({ icon, label, value, color, sub }) {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
+      <div
+        className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shrink-0 text-xl"
+        style={{ backgroundColor: color }}
+      >
+        {icon}
+      </div>
+      <div>
+        <p className="text-xs text-gray-400 font-medium">{label}</p>
+        <p className="text-xl font-bold text-gray-800">{value}</p>
+        {sub && <p className="text-[11px] text-gray-400 mt-0.5">{sub}</p>}
+      </div>
+    </div>
+  );
+}
+
+// ── Notification toast ────────────────────────────────────────────────────────
+function Toast({ notifs, onDismiss }) {
+  if (!notifs.length) return null;
+  return (
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-sm w-full">
+      {notifs.map((n) => (
+        <div
+          key={n.id}
+          className="flex items-start gap-3 bg-gray-900 text-white px-4 py-3 rounded-2xl shadow-xl border border-gray-700 animate-pulse-once"
+        >
+          <span className="text-lg mt-0.5">{n.icon}</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold">{n.title}</p>
+            <p className="text-xs text-gray-400 mt-0.5">{n.msg}</p>
+          </div>
+          <button onClick={() => onDismiss(n.id)} className="text-gray-500 hover:text-white mt-0.5">
+            <HiOutlineXMark size={15} />
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Order detail drawer ────────────────────────────────────────────────────────
+function OrderDrawer({ order, onClose, onUpdate, onNotify }) {
+  const [status,   setStatus]   = useState(order.status);
+  const [payment,  setPayment]  = useState(order.payment);
+  const [delivery, setDelivery] = useState(order.delivery);
+  const [stock,    setStock]    = useState(order.items.map(i => ({ ...i, restocked: false })));
+  const [saving,   setSaving]   = useState(false);
+
+  const save = async () => {
+    setSaving(true);
+    await new Promise(r => setTimeout(r, 600));
+    onUpdate(order.id, { status, payment, delivery });
+    onNotify({
+      icon: "✅",
+      title: `Order ${order.id} Updated`,
+      msg: `Status: ${status} · Payment: ${payment} · Delivery: ${delivery}`,
+    });
+    setSaving(false);
+    onClose();
+  };
+
+  const toggleRestock = (idx) => {
+    setStock(prev => prev.map((s, i) => i === idx ? { ...s, restocked: !s.restocked } : s));
+    onNotify({ icon: "📦", title: "Inventory Note", msg: `${stock[idx].name} restock flagged.` });
+  };
+
+  return (
+    <div className="fixed inset-0 z-40 flex justify-end">
+      {/* backdrop */}
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+
+      <div className="relative w-full max-w-lg bg-white shadow-2xl flex flex-col h-full overflow-hidden">
+        {/* Header */}
+        <div
+          className="flex items-center justify-between px-6 py-4 text-white"
+          style={{ backgroundColor: PRIMARY }}
+        >
+          <div>
+            <p className="text-xs font-medium opacity-80">Order Details</p>
+            <h2 className="text-lg font-bold">{order.id}</h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+          >
+            <HiOutlineXMark size={18} />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+
+          {/* Customer info */}
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Customer</h3>
+            <div className="bg-gray-50 rounded-2xl p-4 flex flex-col gap-2">
+              <div className="flex items-center gap-2 text-sm font-bold text-gray-800">
+                <span className="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-sm font-bold">
+                  {order.customer[0]}
+                </span>
+                {order.customer}
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <HiOutlinePhone size={13} /> {order.phone}
+              </div>
+              <div className="flex items-start gap-2 text-sm text-gray-500">
+                <HiOutlineMapPin size={13} className="mt-0.5 shrink-0" /> {order.address}
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <HiOutlineCalendarDays size={13} /> {order.date}
+              </div>
+            </div>
+          </div>
+
+          {/* Items */}
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Items Ordered</h3>
+            <div className="flex flex-col gap-2">
+              {order.items.map((item, i) => (
+                <div key={i} className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">{item.name}</p>
+                    <p className="text-xs text-gray-400">Qty: {item.qty} × {fmt(item.price)}</p>
+                  </div>
+                  <span className="text-sm font-bold text-gray-700">{fmt(item.qty * item.price)}</span>
+                </div>
+              ))}
+              <div className="flex justify-between px-4 pt-2 border-t border-gray-100">
+                <span className="text-sm font-bold text-gray-700">Total</span>
+                <span className="text-base font-bold" style={{ color: PRIMARY }}>{fmt(order.total)}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Status update */}
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <HiOutlineArrowPath size={13} /> Order Status
+            </h3>
+            <div className="grid grid-cols-3 gap-2">
+              {ORDER_STATUSES.map(s => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setStatus(s)}
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border-2 transition-all capitalize ${
+                    status === s
+                      ? "border-orange-400 text-white"
+                      : "border-gray-200 text-gray-500 hover:border-orange-200"
+                  }`}
+                  style={status === s ? { backgroundColor: PRIMARY, borderColor: PRIMARY } : {}}
+                >
+                  {STATUS_CONFIG[s].label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Payment */}
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <HiOutlineCurrencyDollar size={13} /> Payment Verification
+            </h3>
+            <div className="grid grid-cols-3 gap-2">
+              {PAYMENT_OPTIONS.map(p => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setPayment(p)}
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border-2 transition-all capitalize ${
+                    payment === p
+                      ? "border-green-400 bg-green-500 text-white"
+                      : "border-gray-200 text-gray-500 hover:border-green-200"
+                  }`}
+                >
+                  {PAYMENT_CONFIG[p].label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Delivery tracking */}
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <HiOutlineTruck size={13} /> Delivery Tracking
+            </h3>
+            <div className="flex flex-col gap-2">
+              {DELIVERY_OPTIONS.map((d, idx) => {
+                const current = DELIVERY_OPTIONS.indexOf(delivery);
+                const isPast   = idx < current;
+                const isActive = d === delivery;
+                return (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => setDelivery(d)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left transition-all ${
+                      isActive
+                        ? "border-orange-400 bg-orange-50"
+                        : isPast
+                        ? "border-green-200 bg-green-50/50"
+                        : "border-gray-200 hover:border-orange-200"
+                    }`}
+                  >
+                    <span className="text-base">{DELIVERY_CONFIG[d].icon}</span>
+                    <span className={`text-xs font-bold ${isActive ? "text-orange-600" : isPast ? "text-green-600" : "text-gray-500"}`}>
+                      {DELIVERY_CONFIG[d].label}
+                    </span>
+                    {isActive && (
+                      <span className="ml-auto text-[10px] font-bold text-orange-500 bg-orange-100 px-2 py-0.5 rounded-lg">Current</span>
+                    )}
+                    {isPast && !isActive && (
+                      <HiOutlineCheckCircle size={14} className="ml-auto text-green-500" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Inventory */}
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <HiOutlineArchiveBox size={13} /> Inventory Update
+            </h3>
+            <div className="flex flex-col gap-2">
+              {stock.map((item, i) => (
+                <div
+                  key={i}
+                  className={`flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all ${
+                    item.restocked ? "border-green-300 bg-green-50" : "border-gray-200 bg-gray-50"
+                  }`}
+                >
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700">{item.name}</p>
+                    <p className="text-xs text-gray-400">Used: {item.qty} unit{item.qty > 1 ? "s" : ""}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleRestock(i)}
+                    className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-all ${
+                      item.restocked
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-200 text-gray-600 hover:bg-orange-100 hover:text-orange-600"
+                    }`}
+                  >
+                    {item.restocked ? "✓ Flagged" : "Flag Restock"}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Save footer */}
+        <div className="border-t border-gray-100 px-6 py-4 flex gap-3 bg-white">
+          <button
+            onClick={onClose}
+            className="flex-1 py-3 rounded-xl text-sm font-bold border-2 border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={save}
+            disabled={saving}
+            className="flex-1 py-3 rounded-xl text-sm font-bold text-white transition-all hover:brightness-110 flex items-center justify-center gap-2"
+            style={{ backgroundColor: PRIMARY }}
+          >
+            {saving ? <HiOutlineArrowPath size={15} className="animate-spin" /> : <HiOutlineCheckCircle size={15} />}
+            {saving ? "Saving…" : "Save Changes"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+export default function ManageOrders() {
+  const [orders,      setOrders]      = useState(MOCK_ORDERS);
+  const [search,      setSearch]      = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterPayment, setFilterPayment] = useState("all");
+  const [sortField,   setSortField]   = useState("date");
+  const [sortDir,     setSortDir]     = useState("desc");
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [notifs,      setNotifs]      = useState([]);
+  const [page,        setPage]        = useState(1);
+  const PAGE_SIZE = 7;
+
+  // ── Notifications ──────────────────────────────────────────────────────────
+  const pushNotif = ({ icon, title, msg }) => {
+    const id = Date.now();
+    setNotifs(prev => [...prev, { id, icon, title, msg }]);
+    setTimeout(() => setNotifs(prev => prev.filter(n => n.id !== id)), 4000);
+  };
+
+  const dismissNotif = (id) => setNotifs(prev => prev.filter(n => n.id !== id));
+
+  // ── Update order ───────────────────────────────────────────────────────────
+  const updateOrder = (orderId, changes) => {
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, ...changes } : o));
+  };
+
+  // ── Quick status change inline ─────────────────────────────────────────────
+  const quickStatus = (orderId, newStatus) => {
+    updateOrder(orderId, { status: newStatus });
+    pushNotif({ icon: STATUS_CONFIG[newStatus]?.dot ? "🔄" : "✅", title: "Status Updated", msg: `${orderId} → ${STATUS_CONFIG[newStatus].label}` });
+  };
+
+  // ── Sort ───────────────────────────────────────────────────────────────────
+  const toggleSort = (field) => {
+    if (sortField === field) setSortDir(d => d === "asc" ? "desc" : "asc");
+    else { setSortField(field); setSortDir("desc"); }
+  };
+
+  // ── Filtered + sorted data ─────────────────────────────────────────────────
+  const filtered = useMemo(() => {
+    let list = [...orders];
+    if (search) {
+      const q = search.toLowerCase();
+      list = list.filter(o =>
+        o.id.toLowerCase().includes(q) ||
+        o.customer.toLowerCase().includes(q) ||
+        o.district.toLowerCase().includes(q)
+      );
+    }
+    if (filterStatus  !== "all") list = list.filter(o => o.status  === filterStatus);
+    if (filterPayment !== "all") list = list.filter(o => o.payment === filterPayment);
+    list.sort((a, b) => {
+      let av = a[sortField], bv = b[sortField];
+      if (sortField === "total") return sortDir === "asc" ? av - bv : bv - av;
+      return sortDir === "asc" ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
+    });
+    return list;
+  }, [orders, search, filterStatus, filterPayment, sortField, sortDir]);
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  // ── Stats ──────────────────────────────────────────────────────────────────
+  const totalRevenue  = orders.filter(o => o.payment === "paid").reduce((s, o) => s + o.total, 0);
+  const pendingCount  = orders.filter(o => o.status === "pending").length;
+  const deliveredCount = orders.filter(o => o.status === "delivered").length;
+  const unpaidCount   = orders.filter(o => o.payment === "unpaid").length;
+
+  // ── Sort icon ──────────────────────────────────────────────────────────────
+  const SortIcon = ({ field }) =>
+    sortField === field ? (
+      sortDir === "asc" ? <HiOutlineChevronUp size={12} /> : <HiOutlineChevronDown size={12} />
+    ) : (
+      <HiOutlineArrowsUpDown size={12} className="opacity-30" />
+    );
+
+  // ─────────────────────────────────────────────────────────────────────────
+  return (
+    <div className="min-h-screen bg-gray-50/80 p-6">
+      <div className="max-w-7xl mx-auto flex flex-col gap-6">
+
+        {/* ── Header ───────────────────────────────────────────────────── */}
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+              <HiOutlineClipboardDocumentList size={24} style={{ color: PRIMARY }} />
+              Manage Orders
+            </h1>
+            <p className="text-sm text-gray-400 mt-0.5">
+              {orders.length} total orders · {pendingCount} pending action
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <HiOutlineBell size={18} className="text-gray-500" />
+              {notifs.length > 0 && (
+                <span
+                  className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-white text-[9px] font-bold flex items-center justify-center"
+                  style={{ backgroundColor: PRIMARY }}
+                >
+                  {notifs.length}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Stat cards ────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard icon="৳" label="Total Revenue"   value={fmt(totalRevenue)}  color={PRIMARY}  sub={`${orders.filter(o=>o.payment==="paid").length} paid orders`} />
+          <StatCard icon="🛒" label="Total Orders"    value={orders.length}      color={BLUE}     sub="All time" />
+          <StatCard icon="⏳" label="Pending Orders"  value={pendingCount}       color={AMBER}    sub="Needs action" />
+          <StatCard icon="💰" label="Unpaid Orders"   value={unpaidCount}        color={RED}      sub="Verify payment" />
+        </div>
+
+        {/* ── Filters bar ───────────────────────────────────────────────── */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-wrap gap-3 items-center">
+
+          {/* Search */}
+          <div className="relative flex-1 min-w-[200px]">
+            <HiOutlineMagnifyingGlass size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              value={search}
+              onChange={e => { setSearch(e.target.value); setPage(1); }}
+              placeholder="Search order ID, customer, district…"
+              className="w-full h-10 pl-9 pr-4 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:border-orange-400 transition-colors"
+            />
+          </div>
+
+          {/* Status filter */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <HiOutlineFunnel size={13} className="text-gray-400" />
+            {["all", ...ORDER_STATUSES].map(s => (
+              <button
+                key={s}
+                onClick={() => { setFilterStatus(s); setPage(1); }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all capitalize ${
+                  filterStatus === s
+                    ? "text-white"
+                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                }`}
+                style={filterStatus === s ? { backgroundColor: s === "all" ? PRIMARY : STATUS_CONFIG[s]?.color || PRIMARY } : {}}
+              >
+                {s === "all" ? "All" : STATUS_CONFIG[s].label}
+              </button>
+            ))}
+          </div>
+
+          {/* Payment filter */}
+          <select
+            value={filterPayment}
+            onChange={e => { setFilterPayment(e.target.value); setPage(1); }}
+            className="h-10 px-3 text-xs font-bold rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:border-orange-400 transition-colors cursor-pointer"
+          >
+            <option value="all">All Payments</option>
+            {PAYMENT_OPTIONS.map(p => <option key={p} value={p}>{PAYMENT_CONFIG[p].label}</option>)}
+          </select>
+        </div>
+
+        {/* ── Table ─────────────────────────────────────────────────────── */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-100 bg-gray-50/80">
+                  {[
+                    { label: "Order ID",  field: "id"       },
+                    { label: "Customer",  field: "customer" },
+                    { label: "Date",      field: "date"     },
+                    { label: "Items",     field: null        },
+                    { label: "Total",     field: "total"    },
+                    { label: "Status",    field: "status"   },
+                    { label: "Payment",   field: "payment"  },
+                    { label: "Delivery",  field: "delivery" },
+                    { label: "Actions",   field: null        },
+                  ].map(col => (
+                    <th
+                      key={col.label}
+                      onClick={() => col.field && toggleSort(col.field)}
+                      className={`px-4 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap ${col.field ? "cursor-pointer hover:text-gray-800 select-none" : ""}`}
+                    >
+                      <span className="flex items-center gap-1">
+                        {col.label}
+                        {col.field && <SortIcon field={col.field} />}
+                      </span>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {paged.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="py-16 text-center">
+                      <div className="flex flex-col items-center gap-3 text-gray-400">
+                        <HiOutlineInboxArrowDown size={36} />
+                        <p className="text-sm font-medium">No orders found</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : paged.map(order => (
+                  <tr
+                    key={order.id}
+                    className="hover:bg-orange-50/30 transition-colors group"
+                  >
+                    {/* ID */}
+                    <td className="px-4 py-3.5 font-bold text-gray-800 whitespace-nowrap">
+                      {order.id}
+                    </td>
+
+                    {/* Customer */}
+                    <td className="px-4 py-3.5 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+                          style={{ backgroundColor: PRIMARY }}
+                        >
+                          {order.customer[0]}
+                        </span>
+                        <div>
+                          <p className="font-semibold text-gray-700 text-xs">{order.customer}</p>
+                          <p className="text-gray-400 text-[11px]">{order.district}</p>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Date */}
+                    <td className="px-4 py-3.5 text-gray-500 text-xs whitespace-nowrap">
+                      {order.date}
+                    </td>
+
+                    {/* Items */}
+                    <td className="px-4 py-3.5 text-xs text-gray-500 max-w-[160px]">
+                      <p className="truncate">{order.items.map(i => i.name).join(", ")}</p>
+                      <p className="text-gray-400">{order.items.length} item{order.items.length > 1 ? "s" : ""}</p>
+                    </td>
+
+                    {/* Total */}
+                    <td className="px-4 py-3.5 font-bold whitespace-nowrap" style={{ color: PRIMARY }}>
+                      {fmt(order.total)}
+                    </td>
+
+                    {/* Status — inline quick change */}
+                    <td className="px-4 py-3.5">
+                      <select
+                        value={order.status}
+                        onChange={e => quickStatus(order.id, e.target.value)}
+                        className="text-xs font-bold rounded-xl px-2 py-1 border-2 cursor-pointer focus:outline-none transition-all"
+                        style={{
+                          background:   STATUS_CONFIG[order.status].bg,
+                          color:        STATUS_CONFIG[order.status].color,
+                          borderColor:  STATUS_CONFIG[order.status].color + "44",
+                        }}
+                      >
+                        {ORDER_STATUSES.map(s => (
+                          <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
+                        ))}
+                      </select>
+                    </td>
+
+                    {/* Payment */}
+                    <td className="px-4 py-3.5">
+                      <Badge cfg={PAYMENT_CONFIG[order.payment]} />
+                    </td>
+
+                    {/* Delivery */}
+                    <td className="px-4 py-3.5 whitespace-nowrap text-xs text-gray-500">
+                      <span className="flex items-center gap-1.5">
+                        {DELIVERY_CONFIG[order.delivery]?.icon}
+                        {DELIVERY_CONFIG[order.delivery]?.label}
+                      </span>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="px-4 py-3.5">
+                      <button
+                        onClick={() => setSelectedOrder(order)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white transition-all hover:brightness-110 shadow-sm whitespace-nowrap"
+                        style={{ backgroundColor: PRIMARY }}
+                      >
+                        <HiOutlineEye size={13} /> Manage
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-5 py-3.5 border-t border-gray-100 bg-gray-50/50">
+              <p className="text-xs text-gray-400">
+                Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
+              </p>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:border-orange-400 hover:text-orange-500 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                >
+                  <HiOutlineChevronDown size={13} className="rotate-90" />
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                  <button
+                    key={p}
+                    onClick={() => setPage(p)}
+                    className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
+                      page === p ? "text-white" : "border border-gray-200 text-gray-500 hover:border-orange-300"
+                    }`}
+                    style={page === p ? { backgroundColor: PRIMARY } : {}}
+                  >
+                    {p}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:border-orange-400 hover:text-orange-500 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                >
+                  <HiOutlineChevronDown size={13} className="-rotate-90" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+      </div>
+
+      {/* ── Order detail drawer ──────────────────────────────────────────── */}
+      {selectedOrder && (
+        <OrderDrawer
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+          onUpdate={updateOrder}
+          onNotify={pushNotif}
+        />
+      )}
+
+      {/* ── Toast notifications ──────────────────────────────────────────── */}
+      <Toast notifs={notifs} onDismiss={dismissNotif} />
+    </div>
+  );
+}

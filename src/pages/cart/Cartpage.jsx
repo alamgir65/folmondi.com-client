@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   HiOutlineShoppingCart,
   HiOutlineTrash,
@@ -13,6 +13,9 @@ import {
   HiOutlineArrowLeft,
   HiOutlineCheckBadge,
 } from "react-icons/hi2";
+import { get_product_from_LS, remove_product_from_LS, removeItem, updateQty } from "../../utils";
+import Swal from "sweetalert2";
+import { Link } from "react-router";
 
 // ── Mock data ─────────────────────────────────────────────────────────────────
 const INITIAL_CART = [
@@ -77,7 +80,7 @@ function QtyButton({ onClick, children, disabled }) {
   );
 }
 
-function EmptyCart({ onShop }) {
+function EmptyCart() {
   return (
     <div className="flex flex-col items-center justify-center py-24 gap-5 text-center">
       <div
@@ -90,46 +93,34 @@ function EmptyCart({ onShop }) {
         <h2 className="text-xl font-bold text-gray-800 mb-1">Your cart is empty</h2>
         <p className="text-sm text-gray-400">আপনার কার্টে কোনো পণ্য নেই। কেনাকাটা শুরু করুন!</p>
       </div>
-      <button
-        onClick={onShop}
+      <Link to={'/shop'}
         className="flex items-center gap-2 px-7 py-3 rounded-xl font-bold text-white text-sm transition-all hover:brightness-110 shadow-sm"
         style={{ backgroundColor: "#f04e0f" }}
       >
         <HiOutlineShoppingBag size={16} />
         Continue Shopping
-      </button>
+      </Link>
     </div>
   );
 }
 
 // ── Main Component ────────────────────────────────────────────────────────────
-export default function CartPage({ onCheckout, onContinueShopping }) {
-  const [cart, setCart] = useState(INITIAL_CART);
-  const [selected, setSelected] = useState(new Set(INITIAL_CART.map((i) => i.id)));
+export default function CartPage() {
+  const [cart, setCart] = useState([]);
+  const [selected, setSelected] = useState(new Set(cart.map((i) => i.cart_id)));
   const [promoInput, setPromoInput] = useState("");
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [promoError, setPromoError] = useState("");
   const [removingId, setRemovingId] = useState(null);
 
-  // ── Cart ops ──────────────────────────────────────────────────────────────
-  const updateQty = (id, delta) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, qty: Math.min(item.stock, Math.max(1, item.qty + delta)) }
-          : item
-      )
-    );
-  };
+  // ── Load Cart From LocalStorage ──────────────────────────────────────────
+      useEffect(() => {
+          const storedCart = get_product_from_LS();
+          if (storedCart && Array.isArray(storedCart)) {
+              setCart(storedCart);
+          }
+      }, [setCart]);
 
-  const removeItem = (id) => {
-    setRemovingId(id);
-    setTimeout(() => {
-      setCart((prev) => prev.filter((i) => i.id !== id));
-      setSelected((prev) => { const n = new Set(prev); n.delete(id); return n; });
-      setRemovingId(null);
-    }, 300);
-  };
 
   const clearCart = () => {
     setCart([]);
@@ -148,7 +139,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
 
   const allSelected = cart.length > 0 && selected.size === cart.length;
   const toggleAll = () =>
-    setSelected(allSelected ? new Set() : new Set(cart.map((i) => i.id)));
+    setSelected(allSelected ? new Set() : new Set(cart.map((i) => i.cart_id)));
 
   // ── Promo ─────────────────────────────────────────────────────────────────
   const applyPromo = () => {
@@ -169,12 +160,12 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
   };
 
   // ── Totals (only selected items) ──────────────────────────────────────────
-  const selectedItems = cart.filter((i) => selected.has(i.id));
-  const subtotal = selectedItems.reduce((s, i) => s + i.price * i.qty, 0);
+  const selectedItems = cart.filter((i) => selected.has(i.cart_id));
+  const subtotal = selectedItems.reduce((s, i) => s + i.package_price * i.package_count, 0);
   const discount = appliedPromo ? Math.round((subtotal * appliedPromo.pct) / 100) : 0;
   const delivery = 0; // all free for now
   const total = subtotal - discount + delivery;
-  const totalItems = selectedItems.reduce((s, i) => s + i.qty, 0);
+  const totalItems = selectedItems.reduce((s, i) => s + i.package_count, 0);
 
   // ─────────────────────────────────────────────────────────────────────────
   return (
@@ -184,12 +175,11 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
         {/* ── Page header ─────────────────────────────────────────────── */}
         <div className="flex items-center justify-between mb-7 flex-wrap gap-3">
           <div className="flex items-center gap-3">
-            <button
-              onClick={onContinueShopping}
+            <Link to={'/shop'}
               className="w-9 h-9 rounded-xl border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:border-orange-400 hover:text-orange-500 transition-all"
             >
               <HiOutlineArrowLeft size={17} />
-            </button>
+            </Link>
             <div>
               <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
                 <HiOutlineShoppingCart size={22} style={{ color: "#f04e0f" }} />
@@ -213,7 +203,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
 
         {/* ── Empty state ──────────────────────────────────────────────── */}
         {cart.length === 0 ? (
-          <EmptyCart onShop={onContinueShopping} />
+          <EmptyCart/>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start">
 
@@ -251,11 +241,11 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
 
               {/* Item cards */}
               {cart.map((item) => {
-                const isSelected = selected.has(item.id);
-                const isRemoving = removingId === item.id;
+                const isSelected = selected.has(item.cart_id);
+                const isRemoving = removingId === item.cart_id;
                 return (
                   <div
-                    key={item.id}
+                    key={item.cart_id}
                     className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all duration-300 ${
                       isRemoving ? "opacity-0 scale-95" : "opacity-100 scale-100"
                     } ${
@@ -267,7 +257,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                       {/* Checkbox */}
                       <div className="flex items-start pt-1">
                         <div
-                          onClick={() => toggleSelect(item.id)}
+                          onClick={() => toggleSelect(item.cart_id)}
                           className={`w-5 h-5 rounded-md border-2 flex items-center justify-center cursor-pointer transition-all shrink-0 ${
                             isSelected
                               ? "border-orange-500"
@@ -286,37 +276,28 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                       {/* Image */}
                       <div className="relative shrink-0">
                         <img
-                          src={item.img}
-                          alt={item.nameEn}
+                          src={item.product_image}
+                          alt={item.product_name}
                           className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover border border-gray-100"
                         />
-                        {item.freeDelivery && (
-                          <span
-                            className="absolute -top-1.5 -right-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-md text-white leading-tight"
-                            style={{ backgroundColor: "#22c55e" }}
-                          >
-                            FREE
-                          </span>
-                        )}
                       </div>
-
                       {/* Details */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
                             <h3 className="font-bold text-gray-800 text-base leading-tight truncate">
-                              {item.name}
+                              {item.product_name}
                             </h3>
-                            <p className="text-xs text-gray-400 mt-0.5">{item.nameEn}</p>
+                            {/* <p className="text-xs text-gray-400 mt-0.5">{item.nameEn}</p> */}
                             <div className="flex flex-wrap gap-2 mt-2">
                               <span className="inline-flex items-center gap-1 text-[11px] font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg">
-                                <HiOutlineTag size={10} /> {item.category}
+                                <HiOutlineTag size={10} /> {'item.category'}
                               </span>
                               <span className="inline-flex items-center gap-1 text-[11px] font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg">
-                                📦 {item.weight}
+                                📦 {item.package_quantity} KG
                               </span>
                               <span className="inline-flex items-center gap-1 text-[11px] font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg">
-                                📍 {item.origin}
+                                📍 {' Rajshahi'}
                               </span>
                             </div>
                           </div>
@@ -324,7 +305,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                           {/* Remove */}
                           <button
                             type="button"
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => removeItem(item.cart_id)}
                             className="w-8 h-8 rounded-xl bg-gray-50 hover:bg-red-50 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors shrink-0"
                           >
                             <HiOutlineTrash size={15} />
@@ -338,11 +319,11 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                               className="text-lg font-bold"
                               style={{ color: "#f04e0f" }}
                             >
-                              {fmt(item.price * item.qty)}
+                              {fmt(item.package_price * item.package_count)}
                             </span>
-                            {item.qty > 1 && (
+                            {item.package_quantity > 1 && (
                               <span className="text-xs text-gray-400 ml-1.5">
-                                ({fmt(item.price)} × {item.qty})
+                                ({fmt(item.package_price)} × {item.package_count})
                               </span>
                             )}
                           </div>
@@ -350,34 +331,26 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                           {/* Qty controls */}
                           <div className="flex items-center gap-2">
                             <QtyButton
-                              onClick={() => updateQty(item.id, -1)}
-                              disabled={item.qty <= 1}
+                              onClick={() => updateQty(item.cart_id, -1,setCart)}
+                              disabled={item.package_count <= 1}
                             >
                               <HiMinus size={12} />
                             </QtyButton>
                             <span className="w-8 text-center text-sm font-bold text-gray-800">
-                              {item.qty}
+                              {item.package_count}
                             </span>
                             <QtyButton
-                              onClick={() => updateQty(item.id, 1)}
-                              disabled={item.qty >= item.stock}
+                              onClick={() => updateQty(item.cart_id, 1,setCart)}
                             >
                               <HiPlus size={12} />
                             </QtyButton>
                           </div>
                         </div>
-
-                        {/* Stock warning */}
-                        {item.qty >= item.stock && (
-                          <p className="text-[11px] text-amber-600 mt-1.5 font-medium">
-                            ⚠️ Maximum stock reached ({item.stock} available)
-                          </p>
-                        )}
                       </div>
                     </div>
 
                     {/* Free delivery strip */}
-                    {item.freeDelivery && (
+                    {item.free_delivery === "Yes" && (
                       <div
                         className="flex items-center gap-2 px-5 py-2.5 text-xs font-semibold text-green-700 border-t"
                         style={{ background: "#f0fdf4", borderColor: "#dcfce7" }}
@@ -391,13 +364,13 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
               })}
 
               {/* Continue shopping */}
-              <button
-                onClick={onContinueShopping}
+              <Link
+                to={'/shop'}
                 className="flex items-center gap-2 text-sm font-semibold self-start px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-600 hover:border-orange-400 hover:text-orange-500 transition-all"
               >
                 <HiOutlineArrowLeft size={15} />
                 Continue Shopping
-              </button>
+              </Link>
             </div>
 
             {/* ── RIGHT — Summary ──────────────────────────────────────── */}
@@ -507,15 +480,15 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                 </div>
 
                 {/* Checkout button */}
-                <button
-                  onClick={onCheckout}
+                <Link
+                  to={'/checkout'}
                   disabled={selected.size === 0}
                   className="mt-5 w-full py-3.5 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 transition-all hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                   style={{ backgroundColor: "#f04e0f" }}
                 >
                   Proceed to Checkout
                   <HiOutlineArrowRight size={16} />
-                </button>
+                </Link>
 
                 {selected.size === 0 && (
                   <p className="text-[11px] text-center text-gray-400 mt-2">
@@ -538,7 +511,6 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                 ))}
               </div>
             </div>
-
           </div>
         )}
       </div>
