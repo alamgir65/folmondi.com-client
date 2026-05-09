@@ -41,12 +41,19 @@ export const set_product_to_LS = (product) => {
   return true;
 };
 
-export const remove_product_from_LS = (id) => {
-  const cart = get_product_from_LS();
+export const remove_product_from_LS = (cart_id) => {
+    const cart = get_product_from_LS();
 
-  const updated = cart.filter((item) => item.cart_id !== id);
+    const updated = cart.filter(
+        item => item.cart_id !== cart_id
+    );
 
-  localStorage.setItem("folmondi_cart", JSON.stringify(updated));
+    localStorage.setItem(
+        "folmondi_cart",
+        JSON.stringify(updated)
+    );
+
+    return updated;
 };
 
 export const clear_cart = () => {
@@ -77,27 +84,28 @@ export const set_orders_to_LS = (trackingId) => {
 
 
 // cart operations
-export const updateQty = (id, delta,setCart) => {
-  setCart((prev) => {
-    const updatedCart = prev.map((item) => {
-      if (item.cart_id === id) {
-        return {
-          ...item,
-          package_count: Math.max(
-            1,
-            (item.package_count || 1) + delta
-          ),
-        };
-      }
+export const updateQty = (id, delta, setCart,cart) => {
+    const updatedCart = cart.map(item =>
+        item.cart_id === id
+            ? {
+                ...item,
+                package_count: Math.max(
+                    1,
+                    item.package_count + delta
+                )
+            }
+            : item
+    );
 
-      return item;
-    });
+    setCart(updatedCart);
 
-    return updatedCart;
-  });
+    localStorage.setItem(
+        "cart",
+        JSON.stringify(updatedCart)
+    );
 };
 
-export const removeItem = (id) => {
+export const removeItem = (id,setCart) => {
         Swal.fire({
             title: "Do you want to remove this product?",
             showDenyButton: true,
@@ -107,9 +115,24 @@ export const removeItem = (id) => {
         }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed){
-                remove_product_from_LS(id);
+                const updatedCart = remove_product_from_LS(id);
+                setCart(updatedCart);
                 Swal.fire("Removed!", "", "success");
             }
             else if (result.isDenied) Swal.fire("Product doesn't removed", "", "info");
         });
     }
+
+
+// selected cart 
+export const get_selected_cart_items = () => {
+  const cart = JSON.parse(localStorage.getItem('folmondi_selected_cart')) || [];
+  return cart;
+}
+
+export const set_item_to_selected_cart = (item) => {
+  const cart = get_selected_cart_items();
+  const new_cart = [...cart, item];
+  localStorage.setItem("folmondi_selected_cart", JSON.stringify(new_cart));
+};
+

@@ -21,6 +21,7 @@ import axios from "axios";
 import { LuCopy } from "react-icons/lu";
 import toast, { Toaster } from "react-hot-toast";
 import { FormField, Section } from "../../utils/FormUtils";
+import { useSearchParams } from "react-router";
 
 const DELIVERY_OPTIONS = [
     {
@@ -56,30 +57,48 @@ export default function CheckoutPage() {
     const [isSuccess, setIsSuccess] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedDistrict, setSelectedDistrict] = useState(null);
-    const [districts,setDistricts] = useState([]);
-    const [thanas,setThanas] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [thanas, setThanas] = useState([]);
     const [thanasByDist, setThanasByDist] = useState([]);
-    const [trackingId,setTrackingId] = useState(null);
+    const [trackingId, setTrackingId] = useState(null);
+
+    const [searchParams] = useSearchParams();
+    const from_cart = searchParams.get('from_cart');
 
     // ── Load Cart From LocalStorage ──────────────────────────────────────────
     useEffect(() => {
-        const storedCart = get_product_from_LS();
-        if (storedCart && Array.isArray(storedCart)) {
-            setCart(storedCart);
-        }
-        // fetch districts
-        fetch('/districts.json')
-            .then(res => res.json())
-            .then(data => setDistricts(data))
 
-        // fetch thana's
-            fetch('/thanas.json')
-            .then(res => res.json())
-            .then(data => setThanas(data))
+        if (from_cart == "yes") {
+            const selected_cart =
+                JSON.parse(
+                    localStorage.getItem("folmondi_selected_cart")
+                ) || [];
+
+            setCart(selected_cart);
+
+        } else {
+
+            const storedCart = get_product_from_LS();
+
+            if (storedCart && Array.isArray(storedCart)) {
+                setCart(storedCart);
+            }
+        }
+
+        // fetch districts
+        fetch("/districts.json")
+            .then((res) => res.json())
+            .then((data) => setDistricts(data));
+
+        // fetch thanas
+        fetch("/thanas.json")
+            .then((res) => res.json())
+            .then((data) => setThanas(data));
+
     }, []);
 
     // console.log(districts);
-        const {
+    const {
         register,
         handleSubmit,
         watch,
@@ -91,7 +110,7 @@ export default function CheckoutPage() {
     useEffect(() => {
         setSelectedDistrict(watchedDistrict || "");
     }, [watchedDistrict]);
-    
+
     useEffect(() => {
         if (selectedDistrict) {
             const new_thanas = thanas.filter(
@@ -110,7 +129,7 @@ export default function CheckoutPage() {
         return (
             sum +
             (Number(item.package_price) || 0) *
-                (Number(item.package_count) || 1)
+            (Number(item.package_count) || 1)
         );
     }, 0);
 
@@ -247,7 +266,7 @@ export default function CheckoutPage() {
                         {/* Tracking ID */}
                         <div className="flex justify-between items-center text-gray-600 mb-1 gap-3">
                             <span>Tracking-id</span>
-                            <Toaster/>
+                            <Toaster />
                             <button
                                 type="button"
                                 onClick={() => {
@@ -382,8 +401,8 @@ export default function CheckoutPage() {
                                                 rows={3}
                                                 placeholder="House / Road / Area — be specific"
                                                 className={`w-full px-4 pl-9 py-3 text-sm rounded-xl border bg-white focus:outline-none resize-none transition-colors ${errors.address
-                                                        ? "border-red-400"
-                                                        : "border-gray-200 focus:border-orange-400"
+                                                    ? "border-red-400"
+                                                    : "border-gray-200 focus:border-orange-400"
                                                     }`}
                                                 {...register("address", { required: "Address is required", minLength: { value: 10, message: "Please be more specific" } })}
                                             />
@@ -446,8 +465,8 @@ export default function CheckoutPage() {
                                             key={opt.id}
                                             onClick={() => setDelivery(opt.id)}
                                             className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${delivery === opt.id
-                                                    ? "border-orange-400 bg-orange-50/60"
-                                                    : "border-gray-200 hover:border-orange-200"
+                                                ? "border-orange-400 bg-orange-50/60"
+                                                : "border-gray-200 hover:border-orange-200"
                                                 }`}
                                         >
                                             {/* Custom radio */}
@@ -487,8 +506,8 @@ export default function CheckoutPage() {
                                             key={pm.id}
                                             onClick={() => setPayment(pm.id)}
                                             className={`flex flex-col items-center justify-center gap-2 px-6 py-4 rounded-xl border-2 cursor-pointer transition-all min-w-[110px] ${payment === pm.id
-                                                    ? "border-orange-400 bg-orange-50/60"
-                                                    : "border-gray-200 hover:border-orange-200"
+                                                ? "border-orange-400 bg-orange-50/60"
+                                                : "border-gray-200 hover:border-orange-200"
                                                 }`}
                                         >
                                             <span className="text-2xl">{pm.icon}</span>
@@ -533,7 +552,7 @@ export default function CheckoutPage() {
                                                     </div>
                                                     <button
                                                         type="button"
-                                                        onClick={() => removeItem(item.cart_id)}
+                                                        onClick={() => removeItem(item.cart_id, setCart)}
                                                         className="w-6 h-6 rounded-full bg-gray-100 hover:bg-red-100 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors shrink-0"
                                                     >
                                                         <HiXMark size={12} />
@@ -550,7 +569,7 @@ export default function CheckoutPage() {
                                                     <div className="flex items-center gap-1.5">
                                                         <button
                                                             type="button"
-                                                            onClick={() => updateQty(item.cart_id, -1,setCart)}
+                                                            onClick={() => updateQty(item.cart_id, -1, setCart, cart)}
                                                             className="w-6 h-6 rounded-lg border border-gray-200 flex items-center justify-center hover:border-orange-400 hover:text-orange-500 transition-colors text-gray-500"
                                                         >
                                                             <HiMinus size={11} />
@@ -560,7 +579,7 @@ export default function CheckoutPage() {
                                                         </span>
                                                         <button
                                                             type="button"
-                                                            onClick={() => updateQty(item.cart_id, 1,setCart)}
+                                                            onClick={() => updateQty(item.cart_id, 1, setCart, cart)}
                                                             className="w-6 h-6 rounded-lg border border-gray-200 flex items-center justify-center hover:border-orange-400 hover:text-orange-500 transition-colors text-gray-500"
                                                         >
                                                             <HiPlus size={11} />

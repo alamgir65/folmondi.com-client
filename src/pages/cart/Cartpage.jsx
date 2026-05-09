@@ -13,9 +13,9 @@ import {
   HiOutlineArrowLeft,
   HiOutlineCheckBadge,
 } from "react-icons/hi2";
-import { get_product_from_LS, remove_product_from_LS, removeItem, updateQty } from "../../utils";
+import { get_product_from_LS, remove_product_from_LS, removeItem, set_item_to_selected_cart, updateQty } from "../../utils";
 import Swal from "sweetalert2";
-import { Link } from "react-router";
+import { href, Link } from "react-router";
 
 // ── Mock data ─────────────────────────────────────────────────────────────────
 const INITIAL_CART = [
@@ -158,7 +158,7 @@ export default function CartPage() {
     setPromoInput("");
     setPromoError("");
   };
-
+  // console.log(selected.size);
   // ── Totals (only selected items) ──────────────────────────────────────────
   const selectedItems = cart.filter((i) => selected.has(i.cart_id));
   const subtotal = selectedItems.reduce((s, i) => s + i.package_price * i.package_count, 0);
@@ -166,6 +166,15 @@ export default function CartPage() {
   const delivery = 0; // all free for now
   const total = subtotal - discount + delivery;
   const totalItems = selectedItems.reduce((s, i) => s + i.package_count, 0);
+
+  const proceedToCheckout = () => {
+    localStorage.setItem(
+        "folmondi_selected_cart",
+        JSON.stringify(selectedItems)
+    );
+
+    window.location.href = "/checkout?from_cart=yes";
+  }
 
   // ─────────────────────────────────────────────────────────────────────────
   return (
@@ -305,7 +314,7 @@ export default function CartPage() {
                           {/* Remove */}
                           <button
                             type="button"
-                            onClick={() => removeItem(item.cart_id)}
+                            onClick={() => removeItem(item.cart_id,setCart)}
                             className="w-8 h-8 rounded-xl bg-gray-50 hover:bg-red-50 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors shrink-0"
                           >
                             <HiOutlineTrash size={15} />
@@ -331,7 +340,7 @@ export default function CartPage() {
                           {/* Qty controls */}
                           <div className="flex items-center gap-2">
                             <QtyButton
-                              onClick={() => updateQty(item.cart_id, -1,setCart)}
+                              onClick={() => updateQty(item.cart_id, -1,setCart,cart)}
                               disabled={item.package_count <= 1}
                             >
                               <HiMinus size={12} />
@@ -340,7 +349,7 @@ export default function CartPage() {
                               {item.package_count}
                             </span>
                             <QtyButton
-                              onClick={() => updateQty(item.cart_id, 1,setCart)}
+                              onClick={() => updateQty(item.cart_id, 1,setCart,cart)}
                             >
                               <HiPlus size={12} />
                             </QtyButton>
@@ -480,15 +489,15 @@ export default function CartPage() {
                 </div>
 
                 {/* Checkout button */}
-                <Link
-                  to={'/checkout'}
+                <button
+                  onClick={proceedToCheckout}
                   disabled={selected.size === 0}
                   className="mt-5 w-full py-3.5 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 transition-all hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                   style={{ backgroundColor: "#f04e0f" }}
                 >
                   Proceed to Checkout
                   <HiOutlineArrowRight size={16} />
-                </Link>
+                </button>
 
                 {selected.size === 0 && (
                   <p className="text-[11px] text-center text-gray-400 mt-2">
