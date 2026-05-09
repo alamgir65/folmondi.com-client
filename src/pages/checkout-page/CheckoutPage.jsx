@@ -15,8 +15,11 @@ import {
     HiOutlineShoppingBag,
     HiOutlineGift,
 } from "react-icons/hi2";
-import { get_product_from_LS, remove_product_from_LS } from "../../utils";
+import { get_product_from_LS, remove_product_from_LS, set_orders_to_LS } from "../../utils";
 import Swal from "sweetalert2";
+import axios from "axios";
+import { LuCopy } from "react-icons/lu";
+import toast, { Toaster } from "react-hot-toast";
 
 const DELIVERY_OPTIONS = [
     {
@@ -115,6 +118,7 @@ export default function CheckoutPage() {
     const [districts,setDistricts] = useState([]);
     const [thanas,setThanas] = useState([]);
     const [thanasByDist, setThanasByDist] = useState([]);
+    const [trackingId,setTrackingId] = useState(null);
 
     // ── Load Cart From LocalStorage ──────────────────────────────────────────
     useEffect(() => {
@@ -217,20 +221,110 @@ export default function CheckoutPage() {
     // ── Submit ──────────────────────────────────────────────────────────────
     const onSubmit = async (data) => {
         setIsSubmitting(true);
-        await new Promise((r) => setTimeout(r, 1500)); // simulate API
-        console.log({ ...data, cart, delivery, payment, total });
-        setIsSubmitting(false);
-        setIsSuccess(true);
-    };
+        const order_info = {
+            // ── Basic Info ─────────────────────────
+            order_date: new Date(),
+            order_status: "Pending",
 
+            // ── Customer ───────────────────────────
+            customer: {
+                name: data.name,
+                phone: data.phone,
+                email: data?.email || "",
+            },
+
+            // ── Products ───────────────────────────
+            items: cart.map(item => ({
+                cart_id: item.cart_id,
+                product_id: item.product_id,
+                product_name: item.product_name,
+                product_image: item.product_image,
+
+                package_quantity: item.package_quantity,
+                package_count: item.package_count,
+
+                unit_price: item.package_price,
+                total_price: item.package_price * item.package_count,
+
+                free_delivery: item.free_delivery,
+            })),
+
+            // ── Shipping Address ───────────────────
+            shipping_address: {
+                district_id: data.district,
+
+                district_name:
+                    districts.find(
+                        (d) => Number(d.id) === Number(data.district)
+                    )?.district_name || "",
+
+                thana: data.thana,
+                address: data.address,
+            },
+
+            // ── Pricing ────────────────────────────
+            pricing: {
+                subtotal: subtotal,
+                delivery_cost: deliveryCost,
+                discount: 0,
+                total: total,
+            },
+
+            // ── Payment ────────────────────────────
+            payment: {
+                method: payment, // cod / bkash
+                transaction_id: "",
+                payment_status: "pending",
+                paid_at: null,
+            },
+
+            // ── Delivery ───────────────────────────
+            delivery: {
+                type: delivery, // point / home
+                courier: "Steadfast",
+
+                tracking_id: "",
+                delivery_status: "processing",
+
+                estimated_delivery: null,
+                delivered_at: null,
+            },
+            note: data?.note || "",
+        };
+
+        try {
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_BASE_URL}/orders`,
+                order_info
+            );
+            const trackingId = response.data.trackingId;
+            setTrackingId(trackingId);
+            setIsSuccess(true);
+
+        } catch (error) {
+            console.log(error);
+            Swal.fire({
+                icon: "error",
+                title: "Something went wrong",
+            });
+        }
+        finally {
+            setIsSubmitting(false);
+        }
+    };
+    const continueShoppingHandler = () => {
+        set_orders_to_LS(trackingId);
+        localStorage.setItem("cart", JSON.stringify([]));
+        setCart([]);
+        window.location.href = "/shop";
+    }
     // ── Success screen ──────────────────────────────────────────────────────
     if (isSuccess) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
                 <div className="bg-white rounded-3xl shadow-lg p-10 max-w-md w-full text-center flex flex-col items-center gap-5">
                     <div
-                        className="w-20 h-20 rounded-full flex items-center justify-center"
-                        style={{ background: "#fff7ed" }}
+                        className="w-20 h-20 rounded-full flex items-center justify-center bg-(--cream-bg)"
                     >
                         <HiOutlineCheckCircle size={46} style={{ color: "#f04e0f" }} />
                     </div>
@@ -241,24 +335,45 @@ export default function CheckoutPage() {
                         </p>
                     </div>
                     <div
-                        className="w-full rounded-2xl px-5 py-4 text-left text-sm"
-                        style={{ background: "#fff7ed" }}
+                        className="w-full rounded-2xl px-5 py-4 text-left text-sm bg-(--cream-bg)"
                     >
                         <div className="flex justify-between text-gray-600 mb-1">
                             <span>Items</span>
                             <span className="font-semibold">{cart.length}</span>
                         </div>
+
+                        {/* Tracking ID */}
+                        <div className="flex justify-between items-center text-gray-600 mb-1 gap-3">
+                            <span>Tracking-id</span>
+                            <Toaster/>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    navigator.clipboard.writeText(trackingId);
+                                    toast.success("Tracking ID copied!");
+                                }}
+                                className="flex items-center gap-2 px-3 py-1 "
+                            >
+                                <span className="font-semibold text-(--orange-hot)">
+                                    {trackingId}
+                                </span>
+
+                                <LuCopy className="text-(--orange-hot)" size={16} />
+                            </button>
+                        </div>
+
                         <div className="flex justify-between text-gray-600 mb-1">
                             <span>Delivery</span>
                             <span className="font-semibold text-green-600">Free</span>
                         </div>
+
                         <div className="flex justify-between font-bold text-gray-800 mt-2 pt-2 border-t border-orange-100">
                             <span>Total Paid</span>
                             <span style={{ color: "#f04e0f" }}>{fmt(total)}</span>
                         </div>
                     </div>
                     <button
-                        onClick={() => window.location.reload()}
+                        onClick={continueShoppingHandler}
                         className="w-full py-3 rounded-xl font-bold text-white text-sm transition-all hover:brightness-110"
                         style={{ backgroundColor: "#f04e0f" }}
                     >
@@ -273,7 +388,6 @@ export default function CheckoutPage() {
     return (
         <div className="min-h-screen bg-gray-50 py-8 px-4">
             <div className="max-w-6xl mx-auto">
-
                 {/* Page title */}
                 <div className="mb-7 flex items-center gap-3">
                     <HiOutlineShoppingBag size={26} style={{ color: "#f04e0f" }} />

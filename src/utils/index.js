@@ -53,3 +53,21 @@ export const clear_cart = () => {
 export const discount_calculate = (mainAmount, disAmount) => {
   return Math.round(((mainAmount - disAmount) / mainAmount) * 100);
 };
+
+
+
+// set order in local storage 
+export const get_orders_from_LS = () => {
+  const orders = JSON.parse(localStorage.getItem('folmondi_orders')) || []
+  return orders;
+}
+
+export const set_orders_to_LS = (trackingId) => {
+  if(!trackingId) return false;
+  const orders = get_orders_from_LS();
+  const exists = orders.find((item) => item === trackingId);
+  if(exists) return false;
+  const new_cart = [...orders, trackingId];
+  localStorage.setItem("folmondi_orders", JSON.stringify(new_cart));
+  return true;
+};

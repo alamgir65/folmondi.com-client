@@ -17,6 +17,7 @@ import Categories from "../components/Dashboard/category/Categories";
 import AddPackage from "../components/Dashboard/packages/AddPackage";
 import ManagePackages from "../components/Dashboard/packages/ManagePackages";
 import CheckoutPage from "../pages/checkout-page/CheckoutPage";
+import CartPage from "../pages/cart/Cartpage";
 
 export const router = createBrowserRouter([
     {
@@ -53,6 +54,10 @@ export const router = createBrowserRouter([
             {
                 path: 'checkout',
                 element: <CheckoutPage/>
+            },
+            {
+                path: 'cart',
+                element: <CartPage/>
             }
         ]
     },
