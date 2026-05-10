@@ -186,7 +186,7 @@ export default function ProductDetails() {
 
   const [wishlist, setWishlist] = useState(false);
 
-  console.log(get_product_from_LS());
+  // console.log(get_product_from_LS());
 
   // ─── Set default package ───────────────────────────────────
   useEffect(() => {

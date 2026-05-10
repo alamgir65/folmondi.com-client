@@ -136,3 +136,6 @@ export const set_item_to_selected_cart = (item) => {
   localStorage.setItem("folmondi_selected_cart", JSON.stringify(new_cart));
 };
 
+
+
+export const fmt = (n) => `৳${Number(n).toLocaleString()}`;

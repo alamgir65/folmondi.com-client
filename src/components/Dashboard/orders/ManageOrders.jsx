@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   HiOutlineShoppingBag,
   HiOutlineMagnifyingGlass,
@@ -22,6 +22,9 @@ import {
   HiOutlineExclamationCircle,
   HiOutlineCalendarDays,
 } from "react-icons/hi2";
+import OrderCol from "./order-component/OrderCol";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const PRIMARY = "#f04e0f";
@@ -31,31 +34,18 @@ const BLUE    = "#2563eb";
 const RED     = "#dc2626";
 const GRAY    = "#6b7280";
 
-// ── Mock data ─────────────────────────────────────────────────────────────────
-const MOCK_ORDERS = [
-  { id: "ORD-1001", customer: "Rafiqul Islam",    phone: "01712345678", address: "Mirpur-10, Dhaka",          items: [{ name: "হিমসাগর আম",    qty: 2, price: 1800 }, { name: "সুন্দরবন মধু", qty: 1, price: 950 }],  status: "pending",    payment: "unpaid",   delivery: "processing", date: "2025-05-08", district: "Dhaka",       total: 4550 },
-  { id: "ORD-1002", customer: "Sumaiya Akter",    phone: "01898765432", address: "Gulshan-2, Dhaka",          items: [{ name: "গোবিন্দভোগ আম", qty: 3, price: 1680 }],                                              status: "confirmed",  payment: "paid",     delivery: "shipped",    date: "2025-05-07", district: "Dhaka",       total: 5040 },
-  { id: "ORD-1003", customer: "Karim Hossain",    phone: "01611223344", address: "Agrabad, Chattogram",       items: [{ name: "আনারস",         qty: 5, price: 400 }],                                               status: "delivered",  payment: "paid",     delivery: "delivered",  date: "2025-05-06", district: "Chattogram",  total: 2000 },
-  { id: "ORD-1004", customer: "Nadia Rahman",     phone: "01755667788", address: "Shaheb Bazar, Rajshahi",   items: [{ name: "লিচু",          qty: 4, price: 600 }, { name: "হিমসাগর আম", qty: 1, price: 1800 }],  status: "processing", payment: "paid",     delivery: "processing", date: "2025-05-07", district: "Rajshahi",    total: 4200 },
-  { id: "ORD-1005", customer: "Tariq Mahmud",     phone: "01833445566", address: "Sonadanga, Khulna",         items: [{ name: "খাঁটি ঘি",      qty: 2, price: 1200 }],                                              status: "cancelled",  payment: "refunded", delivery: "cancelled",  date: "2025-05-05", district: "Khulna",      total: 2400 },
-  { id: "ORD-1006", customer: "Fatema Begum",     phone: "01944332211", address: "Ambarkhana, Sylhet",        items: [{ name: "সুন্দরবন মধু", qty: 3, price: 950 }],                                               status: "pending",    payment: "unpaid",   delivery: "processing", date: "2025-05-08", district: "Sylhet",      total: 2850 },
-  { id: "ORD-1007", customer: "Mizanur Rahman",   phone: "01577889900", address: "Sadar, Mymensingh",         items: [{ name: "আম্রপালি আম",   qty: 2, price: 1500 }, { name: "তালের রস",   qty: 2, price: 300 }],  status: "confirmed",  payment: "paid",     delivery: "shipped",    date: "2025-05-06", district: "Mymensingh",  total: 3600 },
-  { id: "ORD-1008", customer: "Sabrina Chowdhury",phone: "01666554433", address: "GEC Circle, Chattogram",    items: [{ name: "পেয়ারা",        qty: 10, price: 200 }],                                              status: "delivered",  payment: "paid",     delivery: "delivered",  date: "2025-05-04", district: "Chattogram",  total: 2000 },
-  { id: "ORD-1009", customer: "Jamal Uddin",      phone: "01322110099", address: "Jessore Road, Khulna",      items: [{ name: "খেজুর গুড়",    qty: 3, price: 800 }],                                               status: "processing", payment: "unpaid",   delivery: "processing", date: "2025-05-08", district: "Khulna",      total: 2400 },
-  { id: "ORD-1010", customer: "Roksana Parvin",   phone: "01811223355", address: "Uttara Sector 7, Dhaka",   items: [{ name: "হিমসাগর আম",    qty: 1, price: 1800 }, { name: "গোবিন্দভোগ আম", qty: 2, price: 1680 }], status: "confirmed", payment: "paid",    delivery: "shipped",    date: "2025-05-07", district: "Dhaka",       total: 5160 },
-];
 
 // ── Config ────────────────────────────────────────────────────────────────────
-const ORDER_STATUSES   = ["pending","processing","confirmed","delivered","cancelled"];
+const ORDER_STATUSES   = ["Pending","Processing","Confirmed","Delivered","Cancelled"];
 const DELIVERY_OPTIONS = ["processing","shipped","out_for_delivery","delivered","cancelled"];
 const PAYMENT_OPTIONS  = ["unpaid","paid","refunded"];
 
 const STATUS_CONFIG = {
-  pending:    { label: "Pending",    bg: "#fff7ed", color: AMBER,  dot: "#fbbf24" },
-  processing: { label: "Processing", bg: "#eff6ff", color: BLUE,   dot: "#60a5fa" },
-  confirmed:  { label: "Confirmed",  bg: "#f0fdf4", color: GREEN,  dot: "#4ade80" },
-  delivered:  { label: "Delivered",  bg: "#f0fdf4", color: GREEN,  dot: GREEN     },
-  cancelled:  { label: "Cancelled",  bg: "#fef2f2", color: RED,    dot: "#f87171" },
+  Pending:    { label: "Pending",    bg: "#fff7ed", color: AMBER,  dot: "#fbbf24" },
+  Processing: { label: "Processing", bg: "#eff6ff", color: BLUE,   dot: "#60a5fa" },
+  Confirmed:  { label: "Confirmed",  bg: "#f0fdf4", color: GREEN,  dot: "#4ade80" },
+  Delivered:  { label: "Delivered",  bg: "#f0fdf4", color: GREEN,  dot: GREEN     },
+  Cancelled:  { label: "Cancelled",  bg: "#fef2f2", color: RED,    dot: "#f87171" },
 };
 
 const PAYMENT_CONFIG = {
@@ -74,66 +64,7 @@ const DELIVERY_CONFIG = {
 
 const fmt = (n) => `৳${Number(n).toLocaleString()}`;
 
-// ── Pill badge ────────────────────────────────────────────────────────────────
-function Badge({ cfg, text }) {
-  return (
-    <span
-      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold whitespace-nowrap"
-      style={{ background: cfg.bg, color: cfg.color }}
-    >
-      {cfg.dot && (
-        <span
-          className="w-1.5 h-1.5 rounded-full inline-block"
-          style={{ backgroundColor: cfg.dot }}
-        />
-      )}
-      {text ?? cfg.label}
-    </span>
-  );
-}
 
-// ── Stat card ─────────────────────────────────────────────────────────────────
-function StatCard({ icon, label, value, color, sub }) {
-  return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
-      <div
-        className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shrink-0 text-xl"
-        style={{ backgroundColor: color }}
-      >
-        {icon}
-      </div>
-      <div>
-        <p className="text-xs text-gray-400 font-medium">{label}</p>
-        <p className="text-xl font-bold text-gray-800">{value}</p>
-        {sub && <p className="text-[11px] text-gray-400 mt-0.5">{sub}</p>}
-      </div>
-    </div>
-  );
-}
-
-// ── Notification toast ────────────────────────────────────────────────────────
-function Toast({ notifs, onDismiss }) {
-  if (!notifs.length) return null;
-  return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-sm w-full">
-      {notifs.map((n) => (
-        <div
-          key={n.id}
-          className="flex items-start gap-3 bg-gray-900 text-white px-4 py-3 rounded-2xl shadow-xl border border-gray-700 animate-pulse-once"
-        >
-          <span className="text-lg mt-0.5">{n.icon}</span>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold">{n.title}</p>
-            <p className="text-xs text-gray-400 mt-0.5">{n.msg}</p>
-          </div>
-          <button onClick={() => onDismiss(n.id)} className="text-gray-500 hover:text-white mt-0.5">
-            <HiOutlineXMark size={15} />
-          </button>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 // ── Order detail drawer ────────────────────────────────────────────────────────
 function OrderDrawer({ order, onClose, onUpdate, onNotify }) {
@@ -169,8 +100,7 @@ function OrderDrawer({ order, onClose, onUpdate, onNotify }) {
       <div className="relative w-full max-w-lg bg-white shadow-2xl flex flex-col h-full overflow-hidden">
         {/* Header */}
         <div
-          className="flex items-center justify-between px-6 py-4 text-white"
-          style={{ backgroundColor: PRIMARY }}
+          className="flex items-center justify-between px-6 py-4 text-white bg-(--orange-hot)"
         >
           <div>
             <p className="text-xs font-medium opacity-80">Order Details</p>
@@ -373,7 +303,7 @@ function OrderDrawer({ order, onClose, onUpdate, onNotify }) {
 
 // ═════════════════════════════════════════════════════════════════════════════
 export default function ManageOrders() {
-  const [orders,      setOrders]      = useState(MOCK_ORDERS);
+  const [orders,      setOrders]      = useState([]);
   const [search,      setSearch]      = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterPayment, setFilterPayment] = useState("all");
@@ -382,7 +312,18 @@ export default function ManageOrders() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [notifs,      setNotifs]      = useState([]);
   const [page,        setPage]        = useState(1);
-  const PAGE_SIZE = 7;
+  const PAGE_SIZE = 8;
+
+  const {data: Orders = []} = useQuery({
+    queryKey: ["orders"],
+    queryFn: async() => {
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/orders`);
+      // console.log(res.data);
+      setOrders(res.data);
+      return res.data;
+    }
+  })
+  console.log('orders',Orders);
 
   // ── Notifications ──────────────────────────────────────────────────────────
   const pushNotif = ({ icon, title, msg }) => {
@@ -416,12 +357,12 @@ export default function ManageOrders() {
     if (search) {
       const q = search.toLowerCase();
       list = list.filter(o =>
-        o.id.toLowerCase().includes(q) ||
-        o.customer.toLowerCase().includes(q) ||
-        o.district.toLowerCase().includes(q)
+        o._id.toLowerCase().includes(q) ||
+        o.customer.name.toLowerCase().includes(q) ||
+        o.shipping_address.district_name.toLowerCase().includes(q)
       );
     }
-    if (filterStatus  !== "all") list = list.filter(o => o.status  === filterStatus);
+    if (filterStatus  !== "all") list = list.filter(o => o.order_status  === filterStatus);
     if (filterPayment !== "all") list = list.filter(o => o.payment === filterPayment);
     list.sort((a, b) => {
       let av = a[sortField], bv = b[sortField];
@@ -469,8 +410,7 @@ export default function ManageOrders() {
               <HiOutlineBell size={18} className="text-gray-500" />
               {notifs.length > 0 && (
                 <span
-                  className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-white text-[9px] font-bold flex items-center justify-center"
-                  style={{ backgroundColor: PRIMARY }}
+                  className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-white text-[9px] font-bold flex items-center justify-center bg(--orange-hot)"
                 >
                   {notifs.length}
                 </span>
@@ -572,90 +512,8 @@ export default function ManageOrders() {
                       </div>
                     </td>
                   </tr>
-                ) : paged.map(order => (
-                  <tr
-                    key={order.id}
-                    className="hover:bg-orange-50/30 transition-colors group"
-                  >
-                    {/* ID */}
-                    <td className="px-4 py-3.5 font-bold text-gray-800 whitespace-nowrap">
-                      {order.id}
-                    </td>
-
-                    {/* Customer */}
-                    <td className="px-4 py-3.5 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-                          style={{ backgroundColor: PRIMARY }}
-                        >
-                          {order.customer[0]}
-                        </span>
-                        <div>
-                          <p className="font-semibold text-gray-700 text-xs">{order.customer}</p>
-                          <p className="text-gray-400 text-[11px]">{order.district}</p>
-                        </div>
-                      </div>
-                    </td>
-
-                    {/* Date */}
-                    <td className="px-4 py-3.5 text-gray-500 text-xs whitespace-nowrap">
-                      {order.date}
-                    </td>
-
-                    {/* Items */}
-                    <td className="px-4 py-3.5 text-xs text-gray-500 max-w-[160px]">
-                      <p className="truncate">{order.items.map(i => i.name).join(", ")}</p>
-                      <p className="text-gray-400">{order.items.length} item{order.items.length > 1 ? "s" : ""}</p>
-                    </td>
-
-                    {/* Total */}
-                    <td className="px-4 py-3.5 font-bold whitespace-nowrap" style={{ color: PRIMARY }}>
-                      {fmt(order.total)}
-                    </td>
-
-                    {/* Status — inline quick change */}
-                    <td className="px-4 py-3.5">
-                      <select
-                        value={order.status}
-                        onChange={e => quickStatus(order.id, e.target.value)}
-                        className="text-xs font-bold rounded-xl px-2 py-1 border-2 cursor-pointer focus:outline-none transition-all"
-                        style={{
-                          background:   STATUS_CONFIG[order.status].bg,
-                          color:        STATUS_CONFIG[order.status].color,
-                          borderColor:  STATUS_CONFIG[order.status].color + "44",
-                        }}
-                      >
-                        {ORDER_STATUSES.map(s => (
-                          <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
-                        ))}
-                      </select>
-                    </td>
-
-                    {/* Payment */}
-                    <td className="px-4 py-3.5">
-                      <Badge cfg={PAYMENT_CONFIG[order.payment]} />
-                    </td>
-
-                    {/* Delivery */}
-                    <td className="px-4 py-3.5 whitespace-nowrap text-xs text-gray-500">
-                      <span className="flex items-center gap-1.5">
-                        {DELIVERY_CONFIG[order.delivery]?.icon}
-                        {DELIVERY_CONFIG[order.delivery]?.label}
-                      </span>
-                    </td>
-
-                    {/* Actions */}
-                    <td className="px-4 py-3.5">
-                      <button
-                        onClick={() => setSelectedOrder(order)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white transition-all hover:brightness-110 shadow-sm whitespace-nowrap"
-                        style={{ backgroundColor: PRIMARY }}
-                      >
-                        <HiOutlineEye size={13} /> Manage
-                      </button>
-                    </td>
-                  </tr>
+                ) : Orders.map(order => (
+                    <OrderCol order={order} ORDER_STATUSES={ORDER_STATUSES} STATUS_CONFIG={STATUS_CONFIG} quickStatus={quickStatus} DELIVERY_CONFIG={DELIVERY_CONFIG} PAYMENT_CONFIG={PAYMENT_CONFIG} setSelectedOrder={setSelectedOrder} />
                 ))}
               </tbody>
             </table>
@@ -713,6 +571,54 @@ export default function ManageOrders() {
 
       {/* ── Toast notifications ──────────────────────────────────────────── */}
       <Toast notifs={notifs} onDismiss={dismissNotif} />
+    </div>
+  );
+}
+
+
+                                                                                                                                                                                                                                                             
+
+
+
+// ── Stat card ─────────────────────────────────────────────────────────────────
+function StatCard({ icon, label, value, color, sub }) {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
+      <div
+        className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shrink-0 text-xl"
+        style={{ backgroundColor: color }}
+      >
+        {icon}
+      </div>
+      <div>
+        <p className="text-xs text-gray-400 font-medium">{label}</p>
+        <p className="text-xl font-bold text-gray-800">{value}</p>
+        {sub && <p className="text-[11px] text-gray-400 mt-0.5">{sub}</p>}
+      </div>
+    </div>
+  );
+}
+
+// ── Notification toast ────────────────────────────────────────────────────────
+function Toast({ notifs, onDismiss }) {
+  if (!notifs.length) return null;
+  return (
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-sm w-full">
+      {notifs.map((n) => (
+        <div
+          key={n.id}
+          className="flex items-start gap-3 bg-gray-900 text-white px-4 py-3 rounded-2xl shadow-xl border border-gray-700 animate-pulse-once"
+        >
+          <span className="text-lg mt-0.5">{n.icon}</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold">{n.title}</p>
+            <p className="text-xs text-gray-400 mt-0.5">{n.msg}</p>
+          </div>
+          <button onClick={() => onDismiss(n.id)} className="text-gray-500 hover:text-white mt-0.5">
+            <HiOutlineXMark size={15} />
+          </button>
+        </div>
+      ))}
     </div>
   );
 }

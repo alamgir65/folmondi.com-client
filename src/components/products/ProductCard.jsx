@@ -1,17 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router";
+import { set_product_to_LS } from "../../utils";
+
+const notify = () => toast.success("Product added to the Cart!");
+const notify2 = () => toast.success("Product already in the Cart!");
 
 export default function ProductCard({ product }) {
-    const [selectedVariant, setSelectedVariant] = useState(0);
-    const [cartAdded, setCartAdded] = useState(false);
 
     const handleAddToCart = () => {
-        if (!product.inStock) return;
-        setCartAdded(true);
-        setTimeout(() => setCartAdded(false), 2000);
-    };
+        const item_details = {
+          product_name: product?.name,
+          free_delivery: product.free_delivery,
+          product_quantity: product?.min_order,
+          product_price: product.price_after_discount,
+          package_price: product.price_after_discount * product.min_order,
+          product_id: product._id,
+          package_quantity: product?.min_order,
+          package_count: 1,
+          product_image: product?.images?.[0]
+        }
+        if(set_product_to_LS(item_details)){
+          notify();
+        }
+        else notify2();
+      };
     return (
         <div  className="card bg-base-100 shadow-sm hover:shadow-lg transition-shadow duration-300 border border-base-200 overflow-hidden">
             {/* Product Image */}
@@ -27,7 +42,7 @@ export default function ProductCard({ product }) {
                     -{product.discount}%
                 </div>
             </Link>
-
+            <Toaster/>
             <div className="card-body p-4 gap-3">
                 {/* Name */}
                 <h3 className="font-bold text-lg text-base-content leading-tight">
@@ -98,7 +113,7 @@ export default function ProductCard({ product }) {
                 <p className="text-xs text-base-content/50 leading-snug">{product.short_description}</p>
                 {/* Buttons */}
                 <div className="card-actions mt-1 gap-2">
-                    <button className="btn-secondary w-full">
+                    <button onClick={handleAddToCart} className="btn-secondary w-full">
                         Add to Cart
                     </button>
                     <Link to={`/product-details/${product._id}`} className="btn-primary text-center w-full">

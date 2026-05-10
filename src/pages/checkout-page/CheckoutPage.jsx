@@ -236,6 +236,7 @@ export default function CheckoutPage() {
     const continueShoppingHandler = () => {
         set_orders_to_LS(trackingId);
         localStorage.setItem("folmondi_cart", JSON.stringify([]));
+        localStorage.setItem("folmondi_selected_cart", JSON.stringify([]));
         setCart([]);
         window.location.href = "/shop";
     }
