@@ -20,7 +20,7 @@ const Navbar = () => {
         { to: "/", label: "Home" },
         { to: "/shop", label: "Shop" },
         { to: "/reviews", label: "Reviews" },
-        { to: "/tract-order", label: "Track Order" },
+        { to: "/track-order", label: "Track Order" },
         { to: "/contact-us", label: "Contact Us" }
     ];
 
