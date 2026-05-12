@@ -59,7 +59,7 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
         images: product.images || [],
         price: product.price || "",
         quantity: product.quantity || "",
-        short_description: product.short_description || "",
+        // short_description: product.short_description || "",
         description: product.description || "",
         discount: product.discount || "",
         origin: product.origin || "",
@@ -68,6 +68,8 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
         min_order: product?.min_order || "",
         unit: product?.unit || "",
         free_delivery: product?.free_delivery || "",
+        delivery_time: product?.delivery_time || "",
+        usefulness: product?.usefulness || ""
       });
     }
   }, [product, reset]);
@@ -122,14 +124,16 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
       price: data.price,
       discount: data.discount,
       quantity: data.quantity,
-      short_description: data.short_description,
+      // short_description: data.short_description,
       description: data.description,
       images,
       price_after_discount: finalPrice ? parseFloat(finalPrice) : data.price,
       min_order: data.min_order,
-      unit : data.unit,
+      unit: data.unit,
       free_delivery: data.free_delivery,
-      category_name: select_category?.name
+      category_name: select_category?.name,
+      delivery_time: data?.delivery_time,
+      usefulness: data?.usefulness
     };
 
     await mutateAsync(product_data);
@@ -201,22 +205,33 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
             </div>
 
             {/* Minmum Order */}
-            <div className="md:col-span-2">
-              <Field label="Minimum Order" icon={<HiOutlineTag size={15} />} required error={errors.min_order}>
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="e.g. 100"
-                  className={`input input-bordered w-full text-sm rounded-xl bg-white h-11 focus:outline-none ${errors.min_order ? "border-red-400" : "focus:border-(--orange-mid)"}`}
-                  style={{ borderColor: errors.min_order ? "#f87171" : "#e5e7eb" }}
-                  {...register("min_order", {
-                    required: "Minimum Order is required",
-                    min: { value: 0, message: "Cannot be negative" },
-                    valueAsNumber: true,
-                  })}
-                />
-              </Field>
-            </div>
+            <Field label="Minimum Order" icon={<HiOutlineTag size={15} />} required error={errors.min_order}>
+              <input
+                type="number"
+                min="0"
+                placeholder="e.g. 100"
+                className={`input input-bordered w-full text-sm rounded-xl bg-white h-11 focus:outline-none ${errors.min_order ? "border-red-400" : "focus:border-(--orange-mid)"}`}
+                style={{ borderColor: errors.min_order ? "#f87171" : "#e5e7eb" }}
+                {...register("min_order", {
+                  required: "Minimum Order is required",
+                  min: { value: 0, message: "Cannot be negative" },
+                  valueAsNumber: true,
+                })}
+              />
+            </Field>
+            {/* Delivery time */}
+            <Field label="Delivery Time" icon={<HiOutlineTag size={15} />} required error={errors.delivery_time}>
+              <input
+                type="text"
+                placeholder="e.g. ডেলিভারির আনুমানিক সময় ১০ ই মে ইনশাআল্লাহ"
+                className={`input input-bordered w-full text-sm rounded-xl bg-white h-11 focus:outline-none ${errors.delivery_time ? "border-red-400" : "focus:border-(--orange-mid)"}`}
+                style={{ borderColor: errors.delivery_time ? "#f87171" : "#e5e7eb" }}
+                {...register("delivery_time", {
+                  required: "Delivery time is required",
+                  minLength: { value: 2, message: "Delivery time must be at least 6 characters" },
+                })}
+              />
+            </Field>
 
             {/* Category */}
             <Field label="Category" icon={<HiOutlineSquares2X2 size={15} />} required error={errors.category}>
@@ -379,31 +394,24 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
           <SectionHeader icon={<HiOutlineDocumentText size={16} />} title="Description" />
           <div className="p-6 flex flex-col gap-5">
 
-            {/* Short description */}
+            {/* Usefulness */}
             <Field
-              label="Short Description"
-              icon={<HiOutlineDocumentText size={15} />}
+              label="Usefulness"
+              icon={<HiOutlineClipboardDocumentList size={15} />}
               required
-              error={errors.short_description}
-              hint="A brief summary shown on the product card (max 160 chars)"
+              error={errors.usefulness}
+              hint="Detailed usefulness shown on the product details page"
             >
-              <div className="relative">
-                <textarea
-                  rows={2}
-                  maxLength={120}
-                  placeholder="e.g. Sweet, chemical-free Himsagar mangoes from Rajshahi..."
-                  className={`textarea textarea-bordered w-full text-sm rounded-xl bg-white resize-none leading-relaxed focus:outline-none ${errors.short_description ? "border-red-400" : "focus:border-(--orange-mid)"}`}
-                  style={{ borderColor: errors.short_description ? "#f87171" : "#e5e7eb" }}
-                  {...register("short_description", {
-                    required: "Short description is required",
-                    maxLength: { value: 120, message: "Max 120 characters" },
-                    minLength: { value: 10, message: "At least 10 characters" },
-                  })}
-                />
-                <span className="absolute bottom-2 right-3 text-xs text-gray-300">
-                  {watch("short_description")?.length || 0}/120
-                </span>
-              </div>
+              <textarea
+                rows={6}
+                placeholder="Write a detailed usefulness about the product and any special notes..."
+                className={`textarea textarea-bordered w-full text-sm rounded-xl bg-white resize-none leading-relaxed focus:outline-none ${errors.usefulness ? "border-red-400" : "focus:border-(--orange-mid)"}`}
+                style={{ borderColor: errors.usefulness ? "#f87171" : "#e5e7eb" }}
+                {...register("usefulness", {
+                  required: "Full description is required",
+                  minLength: { value: 20, message: "At least 20 characters required" },
+                })}
+              />
             </Field>
 
             {/* Full description */}

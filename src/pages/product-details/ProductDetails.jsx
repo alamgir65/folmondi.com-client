@@ -37,34 +37,13 @@ function Stars({ rating = 5, size = "sm" }) {
 }
 
 // ─── Description Tab ───────────────────────────────────────────────────────
-function TabDescription({ product }) {
+function TabDescription({ product,activeTab }) {
   const specs = [
     ["ক্যাটাগরি", product?.category_name || "N/A"],
     ["উৎপত্তি", product?.origin || "N/A"],
     ["সর্বনিম্ন অর্ডার", `${product?.min_order?`${product?.min_order} ${product?.unit}`:"N/A"}`],
     ["ডিসকাউন্ট", `${product?.discount || 0}%`],
   ];
-
-  const extra_info =  [
-    {
-      bg: "#fff0e6",
-      icon: "🗓️",
-      title: "ডেলিভারির তারিখ",
-      sub: "১-২ দিনের মধ্যে ডেলিভারি",
-    },
-    {
-      bg: "#dcfce7",
-      icon: "🚚",
-      title: "ফ্রি ডেলিভারি",
-      sub: "সারা বাংলাদেশে হোম ডেলিভারি",
-    },
-    {
-      bg: "#dbeafe",
-      icon: "📦",
-      title: "নিরাপদ প্যাকেজিং",
-      sub: "বিশেষ কাঠের বাক্সে প্যাক করা হয়",
-    },
-  ]
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-5 gap-10 pt-2">
@@ -74,13 +53,15 @@ function TabDescription({ product }) {
           {product?.name}
         </h3>
 
-        <p className="text-sm leading-relaxed text-gray-600">
-          {product?.short_description}
-        </p>
-
-        <p className="text-sm leading-relaxed text-gray-600">
-          {product?.description}
-        </p>
+        {
+          activeTab === "desc" ? <div>
+            <p className="text-sm leading-relaxed text-gray-600">
+              {product?.description}
+            </p>
+          </div> : <p className="text-sm leading-relaxed text-gray-600">
+              {product?.usefulness}
+            </p>
+        }
 
         <ul className="space-y-2 pt-1">
           {[
@@ -229,6 +210,7 @@ export default function ProductDetails() {
   console.log()
   const TABS = [
     { key: "desc", label: "বিবরণ" },
+    { key: "useful", label: "উপকারিতা" },
   ];
 
   if (isLoading) {
@@ -583,8 +565,8 @@ export default function ProductDetails() {
             ))}
           </div>
 
-          {activeTab === "desc" && (
-            <TabDescription product={product} />
+          {activeTab && (
+            <TabDescription product={product} activeTab={activeTab}/>
           )}
         </div>
       </div>

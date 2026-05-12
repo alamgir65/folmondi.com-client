@@ -110,7 +110,7 @@ export default function ProductCard({ product }) {
                 ) : product?.delivery ? (
                     <p className="text-xs text-base-content/50 leading-snug">{product.delivery}</p>
                 ) : null}
-                <p className="text-xs text-base-content/50 leading-snug">{product.short_description}</p>
+                <p className="text-xs text-base-content/50 leading-snug">{product?.delivery_time || product?.short_description || "Kichu nai"}</p>
                 {/* Buttons */}
                 <div className="card-actions mt-1 gap-2">
                     <button onClick={handleAddToCart} className="btn-secondary w-full">

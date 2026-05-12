@@ -20,6 +20,7 @@ import {
 import OrderCol from "./order-component/OrderCol";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import FolmondiSpinner from "../../snipnner/FolmondiSpinner";
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const PRIMARY = "#f04e0f";
@@ -316,6 +317,8 @@ export default function ManageOrders() {
       return transformedOrders;
     }
   });
+
+  if(isLoading) <FolmondiSpinner/>
 
   // ── Notifications ──────────────────────────────────────────────────────────
   const pushNotif = ({ icon, title, msg }) => {

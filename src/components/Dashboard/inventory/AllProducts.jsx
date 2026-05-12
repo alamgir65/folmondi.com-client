@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   HiOutlineMagnifyingGlass,
   HiOutlinePencilSquare,
@@ -65,13 +65,24 @@ const AllProducts = () => {
   const categoryList = ["All", ...categories.map((c) => c.name)];
 
   // ── Filtering ──────────────
-  const visible = products.filter((p) => {
-    const matchCat = filter === "All" || p.category === filter;
-    const matchSearch = p.name
-      ?.toLowerCase()
-      .includes(search.toLowerCase());
-    return matchCat && matchSearch;
-  });
+  // const visible = products.filter((p) => {
+  //   const matchCat = filter === "All" || p.category === filter;
+  //   const matchSearch = p.name
+  //     ?.toLowerCase()
+  //     .includes(search.toLowerCase());
+  //   return matchCat && matchSearch;
+  // });
+
+  const visible = useMemo(()=>{
+    let list = [...products];
+    if(search)
+    {
+      const s = search.toLocaleLowerCase();
+      list = list.filter((p) => p?.name?.toLocaleLowerCase().includes(s) || p?.category_name?.toLocaleLowerCase().includes(s))
+    }
+    if(filter !== "All") list = list.filter((p) => p?.category_name === filter);
+    return list;
+  },[search,filter,products])
 
 
   if (isLoading) return <p className="text-center mt-10">Loading...</p>;
