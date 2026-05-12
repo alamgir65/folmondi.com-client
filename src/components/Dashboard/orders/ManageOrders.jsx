@@ -1,16 +1,12 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
-  HiOutlineShoppingBag,
   HiOutlineMagnifyingGlass,
   HiOutlineFunnel,
   HiOutlineArrowsUpDown,
-  HiOutlineEye,
   HiOutlineCheckCircle,
-  HiOutlineXCircle,
   HiOutlineTruck,
   HiOutlineCurrencyDollar,
   HiOutlineBell,
-  HiOutlineArchiveBox,
   HiOutlineChevronDown,
   HiOutlineChevronUp,
   HiOutlineXMark,
@@ -19,7 +15,6 @@ import {
   HiOutlineMapPin,
   HiOutlineArrowPath,
   HiOutlineInboxArrowDown,
-  HiOutlineExclamationCircle,
   HiOutlineCalendarDays,
 } from "react-icons/hi2";
 import OrderCol from "./order-component/OrderCol";
@@ -32,13 +27,12 @@ const GREEN   = "#16a34a";
 const AMBER   = "#d97706";
 const BLUE    = "#2563eb";
 const RED     = "#dc2626";
-const GRAY    = "#6b7280";
 
 
 // ── Config ────────────────────────────────────────────────────────────────────
 const ORDER_STATUSES   = ["Pending","Processing","Confirmed","Delivered","Cancelled"];
 const DELIVERY_OPTIONS = ["processing","shipped","out_for_delivery","delivered","cancelled"];
-const PAYMENT_OPTIONS  = ["unpaid","paid","refunded"];
+const PAYMENT_OPTIONS  = ["pending","paid","refunded"];
 
 const STATUS_CONFIG = {
   Pending:    { label: "Pending",    bg: "#fff7ed", color: AMBER,  dot: "#fbbf24" },
@@ -49,7 +43,7 @@ const STATUS_CONFIG = {
 };
 
 const PAYMENT_CONFIG = {
-  unpaid:   { label: "Unpaid",   bg: "#fff7ed", color: AMBER },
+  pending:   { label: "Pending",   bg: "#fff7ed", color: AMBER }, 
   paid:     { label: "Paid",     bg: "#f0fdf4", color: GREEN },
   refunded: { label: "Refunded", bg: "#eff6ff", color: BLUE  },
 };
@@ -64,32 +58,50 @@ const DELIVERY_CONFIG = {
 
 const fmt = (n) => `৳${Number(n).toLocaleString()}`;
 
-
-
 // ── Order detail drawer ────────────────────────────────────────────────────────
-function OrderDrawer({ order, onClose, onUpdate, onNotify }) {
-  const [status,   setStatus]   = useState(order.status);
-  const [payment,  setPayment]  = useState(order.payment);
-  const [delivery, setDelivery] = useState(order.delivery);
-  const [stock,    setStock]    = useState(order.items.map(i => ({ ...i, restocked: false })));
+function OrderDrawer({ order, onClose, onNotify }) {
+  const [status,   setStatus]   = useState(order.order_status);
+  const [payment,  setPayment]  = useState(order?.payment?.payment_status || null);
+  const [delivery, setDelivery] = useState(order?.delivery?.delivery_status || null);
   const [saving,   setSaving]   = useState(false);
 
   const save = async () => {
     setSaving(true);
-    await new Promise(r => setTimeout(r, 600));
-    onUpdate(order.id, { status, payment, delivery });
-    onNotify({
-      icon: "✅",
-      title: `Order ${order.id} Updated`,
-      msg: `Status: ${status} · Payment: ${payment} · Delivery: ${delivery}`,
-    });
-    setSaving(false);
-    onClose();
+    const updated_info = {
+      order_status: status,
+      "payment.payment_status": payment,
+      "delivery.delivery_status": delivery
+    };
+    try{
+      await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/orders/${order._id}`, updated_info);
+      onNotify({
+        icon: "✅",
+        title: `Order ${order._id} Updated`,
+        msg: `Status: ${status} · Payment: ${payment} · Delivery: ${delivery}`,
+      });
+      setSaving(false);
+      onClose();
+    }
+    catch(error){
+      console.error("Failed to update order:", error);
+        onNotify({
+          icon: "❌",
+          title: "Update Failed",
+          msg: "Failed to update order. Please try again."
+        });
+      setSaving(false);
+      onClose()
+    }
   };
 
-  const toggleRestock = (idx) => {
-    setStock(prev => prev.map((s, i) => i === idx ? { ...s, restocked: !s.restocked } : s));
-    onNotify({ icon: "📦", title: "Inventory Note", msg: `${stock[idx].name} restock flagged.` });
+  // Format date for display
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
   return (
@@ -100,11 +112,12 @@ function OrderDrawer({ order, onClose, onUpdate, onNotify }) {
       <div className="relative w-full max-w-lg bg-white shadow-2xl flex flex-col h-full overflow-hidden">
         {/* Header */}
         <div
-          className="flex items-center justify-between px-6 py-4 text-white bg-(--orange-hot)"
+          className="flex items-center justify-between px-6 py-4 text-white"
+          style={{ backgroundColor: PRIMARY }}
         >
           <div>
             <p className="text-xs font-medium opacity-80">Order Details</p>
-            <h2 className="text-lg font-bold">{order.id}</h2>
+            <h2 className="text-lg font-bold">{order._id}</h2>
           </div>
           <button
             onClick={onClose}
@@ -122,18 +135,19 @@ function OrderDrawer({ order, onClose, onUpdate, onNotify }) {
             <div className="bg-gray-50 rounded-2xl p-4 flex flex-col gap-2">
               <div className="flex items-center gap-2 text-sm font-bold text-gray-800">
                 <span className="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-sm font-bold">
-                  {order.customer[0]}
+                  {order.customer?.name?.[0] || "?"}
                 </span>
-                {order.customer}
+                {order.customer?.name || "N/A"}
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-500">
-                <HiOutlinePhone size={13} /> {order.phone}
+                <HiOutlinePhone size={13} /> {order.customer?.phone || "N/A"}
               </div>
               <div className="flex items-start gap-2 text-sm text-gray-500">
-                <HiOutlineMapPin size={13} className="mt-0.5 shrink-0" /> {order.address}
+                <HiOutlineMapPin size={13} className="mt-0.5 shrink-0" /> 
+                {order.shipping_address?.address || "N/A"}
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-500">
-                <HiOutlineCalendarDays size={13} /> {order.date}
+                <HiOutlineCalendarDays size={13} /> {formatDate(order.order_date)}
               </div>
             </div>
           </div>
@@ -142,18 +156,24 @@ function OrderDrawer({ order, onClose, onUpdate, onNotify }) {
           <div>
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Items Ordered</h3>
             <div className="flex flex-col gap-2">
-              {order.items.map((item, i) => (
+              {order.items?.map((item, i) => (
                 <div key={i} className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
                   <div>
-                    <p className="text-sm font-semibold text-gray-800">{item.name}</p>
-                    <p className="text-xs text-gray-400">Qty: {item.qty} × {fmt(item.price)}</p>
+                    <p className="text-sm font-semibold text-gray-800">{item.product_name}</p>
+                    <p className="text-xs text-gray-400">
+                      Qty: {item.package_count} × {fmt(item.unit_price)}
+                    </p>
                   </div>
-                  <span className="text-sm font-bold text-gray-700">{fmt(item.qty * item.price)}</span>
+                  <span className="text-sm font-bold text-gray-700">
+                    {fmt(item.package_count * item.unit_price)}
+                  </span>
                 </div>
               ))}
               <div className="flex justify-between px-4 pt-2 border-t border-gray-100">
                 <span className="text-sm font-bold text-gray-700">Total</span>
-                <span className="text-base font-bold" style={{ color: PRIMARY }}>{fmt(order.total)}</span>
+                <span className="text-base font-bold" style={{ color: PRIMARY }}>
+                  {fmt(order.pricing?.total || 0)}
+                </span>
               </div>
             </div>
           </div>
@@ -174,9 +194,9 @@ function OrderDrawer({ order, onClose, onUpdate, onNotify }) {
                       ? "border-orange-400 text-white"
                       : "border-gray-200 text-gray-500 hover:border-orange-200"
                   }`}
-                  style={status === s ? { backgroundColor: PRIMARY, borderColor: PRIMARY } : {}}
+                  style={status === s ? { backgroundColor: 'var(--orange-hot)', borderColor: 'var(--orange-hot)' } : {}}
                 >
-                  {STATUS_CONFIG[s].label}
+                  {STATUS_CONFIG[s]?.label || s}
                 </button>
               ))}
             </div>
@@ -199,7 +219,7 @@ function OrderDrawer({ order, onClose, onUpdate, onNotify }) {
                       : "border-gray-200 text-gray-500 hover:border-green-200"
                   }`}
                 >
-                  {PAYMENT_CONFIG[p].label}
+                  {PAYMENT_CONFIG[p]?.label || p}
                 </button>
               ))}
             </div>
@@ -228,52 +248,19 @@ function OrderDrawer({ order, onClose, onUpdate, onNotify }) {
                         : "border-gray-200 hover:border-orange-200"
                     }`}
                   >
-                    <span className="text-base">{DELIVERY_CONFIG[d].icon}</span>
-                    <span className={`text-xs font-bold ${isActive ? "text-orange-600" : isPast ? "text-green-600" : "text-gray-500"}`}>
-                      {DELIVERY_CONFIG[d].label}
+                    <span className="text-base">{DELIVERY_CONFIG[d]?.icon || "📦"}</span>
+                    <span className={`text-xs font-bold ${isActive ? "text-(--range-hot)" : isPast ? "text-(--green-deep)" : "text-gray-500"}`}>
+                      {DELIVERY_CONFIG[d]?.label || d}
                     </span>
                     {isActive && (
-                      <span className="ml-auto text-[10px] font-bold text-orange-500 bg-orange-100 px-2 py-0.5 rounded-lg">Current</span>
+                      <span className="ml-auto text-[10px] font-bold text-(--range-hot) bg-orange-100 px-2 py-0.5 rounded-lg">Current</span>
                     )}
                     {isPast && !isActive && (
-                      <HiOutlineCheckCircle size={14} className="ml-auto text-green-500" />
+                      <HiOutlineCheckCircle size={14} className="ml-auto text-(--green-deep)" />
                     )}
                   </button>
                 );
               })}
-            </div>
-          </div>
-
-          {/* Inventory */}
-          <div>
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-              <HiOutlineArchiveBox size={13} /> Inventory Update
-            </h3>
-            <div className="flex flex-col gap-2">
-              {stock.map((item, i) => (
-                <div
-                  key={i}
-                  className={`flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all ${
-                    item.restocked ? "border-green-300 bg-green-50" : "border-gray-200 bg-gray-50"
-                  }`}
-                >
-                  <div>
-                    <p className="text-sm font-semibold text-gray-700">{item.name}</p>
-                    <p className="text-xs text-gray-400">Used: {item.qty} unit{item.qty > 1 ? "s" : ""}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => toggleRestock(i)}
-                    className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-all ${
-                      item.restocked
-                        ? "bg-green-500 text-white"
-                        : "bg-gray-200 text-gray-600 hover:bg-orange-100 hover:text-orange-600"
-                    }`}
-                  >
-                    {item.restocked ? "✓ Flagged" : "Flag Restock"}
-                  </button>
-                </div>
-              ))}
             </div>
           </div>
         </div>
@@ -289,8 +276,7 @@ function OrderDrawer({ order, onClose, onUpdate, onNotify }) {
           <button
             onClick={save}
             disabled={saving}
-            className="flex-1 py-3 rounded-xl text-sm font-bold text-white transition-all hover:brightness-110 flex items-center justify-center gap-2"
-            style={{ backgroundColor: PRIMARY }}
+            className="flex-1 py-3 rounded-xl bg-(--orange-hot) text-sm font-bold text-white transition-all hover:brightness-110 flex items-center justify-center gap-2"
           >
             {saving ? <HiOutlineArrowPath size={15} className="animate-spin" /> : <HiOutlineCheckCircle size={15} />}
             {saving ? "Saving…" : "Save Changes"}
@@ -307,23 +293,29 @@ export default function ManageOrders() {
   const [search,      setSearch]      = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterPayment, setFilterPayment] = useState("all");
-  const [sortField,   setSortField]   = useState("date");
+  const [sortField,   setSortField]   = useState("order_date");
   const [sortDir,     setSortDir]     = useState("desc");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [notifs,      setNotifs]      = useState([]);
   const [page,        setPage]        = useState(1);
-  const PAGE_SIZE = 8;
+  const PAGE_SIZE = 10;
 
-  const {data: Orders = []} = useQuery({
+  const { data: Orders = [], refetch , isLoading } = useQuery({
     queryKey: ["orders"],
     queryFn: async() => {
       const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/orders`);
-      // console.log(res.data);
-      setOrders(res.data);
-      return res.data;
+      // Transform data to ensure consistent structure
+      const transformedOrders = res.data.map(order => ({
+        ...order,
+        payment_status: order.payment?.payment_status || "pending",
+        delivery_status: order.delivery?.delivery_status || "processing",
+        total: order.pricing?.total || 0,
+        status: order.order_status
+      }));
+      setOrders(transformedOrders);
+      return transformedOrders;
     }
-  })
-  console.log('orders',Orders);
+  });
 
   // ── Notifications ──────────────────────────────────────────────────────────
   const pushNotif = ({ icon, title, msg }) => {
@@ -333,17 +325,6 @@ export default function ManageOrders() {
   };
 
   const dismissNotif = (id) => setNotifs(prev => prev.filter(n => n.id !== id));
-
-  // ── Update order ───────────────────────────────────────────────────────────
-  const updateOrder = (orderId, changes) => {
-    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, ...changes } : o));
-  };
-
-  // ── Quick status change inline ─────────────────────────────────────────────
-  const quickStatus = (orderId, newStatus) => {
-    updateOrder(orderId, { status: newStatus });
-    pushNotif({ icon: STATUS_CONFIG[newStatus]?.dot ? "🔄" : "✅", title: "Status Updated", msg: `${orderId} → ${STATUS_CONFIG[newStatus].label}` });
-  };
 
   // ── Sort ───────────────────────────────────────────────────────────────────
   const toggleSort = (field) => {
@@ -357,17 +338,32 @@ export default function ManageOrders() {
     if (search) {
       const q = search.toLowerCase();
       list = list.filter(o =>
-        o._id.toLowerCase().includes(q) ||
-        o.customer.name.toLowerCase().includes(q) ||
-        o.shipping_address.district_name.toLowerCase().includes(q)
+        o._id?.toLowerCase().includes(q) ||
+        o.customer?.name?.toLowerCase().includes(q) ||
+        o.shipping_address?.district_name?.toLowerCase().includes(q)
       );
     }
-    if (filterStatus  !== "all") list = list.filter(o => o.order_status  === filterStatus);
-    if (filterPayment !== "all") list = list.filter(o => o.payment === filterPayment);
+    if (filterStatus !== "all") list = list.filter(o => o.order_status === filterStatus);
+    if (filterPayment !== "all") list = list.filter(o => o.payment_status === filterPayment);
+    
     list.sort((a, b) => {
-      let av = a[sortField], bv = b[sortField];
-      if (sortField === "total") return sortDir === "asc" ? av - bv : bv - av;
-      return sortDir === "asc" ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
+      let av, bv;
+      if (sortField === "total") {
+        av = a.pricing?.total || 0;
+        bv = b.pricing?.total || 0;
+      } else if (sortField === "order_date") {
+        av = new Date(a.order_date);
+        bv = new Date(b.order_date);
+      } else {
+        av = a[sortField];
+        bv = b[sortField];
+      }
+      
+      if (sortDir === "asc") {
+        return av > bv ? 1 : -1;
+      } else {
+        return av < bv ? 1 : -1;
+      }
     });
     return list;
   }, [orders, search, filterStatus, filterPayment, sortField, sortDir]);
@@ -376,10 +372,10 @@ export default function ManageOrders() {
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   // ── Stats ──────────────────────────────────────────────────────────────────
-  const totalRevenue  = orders.filter(o => o.payment === "paid").reduce((s, o) => s + o.total, 0);
-  const pendingCount  = orders.filter(o => o.status === "pending").length;
-  const deliveredCount = orders.filter(o => o.status === "delivered").length;
-  const unpaidCount   = orders.filter(o => o.payment === "unpaid").length;
+  const totalRevenue  = orders.filter(o => o.payment_status === "paid").reduce((s, o) => s + (o.pricing?.total || 0), 0);
+  const pendingCount  = orders.filter(o => o.order_status === "Pending").length;
+  const deliveredCount = orders.filter(o => o.order_status === "Delivered").length;
+  const unpaidCount   = orders.filter(o => o.payment_status === "pending").length;
 
   // ── Sort icon ──────────────────────────────────────────────────────────────
   const SortIcon = ({ field }) =>
@@ -391,8 +387,8 @@ export default function ManageOrders() {
 
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gray-50/80 p-6">
-      <div className="max-w-7xl mx-auto flex flex-col gap-6">
+    <div className="min-h-screen bg-gray-50/80 p-2">
+      <div className="max-w-7xl mx-auto flex flex-col gap-1 sm:gap-6">
 
         {/* ── Header ───────────────────────────────────────────────────── */}
         <div className="flex items-center justify-between flex-wrap gap-3">
@@ -410,7 +406,8 @@ export default function ManageOrders() {
               <HiOutlineBell size={18} className="text-gray-500" />
               {notifs.length > 0 && (
                 <span
-                  className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-white text-[9px] font-bold flex items-center justify-center bg(--orange-hot)"
+                  className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-white text-[9px] font-bold flex items-center justify-center"
+                  style={{ backgroundColor: PRIMARY }}
                 >
                   {notifs.length}
                 </span>
@@ -421,7 +418,7 @@ export default function ManageOrders() {
 
         {/* ── Stat cards ────────────────────────────────────────────────── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard icon="৳" label="Total Revenue"   value={fmt(totalRevenue)}  color={PRIMARY}  sub={`${orders.filter(o=>o.payment==="paid").length} paid orders`} />
+          <StatCard icon="৳" label="Total Revenue"   value={fmt(totalRevenue)}  color={'var(--orange-hot)'}  sub={`${orders.filter(o=>o.payment_status==="paid").length} paid orders`} />
           <StatCard icon="🛒" label="Total Orders"    value={orders.length}      color={BLUE}     sub="All time" />
           <StatCard icon="⏳" label="Pending Orders"  value={pendingCount}       color={AMBER}    sub="Needs action" />
           <StatCard icon="💰" label="Unpaid Orders"   value={unpaidCount}        color={RED}      sub="Verify payment" />
@@ -456,7 +453,7 @@ export default function ManageOrders() {
                 }`}
                 style={filterStatus === s ? { backgroundColor: s === "all" ? PRIMARY : STATUS_CONFIG[s]?.color || PRIMARY } : {}}
               >
-                {s === "all" ? "All" : STATUS_CONFIG[s].label}
+                {s === "all" ? "All" : STATUS_CONFIG[s]?.label || s}
               </button>
             ))}
           </div>
@@ -468,7 +465,9 @@ export default function ManageOrders() {
             className="h-10 px-3 text-xs font-bold rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:border-orange-400 transition-colors cursor-pointer"
           >
             <option value="all">All Payments</option>
-            {PAYMENT_OPTIONS.map(p => <option key={p} value={p}>{PAYMENT_CONFIG[p].label}</option>)}
+            {PAYMENT_OPTIONS.map(p => <option key={p} value={p}
+              style={{ backgroundColor: PAYMENT_CONFIG[p]?.bg , color: PAYMENT_CONFIG[p]?.color}}
+            >{PAYMENT_CONFIG[p]?.label || p}</option>)}
           </select>
         </div>
 
@@ -479,14 +478,14 @@ export default function ManageOrders() {
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/80">
                   {[
-                    { label: "Order ID",  field: "id"       },
-                    { label: "Customer",  field: "customer" },
-                    { label: "Date",      field: "date"     },
+                    { label: "Order ID",  field: "_id"       },
+                    { label: "Customer",  field: null },
+                    { label: "Date",      field: "order_date"},
                     { label: "Items",     field: null        },
                     { label: "Total",     field: "total"    },
-                    { label: "Status",    field: "status"   },
-                    { label: "Payment",   field: "payment"  },
-                    { label: "Delivery",  field: "delivery" },
+                    { label: "Status",    field: null   },
+                    { label: "Payment",   field: null  },
+                    { label: "Delivery",  field: null },
                     { label: "Actions",   field: null        },
                   ].map(col => (
                     <th
@@ -512,8 +511,20 @@ export default function ManageOrders() {
                       </div>
                     </td>
                   </tr>
-                ) : Orders.map(order => (
-                    <OrderCol order={order} ORDER_STATUSES={ORDER_STATUSES} STATUS_CONFIG={STATUS_CONFIG} quickStatus={quickStatus} DELIVERY_CONFIG={DELIVERY_CONFIG} PAYMENT_CONFIG={PAYMENT_CONFIG} setSelectedOrder={setSelectedOrder} />
+                ) : paged.map(order => (
+                  <OrderCol 
+                    key={order._id}
+                    order={{
+                      ...order,
+                      payment_status: order.payment_status,
+                      delivery_status: order.delivery_status,
+                      total: order.pricing?.total || 0
+                    }} 
+                    STATUS_CONFIG={STATUS_CONFIG} 
+                    DELIVERY_CONFIG={DELIVERY_CONFIG} 
+                    PAYMENT_CONFIG={PAYMENT_CONFIG} 
+                    setSelectedOrder={setSelectedOrder} 
+                  />
                 ))}
               </tbody>
             </table>
@@ -533,7 +544,7 @@ export default function ManageOrders() {
                 >
                   <HiOutlineChevronDown size={13} className="rotate-90" />
                 </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map(p => (
                   <button
                     key={p}
                     onClick={() => setPage(p)}
@@ -545,6 +556,17 @@ export default function ManageOrders() {
                     {p}
                   </button>
                 ))}
+                {totalPages > 5 && (
+                  <>
+                    <span className="text-gray-400">...</span>
+                    <button
+                      onClick={() => setPage(totalPages)}
+                      className="w-8 h-8 rounded-lg border border-gray-200 text-gray-500 hover:border-orange-300 transition-all"
+                    >
+                      {totalPages}
+                    </button>
+                  </>
+                )}
                 <button
                   onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
@@ -564,7 +586,6 @@ export default function ManageOrders() {
         <OrderDrawer
           order={selectedOrder}
           onClose={() => setSelectedOrder(null)}
-          onUpdate={updateOrder}
           onNotify={pushNotif}
         />
       )}
@@ -574,11 +595,6 @@ export default function ManageOrders() {
     </div>
   );
 }
-
-
-                                                                                                                                                                                                                                                             
-
-
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
 function StatCard({ icon, label, value, color, sub }) {

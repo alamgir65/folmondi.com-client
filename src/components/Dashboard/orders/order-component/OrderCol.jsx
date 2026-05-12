@@ -3,7 +3,7 @@ import { HiOutlineEye } from 'react-icons/hi2';
 import Badge from './Badge';
 import { fmt } from '../../../../utils';
 
-const OrderCol = ({order,ORDER_STATUSES,STATUS_CONFIG, quickStatus, DELIVERY_CONFIG, PAYMENT_CONFIG,setSelectedOrder}) => {
+const OrderCol = ({order,STATUS_CONFIG, DELIVERY_CONFIG, PAYMENT_CONFIG,setSelectedOrder}) => {
     const {_id,order_date,order_status,customer,pricing,items,shipping_address,payment,note} = order || [];
     const date = new Date(order_date);
     return (
@@ -48,28 +48,31 @@ const OrderCol = ({order,ORDER_STATUSES,STATUS_CONFIG, quickStatus, DELIVERY_CON
             </td>
 
             {/* Status — inline quick change */}
-            <td className="px-4 py-3.5">
+            {/* <td className={`px-4 py-3.5 rounded-xl border-none`}>
                 <select
                     value={order_status}
                     onChange={e => quickStatus(order.id, e.target.value)}
                     className="text-xs font-bold rounded-xl px-2 py-1  cursor-pointer focus:outline-none transition-all"
                 >
                     {ORDER_STATUSES.map(s => (
-                        <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
+                        <option className={`text-${STATUS_CONFIG[s].color}`} key={s} value={s}>{STATUS_CONFIG[s].label}</option>
                     ))}
                 </select>
+            </td> */}
+            <td className="px-4 py-3.5">
+                <Badge cfg={STATUS_CONFIG[order_status]} />
             </td>
 
             {/* Payment */}
             <td className="px-4 py-3.5">
-                {/* <Badge cfg={PAYMENT_CONFIG[order.payment]} /> */} Processing
+                <Badge cfg={PAYMENT_CONFIG[order.payment?.payment_status]} />
             </td>
 
             {/* Delivery */}
             <td className="px-4 py-3.5 whitespace-nowrap text-xs text-gray-500">
                 <span className="flex items-center gap-1.5">
-                    {/* {DELIVERY_CONFIG[order.delivery]?.icon}
-                    {DELIVERY_CONFIG[order.delivery]?.label} */} icon hobe
+                    {DELIVERY_CONFIG[order?.delivery?.delivery_status]?.icon}
+                    {DELIVERY_CONFIG[order?.delivery?.delivery_status]?.label}
                 </span>
             </td>
 
