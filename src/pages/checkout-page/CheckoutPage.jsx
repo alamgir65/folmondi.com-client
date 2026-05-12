@@ -15,7 +15,7 @@ import {
     HiOutlineShoppingBag,
     HiOutlineGift,
 } from "react-icons/hi2";
-import { get_product_from_LS, remove_product_from_LS, removeItem, set_orders_to_LS, updateQty } from "../../utils";
+import { calculate_delivery_charge, get_product_from_LS, remove_product_from_LS, removeItem, set_orders_to_LS, updateQty } from "../../utils";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { LuCopy } from "react-icons/lu";
@@ -133,7 +133,13 @@ export default function CheckoutPage() {
         );
     }, 0);
 
-    const deliveryCost = 0;
+    const totalWeight = cart.reduce((sum,item) => {
+        return (
+            sum + (item?.free_delivery === "Yes" ? 0 : (Number(item.package_count)||0) * (Number(item.package_quantity||0)))
+        )
+    },0)
+
+    const deliveryCost = totalWeight === 0 ? 0 : calculate_delivery_charge(totalWeight);
 
     const total = subtotal + deliveryCost;
 
@@ -542,7 +548,7 @@ export default function CheckoutPage() {
                                                 <div className="flex items-start justify-between gap-2">
                                                     <div>
                                                         <p className="text-sm font-bold text-gray-800 leading-tight">{item?.product_name}</p>
-                                                        {item.free_delivery && (
+                                                        {item.free_delivery === "Yes" && (
                                                             <span
                                                                 className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded-md mt-0.5 text-white"
                                                                 style={{ backgroundColor: "#22c55e" }}
@@ -603,13 +609,18 @@ export default function CheckoutPage() {
                                             <span>
                                                 {delivery === "point" ? "Point Delivery" : "Home Delivery"}
                                             </span>
-                                            <span className="font-bold text-green-600">Free!</span>
+                                            {
+                                                deliveryCost === 0 ? <span className="font-bold text-green-600">Free!</span> : 
+                                                <span className="font-semibold">{fmt(deliveryCost)}</span>
+                                            }
                                         </div>
 
                                         {/* Free delivery banner */}
-                                        <div className="rounded-xl bg-green-50 border border-green-100 text-green-700 text-xs font-semibold text-center py-2 mt-1">
+                                        {
+                                            deliveryCost === 0 && <div className="rounded-xl bg-green-50 border border-green-100 text-green-700 text-xs font-semibold text-center py-2 mt-1">
                                             🎉 Delivery is free on this order.
                                         </div>
+                                        }
 
                                         <div className="flex justify-between items-center mt-2 pt-3 border-t border-gray-100">
                                             <span className="text-base font-bold text-gray-800">Total</span>

@@ -13,7 +13,7 @@ import {
   HiOutlineArrowLeft,
   HiOutlineCheckBadge,
 } from "react-icons/hi2";
-import { get_product_from_LS, remove_product_from_LS, removeItem, set_item_to_selected_cart, updateQty } from "../../utils";
+import { calculate_delivery_charge, get_product_from_LS, remove_product_from_LS, removeItem, set_item_to_selected_cart, updateQty } from "../../utils";
 import Swal from "sweetalert2";
 import { href, Link } from "react-router";
 
@@ -161,9 +161,14 @@ export default function CartPage() {
   // console.log(selected.size);
   // ── Totals (only selected items) ──────────────────────────────────────────
   const selectedItems = cart.filter((i) => selected.has(i.cart_id));
+  const totalWeight = selectedItems.reduce((sum,item) => {
+        return (
+            sum + (item?.free_delivery === "Yes" ? 0 : (Number(item.package_count)||0) * (Number(item.package_quantity||0)))
+        )
+    },0)
   const subtotal = selectedItems.reduce((s, i) => s + i.package_price * i.package_count, 0);
   const discount = appliedPromo ? Math.round((subtotal * appliedPromo.pct) / 100) : 0;
-  const delivery = 0; // all free for now
+  const delivery = totalWeight === 0? 0 : calculate_delivery_charge(totalWeight);
   const total = subtotal - discount + delivery;
   const totalItems = selectedItems.reduce((s, i) => s + i.package_count, 0);
 
@@ -461,16 +466,18 @@ export default function CartPage() {
 
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Delivery</span>
-                    <span className="font-bold text-green-600">Free!</span>
+                    <span className={`font-bold text-${delivery === 0?'green-600':'(--orange-hot)'}`}> {delivery === 0? 'Free': delivery}</span>
                   </div>
 
                   {/* Free delivery banner */}
-                  <div
+                  {
+                    totalWeight===0 && <div
                     className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-semibold text-green-700 border"
                     style={{ background: "#f0fdf4", borderColor: "#bbf7d0" }}
                   >
                     🎉 Delivery is free on this order!
                   </div>
+                  }
 
                   {/* Divider */}
                   <div className="border-t border-gray-100 pt-3 mt-1">

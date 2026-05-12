@@ -171,6 +171,12 @@ function OrderDrawer({ order, onClose, onNotify }) {
                 </div>
               ))}
               <div className="flex justify-between px-4 pt-2 border-t border-gray-100">
+                <span className="text-sm font-bold text-gray-700">Delivery Cost</span>
+                <span className="text-sm font-bold text-gray-700">
+                  {fmt(order.pricing?.delivery_cost || 0)}
+                </span>
+              </div>
+              <div className="flex justify-between px-4 pt-2 border-t border-gray-100">
                 <span className="text-sm font-bold text-gray-700">Total</span>
                 <span className="text-base font-bold" style={{ color: PRIMARY }}>
                   {fmt(order.pricing?.total || 0)}

@@ -136,6 +136,9 @@ export const set_item_to_selected_cart = (item) => {
   localStorage.setItem("folmondi_selected_cart", JSON.stringify(new_cart));
 };
 
+export const calculate_delivery_charge=(weight)=>{
+  return 60 + (Number(weight) * 10);
+}
 
 
 export const fmt = (n) => `৳${Number(n).toLocaleString()}`;

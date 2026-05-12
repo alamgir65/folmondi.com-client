@@ -60,7 +60,7 @@ export default function Products() {
     <div className="bg-gray-50 max-w-7xl mx-auto px-2 sm:px-4">
 
       {/* CATEGORY */}
-      <div className="sticky top-20 z-30 py-3 mb-4">
+      <div className="top-20 z-30 py-3 mb-4">
         <div className="flex justify-center">
           <Category
             categories={all_categories}

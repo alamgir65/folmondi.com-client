@@ -7,7 +7,6 @@ const Category = ({ categories, activeCategory, setActiveCategory }) => {
             {
                 categories.map((cat, index) => {
                     const isActive = activeCategory === cat._id;
-
                     return (
                         <Link
                             key={index}
