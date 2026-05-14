@@ -181,8 +181,7 @@ export default function ProductDetails() {
   const oldPrice =
     (product?.price || 0) * (activeWeight?.quantity || 1);
 
-  const discount =
-    product?.discount || 0;
+  const discount = Number(product.price)*Number(activeWeight?.quantity) - Number(activeWeight?.price);
 
   const finalOldPrice =
     currentPrice +
@@ -207,7 +206,6 @@ export default function ProductDetails() {
     else notify2();
   };
 
-  console.log()
   const TABS = [
     { key: "desc", label: "বিবরণ" },
     { key: "useful", label: "উপকারিতা" },

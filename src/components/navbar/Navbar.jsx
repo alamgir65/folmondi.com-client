@@ -5,7 +5,6 @@ import Logo from '../logo/Logo';
 import { FaSearch } from "react-icons/fa";
 import { IoCloseOutline } from 'react-icons/io5';
 
-const lang = "en";
 
 const Navbar = () => {
     const [open, setOpen] = useState(false);
@@ -66,9 +65,9 @@ const Navbar = () => {
 
             {/* RIGHT */}
             <div className="navbar-end gap-5">
-                <button className="hover:bg-(--orange-light) p-2 right-btn rounded-full">
+                {/* <button className="hover:bg-(--orange-light) p-2 right-btn rounded-full">
                     <FaSearch className='text-lg' />
-                </button>
+                </button> */}
 
                 <Link to={`/cart`}
                     className="btn-primary"

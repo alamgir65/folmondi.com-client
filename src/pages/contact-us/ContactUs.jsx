@@ -8,6 +8,7 @@ import {
   HiPaperAirplane,
 } from "react-icons/hi2";
 import { FaWhatsapp } from "react-icons/fa";
+import axios from "axios";
 
 const C = {
   orangeHot: "#f04e0f",
@@ -21,21 +22,21 @@ const CONTACT_INFO = [
   {
     icon:    <HiMapPin size={20} />,
     label:   "Our Address",
-    lines:   ["House 12, Road 5, Block B", "Mirpur-10, Dhaka-1216", "Bangladesh"],
+    lines:   ["House 12, Road 5, Block B", "Agrabad, Chittagong", "Bangladesh"],
     iconBg:  "#fff0e6",
     iconClr: C.orangeHot,
   },
   {
     icon:    <HiEnvelope size={20} />,
     label:   "Email Us",
-    lines:   ["support@folmondi.com", "orders@folmondi.com"],
+    lines:   ["fruitkingdomofficial@gmail.com", ""],
     iconBg:  "#dbeafe",
     iconClr: C.blueTrust,
   },
   {
     icon:    <HiPhone size={20} />,
     label:   "Call Us",
-    lines:   ["+880 1700-000000", "Sat – Thu, 9:00 AM – 9:00 PM"],
+    lines:   ["+8801629-040900", "Sat – Thu, 9:00 AM – 9:00 PM"],
     iconBg:  "#dcfce7",
     iconClr: C.greenDeep,
   },
@@ -47,10 +48,10 @@ const BUSINESS_HOURS = [
 ];
 
 const SUBJECT_OPTIONS = [
-  { value: "order",    label: "Order Inquiry"    },
-  { value: "delivery", label: "Delivery Issue"   },
-  { value: "quality",  label: "Product Quality"  },
-  { value: "payment",  label: "Payment Related"  },
+  { value: "Order Inquiry",    label: "Order Inquiry" },
+  { value: "Delivery Issue", label: "Delivery Issue"   },
+  { value: "Product Quality",  label: "Product Quality"  },
+  { value: "Payment Related",  label: "Payment Related"  },
   { value: "other",    label: "Other"            },
 ];
 
@@ -68,17 +69,27 @@ export default function ContactUs() {
 
   const onSubmit = async (data) => {
     setIsLoading(true);
+    console.log(data);
+    try{
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/contact`, data);
+      setIsLoading(false);
+      setIsSubmitted(true);
+      reset();
+    }
+    catch(err){
+      console.log(err);
+      alert('Something went wrong!')
+      setIsLoading(false);
+    }
     // TODO: replace with your real API call, e.g. await sendContactForm(data)
-    await new Promise((res) => setTimeout(res, 1400));
-    setIsLoading(false);
-    setIsSubmitted(true);
-    reset();
+    // await new Promise((res) => setTimeout(res, 1400));
+    
   };
 
   return (
     <section
-      className="min-h-screen py-16 px-4"
-      style={{ background: C.cream, fontFamily: "'Nunito', sans-serif" }}
+      className="min-h-screen py-16 px-4 bg-(--cream-bg) "
+      // style={{ background: C.cream, fontFamily: "'Nunito', sans-serif" }}
     >
       <style>{`
         .input-brand:focus {
@@ -142,7 +153,7 @@ export default function ContactUs() {
 
             {/* WhatsApp button */}
             <a
-              href="https://wa.me/8801860384930"
+              href="https://wa.me/8801629040900"
               target="_blank"
               rel="noopener noreferrer"
               className="whatsapp-btn flex items-center justify-center gap-3 rounded-2xl py-4 px-6 text-white font-bold text-base shadow-md transition-all"
@@ -154,8 +165,8 @@ export default function ContactUs() {
 
             {/* Business hours */}
             <div
-              className="rounded-2xl px-5 py-4 border"
-              style={{ background: C.sand, borderColor: "#fbd5bb" }}
+              className="px-5 py-4 border bg-white rounded-2xl border-orange-50 shadow-sm transition-shadow hover:shadow-md"
+              // style={{ background: C.sand, borderColor: "#fbd5bb" }}
             >
               <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
                 Business Hours

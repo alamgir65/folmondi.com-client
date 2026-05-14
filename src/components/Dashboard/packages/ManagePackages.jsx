@@ -1,7 +1,7 @@
 import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { useState } from 'react';
-import { HiOutlineCheckCircle, HiOutlinePencilSquare, HiOutlineTrash } from 'react-icons/hi2';
+import { useMemo, useState } from 'react';
+import { HiOutlineCheckCircle, HiOutlineMagnifyingGlass, HiOutlinePencilSquare, HiOutlineTrash } from 'react-icons/hi2';
 import { Modal } from '../../../utils/Modal';
 import EditPackage from './EditPackage';
 
@@ -11,6 +11,9 @@ const ManagePackages = () => {
     const [delete_id, set_delete_id] = useState(null);
     const [edit_id, set_edit_id] = useState(null);
     const [isSuccess, setIsSuccess] = useState(null);
+    const [search, setSearch] = useState(null);
+    const [productsList, setProductsList] = useState(["All"]);
+    const [filter, setFilter] = useState("All");
 
     // ── packages Query ───────
     const { data: packages = [] } = useQuery({
@@ -21,6 +24,29 @@ const ManagePackages = () => {
         },
     });
 
+    // ── Products Query ───────
+    const { data: products = [] } = useQuery({
+        queryKey: ["products"],
+        queryFn: async () => {
+            const res = await axios.get(`${API}/products`);
+            const newList = res.data.map((p) => p.name);
+            setProductsList(["All",...newList]);
+            return res.data;
+        },
+    });
+
+    const visible = useMemo(()=>{
+        let list = [...packages];
+        if(search)
+        {
+          const s = search.toLocaleLowerCase();
+          list = list.filter((p) => p?.product_name?.toLocaleLowerCase().includes(s))
+        }
+        if(filter !== "All") list = list.filter((p) => p?.product_name === filter);
+        return list;
+      },[search,filter,packages])
+
+    console.log(productsList);
 
     const { mutateAsync, isPending } = useMutation({
         mutationFn: async (id) => {
@@ -75,6 +101,39 @@ const ManagePackages = () => {
                     <p className="text-sm text-gray-400">{packages.length} packages</p>
                 </div>
             </div>
+
+            {/* Filters */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4 flex-wrap">
+
+                {/* Search */}
+                <div className="relative flex-1 min-w-48">
+                    <HiOutlineMagnifyingGlass
+                        size={16}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Search packages..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:border-orange-400 focus:bg-white transition-colors"
+                    />
+                </div>
+
+                {/* Category tabs */}
+                <div className="flex gap-2 flex-wrap">
+                      {productsList.map((cat) => (
+                        <button
+                          key={cat}
+                          onClick={() => setFilter(cat)}
+                          className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-all ${filter === cat ? 'bg-(--orange-hot) text-white' : 'bg-(--base-color-light) text-(--base-color)'}`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+            </div>
+
             {/* Table */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
@@ -93,14 +152,14 @@ const ManagePackages = () => {
                         </thead>
 
                         <tbody>
-                            {packages.length === 0 ? (
+                            {visible.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="px-5 py-10 text-center text-sm text-gray-400">
                                         No Packages found.
                                     </td>
                                 </tr>
                             ) : (
-                                packages.map((p, i) => (
+                                visible.map((p, i) => (
                                     <tr key={p._id} className="border-t border-gray-50 hover:bg-gray-50 transition-colors">
                                         <td className="px-5 py-3.5 text-gray-500">{i + 1}</td>
                                         <td className="px-5 py-3.5 text-gray-500">{p?.product_name}</td>

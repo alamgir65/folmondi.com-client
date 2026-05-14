@@ -2,10 +2,13 @@ import React from "react";
 import { FaHome, FaShoppingBag, FaShoppingCart, FaPhone } from "react-icons/fa";
 import { Link } from "react-router";
 import "./MobileMenuBar.css";
+import { get_product_from_LS } from "../../utils";
 
 const MobileMenuBar = () => {
+  const cart = get_product_from_LS().length;
+  console.log(cart);
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-base-100 shadow-md z-50 md:hidden">
+    <div className="fixed bottom-0 left-0 w-full bg-white shadow-lg z-50 md:hidden">
       <div className="flex justify-around items-center py-2 mobile-menu-bar">
 
         {/* Home */}
@@ -26,14 +29,14 @@ const MobileMenuBar = () => {
 
           {/* Optional cart badge */}
           <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] px-1 rounded-full">
-            2
+            {cart}
           </span>
 
           <span className="text-xs mt-1">Cart</span>
         </Link>
 
         {/* Contact */}
-        <Link to="/contact" className="flex flex-col items-center text-gray-500">
+        <Link to="/contact-us" className="flex flex-col items-center text-gray-500">
           <FaPhone size={20} />
           <span className="text-xs mt-1">Contact</span>
         </Link>

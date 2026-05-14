@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
 import { NavLink } from 'react-router'
 
-const MenuItem = ({ label, address, icon: Icon }) => {
+const MenuItem = ({ label, address, icon: Icon ,onClick}) => {
   return (
     <NavLink
+    onClick={onClick}
       to={address}
       end
       className={({ isActive }) =>

@@ -652,8 +652,8 @@ export default function OrderTrackPage() {
       `}</style>
 
       <div
-        className="min-h-screen"
-        style={{ background: "#fafaf8" }}
+        className="min-h-screen bg-(--cream-bg) "
+        // style={{ background: "#fafaf8" }}
       >
 
         {/* Hero */}
@@ -814,7 +814,7 @@ export default function OrderTrackPage() {
         {/* ── No search yet — hint cards ─────────────────────────────────── */}
         {!order && !loading && !error && (
           <div
-            className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-4 sm:my-8 mx-6 sm:mx-14"
+            className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6 sm:my-10 mx-6 sm:mx-14"
             style={{ animation: "slideUp 0.5s ease both" }}
           >
             {[
@@ -824,7 +824,7 @@ export default function OrderTrackPage() {
             ].map(card => (
               <div
                 key={card.title}
-                className="bg-(--cream-bg) rounded-2xl border border-gray-100 p-6 text-center hover:shadow-md hover:border-orange-200 transition-all"
+                className="bg-white rounded-2xl border border-gray-100 p-6 text-center hover:shadow-md hover:border-orange-200 transition-all"
               >
                 <span className="text-3xl block mb-3">{card.icon}</span>
                 <p className="text-sm font-bold text-gray-800 mb-1">{card.title}</p>

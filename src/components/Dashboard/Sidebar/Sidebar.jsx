@@ -25,7 +25,7 @@ const Sidebar = () => {
         <div>
           <div className='block cursor-pointer p-2 font-bold'>
             <Link to='/'>
-                <Logo width={120}/>
+                <Logo width={120} bg={false}/>
             </Link>
           </div>
         </div>
@@ -50,7 +50,7 @@ const Sidebar = () => {
             {/* Logo */}
             <div className='w-full hidden md:flex shadow-lg rounded-lg justify-center items-center mx-auto'>
               <Link to='/'>
-                <Logo width={240} />
+                <Logo width={200} bg={false} />
               </Link>
             </div>
           </div>
@@ -65,7 +65,7 @@ const Sidebar = () => {
                 label='Statistics'
                 address='/dashboard'
               />
-              <AdminMenu/> 
+              <AdminMenu handleToggle={handleToggle}/> 
             </nav>
           </div>
 
