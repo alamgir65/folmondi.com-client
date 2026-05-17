@@ -583,7 +583,6 @@ export default function ReviewSection() {
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 bg-white border border-blue-200 rounded-full px-5 py-2 mb-4">
             <span>⭐</span>
-
             <span className="text-xs font-bold text-blue-700">
               গ্রাহকদের মতামত
             </span>

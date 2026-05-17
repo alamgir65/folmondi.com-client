@@ -20,6 +20,8 @@ import CheckoutPage from "../pages/checkout-page/CheckoutPage";
 import CartPage from "../pages/cart/Cartpage";
 import ManageOrders from "../components/Dashboard/orders/Manageorders";
 import OrderTrackPage from "../pages/track-order/OrderTrackpage";
+import AboutUs from "../pages/about-us/AboutUs";
+import TermsAndConditions from "../pages/terms-conditions/Termsandconditions";
 
 export const router = createBrowserRouter([
     {
@@ -64,6 +66,14 @@ export const router = createBrowserRouter([
             {
                 path: 'track-order',
                 element: <OrderTrackPage/>
+            },
+            {
+                path: 'about-us',
+                element: <AboutUs/>
+            },
+            {
+                path: 'terms-conditions',
+                element: <TermsAndConditions/>
             }
         ]
     },
