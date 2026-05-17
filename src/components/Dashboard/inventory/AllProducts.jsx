@@ -64,14 +64,6 @@ const AllProducts = () => {
   // Correct category list
   const categoryList = ["All", ...categories.map((c) => c.name)];
 
-  // ── Filtering ──────────────
-  // const visible = products.filter((p) => {
-  //   const matchCat = filter === "All" || p.category === filter;
-  //   const matchSearch = p.name
-  //     ?.toLowerCase()
-  //     .includes(search.toLowerCase());
-  //   return matchCat && matchSearch;
-  // });
 
   const visible = useMemo(()=>{
     let list = [...products];
@@ -162,7 +154,7 @@ const AllProducts = () => {
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
                         <span className="text-xl">
-                          <img src={p.images[0]} alt={p.name} className="w-10 h-10 rounded-lg object-cover" />
+                          <img src={p.image || p.images[0]} alt={p.name} className="w-10 h-10 rounded-lg object-cover" />
                         </span>
                         <span className="font-semibold text-gray-800">{p.name}</span>
                       </div>

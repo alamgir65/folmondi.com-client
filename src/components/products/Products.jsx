@@ -89,19 +89,19 @@ export default function Products() {
 
         {/* Grid */}
         {
-          products.length === 0? <div className="flex justify-center flex-col gap-6 items-center my-10">
+          products.length === 0 ? <div className="flex justify-center flex-col gap-6 items-center my-10">
             <h1 className="text-xl sm:text-2xl font-bold text-(--orange-hot)">No Products found</h1>
-            <button onClick={()=>setActiveCategory(-1)} className="btn-primary">View all products</button>
-          </div> : <h1>Product ache bhai</h1>
+            <button onClick={() => setActiveCategory(-1)} className="btn-primary">View all products</button>
+          </div> : <div
+            id="products"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+          >
+            {products.map((p) => (
+              <ProductCard key={p._id} product={p} />
+            ))}
+          </div>
         }
-        <div
-          id="products"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
-        >
-          {products.map((p) => (
-            <ProductCard key={p._id} product={p} />
-          ))}
-        </div>
+
 
       </div>
     </div>

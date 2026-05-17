@@ -182,7 +182,7 @@ const Footer = () => {
           <a href="#" className="link link-hover text-white transition-colors">আনারস (Pineapple)</a>
           <a href="#" className="link link-hover text-white transition-colors">আঙ্গুর (Grapes)</a> */}
           <Link to={'/about-us'}>About Us</Link>
-          <Link to={'/pricacy-policy'}>Privacy Policy</Link>
+          <Link to={'/privacy-policy'}>Privacy Policy</Link>
           <Link to={'/terms-conditions'}>Terms & Conditions</Link>
         </nav>
 

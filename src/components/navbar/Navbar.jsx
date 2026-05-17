@@ -47,7 +47,7 @@ const Navbar = () => {
                 </button>
 
                 {/* Logo */}
-                <Logo width={130} />
+                <Link to={'/'}><Logo width={130} /></Link>
             </div>
 
             {/* CENTER (Desktop Menu) */}
@@ -83,7 +83,7 @@ const Navbar = () => {
 
                     {/* Top bar */}
                     <div className="flex justify-between items-center mb-6">
-                        <Logo width={120} />
+                        <Link><Logo width={120} /></Link>
                         <button onClick={() => setOpen(false)}>
                             <IoCloseOutline size={30} />
                         </button>

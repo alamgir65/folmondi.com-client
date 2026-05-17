@@ -14,7 +14,7 @@ const Home = () => {
         <div>
             <FolmondiHero />
             <Products />
-            <div className="flex justify-center mt-5 mb-2 sm:mb-4">
+            <div className="flex justify-center mt-10 mb-2 sm:mb-4">
                 <Link to={'/shop'} className="btn-primary w-full sm:w-auto">
                     View All Products →
                 </Link>

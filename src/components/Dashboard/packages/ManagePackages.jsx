@@ -1,16 +1,19 @@
-import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useMemo, useState } from 'react';
 import { HiOutlineCheckCircle, HiOutlineMagnifyingGlass, HiOutlinePencilSquare, HiOutlineTrash } from 'react-icons/hi2';
 import { Modal } from '../../../utils/Modal';
 import EditPackage from './EditPackage';
+import toast, { Toaster } from 'react-hot-toast';
+
+const notify = () => toast.success('Package Deleted!');
 
 const API = import.meta.env.VITE_API_BASE_URL;
 
 const ManagePackages = () => {
+    const queryClient = useQueryClient();
     const [delete_id, set_delete_id] = useState(null);
     const [edit_id, set_edit_id] = useState(null);
-    const [isSuccess, setIsSuccess] = useState(null);
     const [search, setSearch] = useState(null);
     const [productsList, setProductsList] = useState(["All"]);
     const [filter, setFilter] = useState("All");
@@ -55,38 +58,15 @@ const ManagePackages = () => {
         },
 
         onSuccess: () => {
-            setIsSuccess(true);
+            notify();
             set_delete_id(null);
-            QueryClient.invalidateQueries({ queryKey: ["packages"] });
+            queryClient.invalidateQueries({ queryKey: ["packages"] });
         },
         onError: (error) => {
             console.error("Error deleting category:", error);
         },
     });
 
-    if (isSuccess) {
-        return (
-            <Modal size={'md'}>
-                <div className="flex flex-col items-center justify-center min-h-[60vh] gap-5 text-center px-4">
-                    <div className="w-20 h-20 rounded-full flex items-center justify-center bg-green-100">
-                        <HiOutlineCheckCircle size={46} className="text-green-600" />
-                    </div>
-
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-1">
-                            Package Deleted!
-                        </h2>
-                        <p className="text-sm text-gray-400">
-                            Your package has been deleted successfully.
-                        </p>
-                    </div>
-                </div>
-                <div className="flex justify-center gap-3">
-                    <button onClick={() => setIsSuccess(false)} className='btn-primary'>ok</button>
-                </div>
-            </Modal>
-        );
-    }
 
     const handleDelete = (delete_id) => {
         mutateAsync(delete_id);
@@ -94,6 +74,7 @@ const ManagePackages = () => {
 
     return (
         <div className='space-y-6'>
+            <Toaster/>
             {/* Header */}
             <div className="flex justify-between items-center flex-wrap gap-4">
                 <div>

@@ -32,7 +32,7 @@ export default function ProductCard({ product }) {
             {/* Product Image */}
             <Link to={`/product-details/${product._id}`} className="relative overflow-hidden" style={{ height: 220 }}>
                 <img
-                    src={product.images[0]}
+                    src={product?.image || product.images[0]}
                     alt={product.name}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                 />
@@ -45,9 +45,14 @@ export default function ProductCard({ product }) {
             <Toaster/>
             <div className="card-body p-4 gap-3">
                 {/* Name */}
-                <h3 className="font-bold text-lg text-base-content leading-tight">
+                <div className="flex justify-between gap-2">
+                    <h3 className="font-bold text-lg text-base-content leading-tight">
                     {product.name}
                 </h3>
+                {
+                    product.free_delivery == "Yes" && <p className="text-green-700">Free Delivery</p>
+                }
+                </div>
 
                 {/* Price */}
                 <div className="flex items-center gap-2">

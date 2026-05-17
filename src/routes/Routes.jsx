@@ -22,6 +22,8 @@ import ManageOrders from "../components/Dashboard/orders/Manageorders";
 import OrderTrackPage from "../pages/track-order/OrderTrackpage";
 import AboutUs from "../pages/about-us/AboutUs";
 import TermsAndConditions from "../pages/terms-conditions/Termsandconditions";
+import PrivacyPolicy from "../pages/privacy-policy/PrivacyPolicy";
+import StatisticsPage from "../components/Dashboard/statistics/StatisticsPage";
 
 export const router = createBrowserRouter([
     {
@@ -74,6 +76,10 @@ export const router = createBrowserRouter([
             {
                 path: 'terms-conditions',
                 element: <TermsAndConditions/>
+            },
+            {
+                path: 'privacy-policy',
+                element: <PrivacyPolicy/>
             }
         ]
     },
@@ -91,7 +97,8 @@ export const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <AdminStatistics/>
+                // element: <AdminStatistics/>
+                element: <StatisticsPage/>
             },
             {
                 path: 'add-product',

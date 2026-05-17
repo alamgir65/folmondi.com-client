@@ -5,15 +5,15 @@ const Marque = () => {
         <div className="marquee-container">
             <div className="marquee-track">
                 {[
-                    { icon: "🚚", text: "৳৫০০ এর উপরে ফ্রি ডেলিভারি" },
+                    { icon: "🚚", text: "দ্রুত ডেলিভারি" },
                     { icon: "🌿", text: "১০০% প্রাকৃতিক" },
-                    { icon: "📦", text: "ঢাকায় একই দিনে ডেলিভারি" },
+                    { icon: "📦", text: "চট্টগ্রামে একই দিনে ডেলিভারি" },
                     { icon: "🔄", text: "সহজ রিটার্ন" },
                 ]
                     .concat([
-                        { icon: "🚚", text: "৳৫০০ এর উপরে ফ্রি ডেলিভারি" },
+                        { icon: "🚚", text: "দ্রুত ডেলিভারি" },
                         { icon: "🌿", text: "১০০% প্রাকৃতিক" },
-                        { icon: "📦", text: "ঢাকায় একই দিনে ডেলিভারি" },
+                        { icon: "📦", text: "চট্টগ্রামে একই দিনে ডেলিভারি" },
                         { icon: "🔄", text: "সহজ রিটার্ন" },
                     ]) // duplicate for smooth loop
                     .map((item, i) => (

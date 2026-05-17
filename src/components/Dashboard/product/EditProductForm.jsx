@@ -15,11 +15,12 @@ import {
 import Field from "../../../utils/Field";
 import ImageUploader from "../../../utils/ImageUploader"; // ← import from its own file
 import { cloudinary_image_upload } from "../../../utils";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 // ── Main Component ─────────────────────────────────────────────────────────
 export default function EditProductForm({ product_id, setEditRow, onCancel }) {
+  const queryClient = useQueryClient();
   const [isSuccess, setIsSuccess] = useState(false);
   const [categoryList, setCategoryList] = useState([]);
 
@@ -57,6 +58,7 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
       reset({
         name: product.name || "",
         images: product.images || [],
+        image: product.image || "",
         price: product.price || "",
         quantity: product.quantity || "",
         // short_description: product.short_description || "",
@@ -93,6 +95,7 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
     onSuccess: () => {
       setIsSuccess(true);
       mutationReset();
+      queryClient.invalidateQueries({queryKey: 'products'});
     },
     onError: (error) => {
       console.error("Error updating product:", error);
@@ -115,9 +118,16 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
       })
     );
 
+    let image = product?.image;
+
+    if (data?.image?.[0]) {
+      image = await cloudinary_image_upload(data.image[0]);
+    }
+
     const select_category = categories.find((c) => c._id === data.category);
 
     const product_data = {
+      image: image,
       name: data.name,
       category: data.category,
       origin: data.origin,
@@ -286,12 +296,34 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
           </div>
         </div>
 
-        {/* ── Section: Product Images ──────────────────────────────────────── */}
+        {/* ── Image Section (Simple) ───────────────── */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <SectionHeader icon={<HiOutlinePhoto size={16} />} title="Product Images" />
+          <SectionHeader
+            icon={<HiOutlinePhoto size={16} />}
+            title="Product display Image"
+          />
+
+          <div className="p-6">
+            <Field label="Upload Image" required error={errors.image}>
+              <input
+                type="file"
+                accept="image/*"
+                className={`file-input file-input-bordered w-full rounded-xl ${errors.image ? "border-red-400" : ""
+                  }`}
+                {...register("image", {
+                  required: "Product image is required",
+                })}
+              />
+            </Field>
+          </div>
+        </div>
+
+        {/* ── Section: Product Images ────────────────────────────────────── */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <SectionHeader icon={<HiOutlinePhoto size={16} />} title="Product Other's Images" />
           <div className="p-6">
             <Field
-              label="Upload Images"
+              label="Other's Images"
               icon={<HiOutlinePhoto size={15} />}
               required
               error={errors.images}
@@ -301,7 +333,7 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
                 name="images"
                 control={control}
                 rules={{
-                  validate: (v) => (v && v.length > 0) || "Please upload at least one image",
+                  validate: (v) => v.length > 0 || "Please upload at least one image",
                 }}
                 render={({ field }) => (
                   <ImageUploader

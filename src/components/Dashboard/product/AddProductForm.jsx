@@ -25,7 +25,6 @@ import axios from "axios";
 // ── Main Component ─────────────────────────────────────────────────────────
 export default function AddProductForm() {
   const [isSuccess, setIsSuccess] = useState(false);
-  const [categoryList, setCategoryList] = useState([]);
 
   const { register, handleSubmit, control, reset, watch, formState: { errors, isSubmitting },
   } = useForm({
@@ -33,7 +32,7 @@ export default function AddProductForm() {
     defaultValues: {
       name: "", category: "", origin: "",
       price: "", discount: "", quantity: "",
-      short_description: "",
+      short_description: "", image : "",
       unit: "", free_delivery: "", min_order: "",
       images: [], delivery_time: "", usefulness: ""
     },
@@ -47,13 +46,6 @@ export default function AddProductForm() {
     }
   })
   // console.log('Categories ------>', categories);
-
-  useEffect(() => {
-    if (categories) {
-      const c_list = categories.map(c => c.name);
-      setCategoryList(c_list);
-    }
-  }, [categories, setCategoryList]);
 
 
   const { isPending, isError, mutateAsync, reset: mutationReset } = useMutation({
@@ -81,18 +73,17 @@ export default function AddProductForm() {
     : price || "";
 
   const onSubmit = async (data) => {
-    // console.log("Product data:", data);
-    const select_category = categories.find((c) => c._id === data.category);
-
-    console.log(categories.find((c) => c._id === data.category)?.name);
     // return;
 
     const images = await Promise.all(data.images.map(async (image) => {
       return await cloudinary_image_upload(image?.file);
     }));
 
+    const image = await cloudinary_image_upload(data?.image[0]);
+
     const product_data = {
       name: data.name,
+      image: image,
       category: data.category,
       origin: data.origin,
       price: data.price,
@@ -264,12 +255,35 @@ export default function AddProductForm() {
           </div>
         </div>
 
+        {/* ── Image Section (Simple) ───────────────── */}
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                  <SectionHeader
+                    icon={<HiOutlinePhoto size={16} />}
+                    title="Product display Image"
+                  />
+        
+                  <div className="p-6">
+                    <Field label="Upload Image" required error={errors.image}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className={`file-input file-input-bordered w-full rounded-xl ${
+                          errors.image ? "border-red-400" : ""
+                        }`}
+                        {...register("image", {
+                          required: "Product image is required",
+                        })}
+                      />
+                    </Field>
+                  </div>
+                </div>
+
         {/* ── Section: Product Images ────────────────────────────────────── */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <SectionHeader icon={<HiOutlinePhoto size={16} />} title="Product Images" />
+          <SectionHeader icon={<HiOutlinePhoto size={16} />} title="Product Other's Images" />
           <div className="p-6">
             <Field
-              label="Upload Images"
+              label="Other's Images"
               icon={<HiOutlinePhoto size={15} />}
               required
               error={errors.images}
