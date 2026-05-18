@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "./FolmondiHero.css";
 import Marque from "./marque/Marque";
+import { Link } from "react-router";
 
 const FloatingFruit = ({ emoji, style, delay }) => (
   <div
@@ -117,8 +118,8 @@ export default function FolmondiHero() {
               </div>
 
               <div className="reveal-4" style={{ marginTop: 32, display: "flex", gap: 14, flexWrap: "wrap" }}>
-                <a href="#products" className="btn-primary">{t.cta1} →</a>
-                <button className="btn-secondary">{t.cta2}</button>
+                <Link to={'/shop'} className="btn-primary">{t.cta1} →</Link>
+                <Link to={'/shop'} className="btn-secondary">{t.cta2}</Link>
               </div>
 
               <div className="reveal-5" style={{ marginTop: 36, display: "flex", gap: 12, flexWrap: "wrap" }}>

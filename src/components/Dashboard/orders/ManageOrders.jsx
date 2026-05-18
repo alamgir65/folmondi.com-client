@@ -31,8 +31,8 @@ const RED     = "#dc2626";
 
 
 // ── Config ────────────────────────────────────────────────────────────────────
-const ORDER_STATUSES   = ["Pending","Processing","Confirmed","Delivered","Cancelled"];
-const DELIVERY_OPTIONS = ["processing","shipped","out_for_delivery","delivered","cancelled"];
+const ORDER_STATUSES   = ["Pending","Confirmed","Processing","Delivered","Cancelled"];
+const DELIVERY_OPTIONS = ["confirmed","processing","shipped","delivered","cancelled"];
 const PAYMENT_OPTIONS  = ["pending","paid","refunded"];
 
 const STATUS_CONFIG = {
@@ -50,9 +50,9 @@ const PAYMENT_CONFIG = {
 };
 
 const DELIVERY_CONFIG = {
+  confirmed: { label: "Confirmed",  icon: "🎫" },
   processing:       { label: "Processing",       icon: "📦" },
   shipped:          { label: "Shipped",           icon: "🚚" },
-  out_for_delivery: { label: "Out for Delivery",  icon: "🛵" },
   delivered:        { label: "Delivered",         icon: "✅" },
   cancelled:        { label: "Cancelled",         icon: "❌" },
 };

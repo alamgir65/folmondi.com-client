@@ -49,7 +49,7 @@ const STATUS_META = {
     bg: "#fff7ed",
     icon: "⏳",
   },
-
+  confirmed: { label: "Confirmed", bg: "#eff6ff", icon: "🎫" },
   processing: {
     label: "Processing",
     color: BLUE,
@@ -102,6 +102,7 @@ const PAYMENT_META = {
 // ── Timeline Config ───────────────────────────────────────────────────
 const steps = [
   "pending",
+  "confirmed",
   "processing",
   "shipped",
   "delivered",
@@ -109,6 +110,7 @@ const steps = [
 
 const timelineLabels = {
   pending: "Order Placed",
+  confirmed: "Order Confirmed",
   processing: "Being Prepared",
   shipped: "Shipped",
   delivered: "Delivered",
@@ -658,11 +660,7 @@ export default function OrderTrackPage() {
 
         {/* Hero */}
         <div
-          className="relative overflow-hidden"
-          style={{
-            background:
-              "linear-gradient(135deg,#1a0a04 0%,#3d1405 50%,#5c1e07 100%)",
-          }}
+          className="relative overflow-hidden bg-black "
         >
 
           {/* Blobs */}
