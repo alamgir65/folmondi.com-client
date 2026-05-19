@@ -5,7 +5,6 @@ import "./Products.css";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import logo from "../../assets/logo.png";
-import { Link } from "react-router";
 
 export default function Products() {
   const [activeCategory, setActiveCategory] = useState(-1);
@@ -21,7 +20,6 @@ export default function Products() {
       return res.data;
     },
   });
-  console.log(activeCategory);
   // ── Products Fetch ───────────────────
   useEffect(() => {
     const fetchProducts = async () => {
