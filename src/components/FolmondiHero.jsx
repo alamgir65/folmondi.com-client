@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import "./FolmondiHero.css";
 import Marque from "./marque/Marque";
 import { Link } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 const FloatingFruit = ({ emoji, style, delay }) => (
   <div
@@ -33,6 +35,17 @@ const Badge = ({ children }) => (
 export default function FolmondiHero() {
   const lang = "bn";
   const [mounted, setMounted] = useState(false);
+
+  const {data: products = []} = useQuery({
+    queryKey: ['products'],
+    queryFn: async() => {
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/products`);
+      return res.data;
+    }
+  });
+
+  products.sort((a,b) => b.discount - a.discount);
+  // console.log(products[0]);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -162,11 +175,11 @@ export default function FolmondiHero() {
                 <div style={{ fontSize: "9rem", lineHeight: 1, filter: "drop-shadow(0 16px 32px rgba(249,115,22,0.3))" }}>🥭</div>
                 <div style={{ marginTop: 1, background: "white", borderRadius: 16, padding: "12px 24px", boxShadow: "0 8px 30px rgba(0,0,0,0.12)", display: "inline-block" }}>
                   <div style={{ fontSize: "0.75rem", color: "#9ca3af", fontWeight: 500 }}>আজকের বিশেষ</div>
-                  <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "#1f2937", fontFamily: "'Playfair Display', serif" }}>রাজশাহীর আম</div>
+                  <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "#1f2937", fontFamily: "'Playfair Display', serif" }}>{products[0]?.name || "রাজশাহীর আম"}</div>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "center", marginTop: 4 }}>
-                    <span style={{ fontSize: "0.8rem", color: "#f04e0f", fontWeight: 700 }}>৳ 180/kg</span>
-                    <span style={{ fontSize: "0.72rem", color: "#9ca3af", textDecoration: "line-through" }}>৳ 250</span>
-                    <span style={{ background: "#dcfce7", color: "#16a34a", fontSize: "0.7rem", fontWeight: 700, borderRadius: 20, padding: "2px 8px" }}>28% OFF</span>
+                    <span style={{ fontSize: "0.8rem", color: "#f04e0f", fontWeight: 700 }}>৳ {products[0]?.price_after_discount}/kg</span>
+                    <span style={{ fontSize: "0.72rem", color: "#9ca3af", textDecoration: "line-through" }}>৳ {products[0]?.price}</span>
+                    <span style={{ background: "#dcfce7", color: "#16a34a", fontSize: "0.7rem", fontWeight: 700, borderRadius: 20, padding: "2px 8px" }}>{products[0]?.discount || 0}% OFF</span>
                   </div>
                 </div>
               </div>
