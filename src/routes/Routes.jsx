@@ -24,6 +24,7 @@ import AboutUs from "../pages/about-us/AboutUs";
 import TermsAndConditions from "../pages/terms-conditions/Termsandconditions";
 import PrivacyPolicy from "../pages/privacy-policy/PrivacyPolicy";
 import StatisticsPage from "../components/Dashboard/statistics/StatisticsPage";
+import AdminLogin from "../pages/admin-login/Adminlogin";
 
 export const router = createBrowserRouter([
     {
@@ -80,6 +81,10 @@ export const router = createBrowserRouter([
             {
                 path: 'privacy-policy',
                 element: <PrivacyPolicy/>
+            },
+            {
+                path: 'admin/login',
+                element: <AdminLogin/>
             }
         ]
     },
