@@ -1,12 +1,18 @@
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import toast, { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router";
+
+const notify = (msg) => {
+  toast.success(`${msg}`)
+}
 
 export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
-
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -18,7 +24,12 @@ export default function AdminLogin() {
     setLoginError("");
     try {
       console.log("Login data:", data);
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/admin/login`, data)
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/admin/login`, data)
+      console.log(res);
+      // notify(res?.data?.message)
+      localStorage.setItem('folmondi_token', res.data.token);
+      // Redirect dashboard
+        navigate('/dashboard');
     } catch (err) {
       setLoginError("Invalid email or password. Please try again.");
     } finally {
@@ -31,6 +42,7 @@ export default function AdminLogin() {
       className="min-h-screen flex items-center justify-center px-4"
       style={{ background: "#f9fafb", fontFamily: "'DM Sans', sans-serif" }}
     >
+      <Toaster/>
 
       <div className="w-full max-w-sm">
 

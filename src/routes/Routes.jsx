@@ -7,9 +7,7 @@ import ProductDetails from "../pages/product-details/ProductDetails";
 import ReviewsPage from "../pages/review-page/ReviewsPage";
 import ContactUs from "../pages/contact-us/ContactUs";
 import FolmondiSpinner from "../components/snipnner/FolmondiSpinner";
-import AdminDashboard from "../layouts/AdminDashboard";
 import DashboardLayout from "../layouts/DashboardLayout";
-import AdminStatistics from "../components/Dashboard/statistics/AdminStatistics";
 import AddProductForm from "../components/Dashboard/product/AddProductForm";
 import AllProducts from "../components/Dashboard/inventory/AllProducts";
 import AddCategoryForm from "../components/Dashboard/category/AddCategoryForm";
@@ -25,6 +23,7 @@ import TermsAndConditions from "../pages/terms-conditions/Termsandconditions";
 import PrivacyPolicy from "../pages/privacy-policy/PrivacyPolicy";
 import StatisticsPage from "../components/Dashboard/statistics/StatisticsPage";
 import AdminLogin from "../pages/admin-login/Adminlogin";
+import PrivateRoutes from "./PrivateRoutes";
 
 export const router = createBrowserRouter([
     {
@@ -93,12 +92,8 @@ export const router = createBrowserRouter([
         element: <ErrorPage/>
     },
     {
-        path: 'dashboard1',
-        element: <AdminDashboard/>
-    },
-    {
         path: 'dashboard',
-        element: <DashboardLayout/>,
+        element: <PrivateRoutes><DashboardLayout/></PrivateRoutes>,
         children: [
             {
                 index: true,

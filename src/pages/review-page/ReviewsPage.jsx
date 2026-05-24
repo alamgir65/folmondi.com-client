@@ -202,11 +202,10 @@ const ReviewCard = React.memo(function ReviewCard({ r }) {
 
         <button
           onClick={handleHelpful}
-          className={`flex items-center gap-1.5 rounded-full px-3 py-1 border text-xs font-bold transition-all ${
-            voted
+          className={`flex items-center gap-1.5 rounded-full px-3 py-1 border text-xs font-bold transition-all ${voted
               ? "bg-blue-50 border-blue-200 text-blue-700"
               : "bg-transparent border-gray-200 text-gray-400 hover:border-blue-300"
-          }`}
+            }`}
         >
           👍 {helpful}
         </button>
@@ -256,9 +255,16 @@ function WriteReviewModal({ onClose }) {
         createdAt: new Date().toISOString(),
       };
 
+      const token = localStorage.getItem('folmondi_token');
+
       await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/reviews`,
-        reviewData
+        reviewData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       await queryClient.invalidateQueries(["reviews"]);
@@ -419,11 +425,10 @@ function WriteReviewModal({ onClose }) {
               />
 
               <div
-                className={`text-right text-xs mt-1 ${
-                  text.length > 260
+                className={`text-right text-xs mt-1 ${text.length > 260
                     ? "text-red-400"
                     : "text-slate-400"
-                }`}
+                  }`}
               >
                 {text.length}/300
               </div>
@@ -575,11 +580,10 @@ export default function ReviewsPage() {
                   <button
                     key={n}
                     onClick={() => setPage(n + 1)}
-                    className={`w-10 h-10 rounded-xl text-sm font-bold transition-all ${
-                      page === n + 1
+                    className={`w-10 h-10 rounded-xl text-sm font-bold transition-all ${page === n + 1
                         ? "bg-blue-700 text-white"
                         : "bg-white border border-blue-100 text-blue-700"
-                    }`}
+                      }`}
                   >
                     {n + 1}
                   </button>

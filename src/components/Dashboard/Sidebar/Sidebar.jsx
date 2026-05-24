@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 // Icons
 import { GrLogout } from 'react-icons/gr'
 import { FcSettings } from 'react-icons/fc'
@@ -8,6 +8,7 @@ import { BsGraphUp } from 'react-icons/bs'
 import MenuItem from '../menu/MenuItem'
 import AdminMenu from '../menu/AdminMenu'
 import Logo from '../../logo/Logo'
+import Swal from 'sweetalert2'
 
 
 const Sidebar = () => {
@@ -18,6 +19,26 @@ const Sidebar = () => {
     setActive(!isActive)
   }
 
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Do you want to Logout?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Logout",
+      denyButtonText: `Don't Logout`
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed){
+        Swal.fire("Logout!", "", "success");
+        localStorage.removeItem("folmondi_token");
+        navigate('/');
+      }
+      else if (result.isDenied) Swal.fire("Changes are not saved", "", "info");
+    });
+  }
+
   return (
     <>
       {/* Small Screen Navbar, only visible till md breakpoint */}
@@ -25,7 +46,7 @@ const Sidebar = () => {
         <div>
           <div className='block cursor-pointer p-2 font-bold'>
             <Link to='/'>
-                <Logo width={120} bg={false}/>
+              <Logo width={120} bg={false} />
             </Link>
           </div>
         </div>
@@ -40,9 +61,8 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <div
-        className={`z-10 md:fixed flex flex-col justify-between overflow-x-hidden bg-gray-100 w-64 space-y-6 px-2 py-4 absolute inset-y-0 left-0 transform ${
-          isActive && '-translate-x-full'
-        }  md:translate-x-0  transition duration-200 ease-in-out`}
+        className={`z-10 md:fixed flex flex-col justify-between overflow-x-hidden bg-gray-100 w-64 space-y-6 px-2 py-4 absolute inset-y-0 left-0 transform ${isActive && '-translate-x-full'
+          }  md:translate-x-0  transition duration-200 ease-in-out`}
       >
         <div className='flex flex-col h-full'>
           {/* Top Content */}
@@ -65,7 +85,7 @@ const Sidebar = () => {
                 label='Statistics'
                 address='/dashboard'
               />
-              <AdminMenu handleToggle={handleToggle}/> 
+              <AdminMenu handleToggle={handleToggle} />
             </nav>
           </div>
 
@@ -78,7 +98,7 @@ const Sidebar = () => {
               label='Profile'
               address='/dashboard/profile'
             />
-            <button
+            <button onClick={handleLogout}
               className='flex cursor-pointer w-full items-center px-4 py-2 mt-5 text-gray-600 hover:bg-(--orange-light)   hover:text-white transition-colors duration-300 transform'
             >
               <GrLogout className='w-5 h-5' />
