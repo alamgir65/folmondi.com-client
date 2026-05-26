@@ -53,7 +53,14 @@ const ManagePackages = () => {
 
     const { mutateAsync, isPending } = useMutation({
         mutationFn: async (id) => {
-            const res = await axios.delete(`${API}/package/${id}`);
+            const token = localStorage.getItem('folmondi_token');
+            const res = await axios.delete(`${API}/package/${id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
             return res.data;
         },
 

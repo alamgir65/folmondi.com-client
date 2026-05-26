@@ -32,7 +32,7 @@ export default function AddProductForm() {
     defaultValues: {
       name: "", category: "", origin: "",
       price: "", discount: "", quantity: "",
-      short_description: "", image : "",
+      short_description: "", image: "",
       unit: "", free_delivery: "", min_order: "",
       images: [], delivery_time: "", usefulness: ""
     },
@@ -50,7 +50,14 @@ export default function AddProductForm() {
 
   const { isPending, isError, mutateAsync, reset: mutationReset } = useMutation({
     mutationFn: async (product_data) => {
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/products`, product_data);
+      const token = localStorage.getItem('folmondi_token');
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/products`, product_data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
     },
     onSuccess: (data) => {
       console.log('Product added successfully:', data);
@@ -256,27 +263,26 @@ export default function AddProductForm() {
         </div>
 
         {/* ── Image Section (Simple) ───────────────── */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                  <SectionHeader
-                    icon={<HiOutlinePhoto size={16} />}
-                    title="Product display Image"
-                  />
-        
-                  <div className="p-6">
-                    <Field label="Upload Image" required error={errors.image}>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className={`file-input file-input-bordered w-full rounded-xl ${
-                          errors.image ? "border-red-400" : ""
-                        }`}
-                        {...register("image", {
-                          required: "Product image is required",
-                        })}
-                      />
-                    </Field>
-                  </div>
-                </div>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <SectionHeader
+            icon={<HiOutlinePhoto size={16} />}
+            title="Product display Image"
+          />
+
+          <div className="p-6">
+            <Field label="Upload Image" required error={errors.image}>
+              <input
+                type="file"
+                accept="image/*"
+                className={`file-input file-input-bordered w-full rounded-xl ${errors.image ? "border-red-400" : ""
+                  }`}
+                {...register("image", {
+                  required: "Product image is required",
+                })}
+              />
+            </Field>
+          </div>
+        </div>
 
         {/* ── Section: Product Images ────────────────────────────────────── */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">

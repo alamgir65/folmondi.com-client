@@ -68,13 +68,20 @@ function OrderDrawer({ order, onClose, onNotify }) {
 
   const save = async () => {
     setSaving(true);
+    const token = localStorage.getItem('folmondi_token');
     const updated_info = {
       order_status: status,
       "payment.payment_status": payment,
       "delivery.delivery_status": delivery
     };
     try{
-      await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/orders/${order._id}`, updated_info);
+      await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/orders/${order._id}`, updated_info,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       onNotify({
         icon: "✅",
         title: `Order ${order._id} Updated`,

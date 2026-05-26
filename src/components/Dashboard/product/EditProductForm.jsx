@@ -87,15 +87,21 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
 
   const { isPending, isError, mutateAsync, reset: mutationReset } = useMutation({
     mutationFn: async (product_data) => {
+      const token = localStorage.getItem('folmondi_token');
       await axios.patch(
         `${import.meta.env.VITE_API_BASE_URL}/product/${product_id}`,
-        product_data
+        product_data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
     },
     onSuccess: () => {
       setIsSuccess(true);
       mutationReset();
-      queryClient.invalidateQueries({queryKey: 'products'});
+      queryClient.invalidateQueries({ queryKey: 'products' });
     },
     onError: (error) => {
       console.error("Error updating product:", error);

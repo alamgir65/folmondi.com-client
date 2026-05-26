@@ -31,21 +31,29 @@ export default function AddCategoryForm() {
   });
 
 
-  const {isPending, isError, mutateAsync, reset: mutationReset} = useMutation({
-      mutationFn: async(category_data) => {
-          await axios.post(`${import.meta.env.VITE_API_BASE_URL}/categories`, category_data);
-      },
-      onSuccess: (data) => {
-          console.log('Category added successfully from onsuccess:', data);
-          setIsSuccess(true);
-          mutationReset();
-      },
-      onError: (error) => {
-          console.error('Error adding category:', error);
-          alert('Failed to add category. Please try again.');
-      }
-  
-    })
+  const { isPending, isError, mutateAsync, reset: mutationReset } = useMutation({
+    mutationFn: async (category_data) => {
+      const token = localStorage.getItem('folmondi_token');
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/categories`,
+        category_data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    },
+    onSuccess: (data) => {
+      console.log('Category added successfully from onsuccess:', data);
+      setIsSuccess(true);
+      mutationReset();
+    },
+    onError: (error) => {
+      console.error('Error adding category:', error);
+      alert('Failed to add category. Please try again.');
+    }
+
+  })
 
 
   const onSubmit = async (data) => {
@@ -54,9 +62,9 @@ export default function AddCategoryForm() {
     const image = await cloudinary_image_upload(data?.image[0]);
 
     const category_data = {
-        name: data.name,
-        description: data.description,
-        image: image
+      name: data.name,
+      description: data.description,
+      image: image
     };
 
     console.log(category_data);
@@ -138,9 +146,8 @@ export default function AddCategoryForm() {
               <input
                 type="text"
                 placeholder="e.g. Fruits"
-                className={`input input-bordered w-full rounded-xl ${
-                  errors.name ? "border-red-400" : ""
-                }`}
+                className={`input input-bordered w-full rounded-xl ${errors.name ? "border-red-400" : ""
+                  }`}
                 {...register("name", {
                   required: "Category name is required",
                   minLength: {
@@ -160,9 +167,8 @@ export default function AddCategoryForm() {
               <textarea
                 rows={2}
                 maxLength={160}
-                className={`textarea textarea-bordered w-full rounded-xl ${
-                  errors.description ? "border-red-400" : ""
-                }`}
+                className={`textarea textarea-bordered w-full rounded-xl ${errors.description ? "border-red-400" : ""
+                  }`}
                 {...register("description", {
                   required: "Description is required",
                   minLength: {
@@ -191,9 +197,8 @@ export default function AddCategoryForm() {
               <input
                 type="file"
                 accept="image/*"
-                className={`file-input file-input-bordered w-full rounded-xl ${
-                  errors.image ? "border-red-400" : ""
-                }`}
+                className={`file-input file-input-bordered w-full rounded-xl ${errors.image ? "border-red-400" : ""
+                  }`}
                 {...register("image", {
                   required: "Category image is required",
                 })}

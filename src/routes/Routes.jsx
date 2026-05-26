@@ -24,6 +24,7 @@ import PrivacyPolicy from "../pages/privacy-policy/PrivacyPolicy";
 import StatisticsPage from "../components/Dashboard/statistics/StatisticsPage";
 import AdminLogin from "../pages/admin-login/Adminlogin";
 import PrivateRoutes from "./PrivateRoutes";
+import CreateAdmin from "../components/Dashboard/admin/CreateAdmin";
 
 export const router = createBrowserRouter([
     {
@@ -127,6 +128,10 @@ export const router = createBrowserRouter([
             {
                 path: 'manage-orders',
                 element: <ManageOrders/>
+            },
+            {
+                path: 'create-admin',
+                element: <CreateAdmin/>
             }
             
         ]

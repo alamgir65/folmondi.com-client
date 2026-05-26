@@ -57,7 +57,14 @@ export default function EditPackage({ package_id, onClose, onCancel }) {
     // ── Mutation (PATCH) ──
     const { mutateAsync } = useMutation({
         mutationFn: async (data) => {
-            await axios.patch(`${API}/package/${package_id}`, data);
+            const token = localStorage.getItem('folmondi_token');
+            await axios.patch(`${API}/package/${package_id}`, data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
         },
         onSuccess: () => {
             setIsSuccess(true);

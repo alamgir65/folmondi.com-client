@@ -51,9 +51,15 @@ const EditCategoryForm = ({  category_id,onClose, onCancel }) => {
   // ── Mutation ──
   const { mutateAsync, isPending } = useMutation({
     mutationFn: async (category_data) => {
+      const token = localStorage.getItem('folmondi_token');
       const res = await axios.patch(
         `${API}/category/${category_id}`,
-        category_data
+        category_data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       return res.data;
     },
