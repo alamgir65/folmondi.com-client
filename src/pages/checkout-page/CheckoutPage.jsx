@@ -61,6 +61,7 @@ export default function CheckoutPage() {
     const [thanas, setThanas] = useState([]);
     const [thanasByDist, setThanasByDist] = useState([]);
     const [trackingId, setTrackingId] = useState(null);
+    const [selectedThana, setSelectedThana] = useState(null);
 
     const [searchParams] = useSearchParams();
     const from_cart = searchParams.get('from_cart');
@@ -110,6 +111,12 @@ export default function CheckoutPage() {
     useEffect(() => {
         setSelectedDistrict(watchedDistrict || "");
     }, [watchedDistrict]);
+
+    const watchedThana = watch("thana");
+    useEffect(() => {
+        setSelectedThana(watchedThana || "");
+    }, [watchedThana]);
+
     // console.log(selectedDistrict);
     useEffect(() => {
         if (selectedDistrict) {
@@ -139,7 +146,7 @@ export default function CheckoutPage() {
         )
     },0)
 
-    const deliveryCost = totalWeight === 0 ? 0 : calculate_delivery_charge(totalWeight,selectedDistrict);
+    const deliveryCost = totalWeight === 0 ? 0 : calculate_delivery_charge(totalWeight,selectedDistrict,selectedThana);
 
     const total = subtotal + deliveryCost;
 
@@ -425,7 +432,7 @@ export default function CheckoutPage() {
                                             >
                                                 <option value="">Select district</option>
                                                 {districts?.map((d) => (
-                                                    <option key={d.id} value={d.id}>{d.district_name}</option>
+                                                    <option key={d.id} value={d.id}>{d.bn_name}</option>
                                                 ))}
                                             </select>
                                         </FormField>
@@ -440,7 +447,7 @@ export default function CheckoutPage() {
                                                     {selectedDistrict ? "Pick thana" : "Pick district first"}
                                                 </option>
                                                 {(thanasByDist)?.map((u) => (
-                                                    <option key={u.id} value={u.thana_name}>{u.thana_name}</option>
+                                                    <option key={u.id} value={u.id}>{u.bn_name}</option>
                                                 ))}
                                             </select>
                                         </FormField>
