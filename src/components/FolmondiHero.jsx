@@ -284,9 +284,9 @@ export default function FolmondiHero() {
           {/* ── Fruit chips row (replaces absolute-positioned cards) ── */}
           <div className="reveal-4 flex gap-2.5 justify-center flex-wrap">
             {[
-              { emoji: "🍎", name: "আপেল",  price: "৳320/kg" },
-              { emoji: "🍊", name: "কমলা",  price: "৳150/kg" },
-              { emoji: "🍍", name: "আনারস", price: "৳80/pc"  },
+              { emoji: "🍎", name: "আপেল"},
+              { emoji: "🍊", name: "কমলা"},
+              { emoji: "🍍", name: "আনারস"},
             ].map((c, i) => (
               <div
                 key={i}
@@ -303,7 +303,7 @@ export default function FolmondiHero() {
               >
                 <div style={{ fontSize: "1.6rem" }}>{c.emoji}</div>
                 <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "#374151", marginTop: 3 }}>{c.name}</div>
-                <div style={{ fontSize: "0.65rem", color: "#f04e0f", fontWeight: 600 }}>{c.price}</div>
+                {/* <div style={{ fontSize: "0.65rem", color: "#f04e0f", fontWeight: 600 }}>{c.price}</div> */}
               </div>
             ))}
           </div>

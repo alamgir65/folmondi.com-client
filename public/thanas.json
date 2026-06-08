@@ -151,6 +151,7 @@
     { "id": 150, "district_id": 20, "thana_name": "Raipur", "bn_name": "রায়পুর" },
     { "id": 151, "district_id": 20, "thana_name": "Ramgati", "bn_name": "রামগতি" },
     { "id": 152, "district_id": 20, "thana_name": "Ramganj", "bn_name": "রামগঞ্জ" },
+    { "id": 1533, "district_id": 21, "thana_name": "Chattagram City", "bn_name": "চট্টগ্রাম সিটি" },
     { "id": 153, "district_id": 21, "thana_name": "Rangunia", "bn_name": "রাঙ্গুনিয়া" },
     { "id": 154, "district_id": 21, "thana_name": "Sitakunda", "bn_name": "সীতাকুন্ড" },
     { "id": 155, "district_id": 21, "thana_name": "Mirsharai", "bn_name": "মীরসরাই" },

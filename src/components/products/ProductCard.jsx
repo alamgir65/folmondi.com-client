@@ -117,10 +117,13 @@ export default function ProductCard({ product }) {
                 ) : null}
                 <p className="text-xs text-base-content/50 leading-snug">{product?.delivery_time || product?.short_description || "Kichu nai"}</p>
                 {/* Buttons */}
+        
                 <div className="card-actions mt-1 gap-2">
-                    <button onClick={handleAddToCart} className="btn-secondary w-full">
+                    {
+                        product.quantity ? <button onClick={handleAddToCart} className="btn-secondary w-full">
                         Add to Cart
-                    </button>
+                    </button> : null
+                    }
                     <Link to={`/product-details/${product._id}`} className="btn-primary text-center w-full">
                         View Details
                     </Link>

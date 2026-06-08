@@ -110,7 +110,7 @@ export default function CheckoutPage() {
     useEffect(() => {
         setSelectedDistrict(watchedDistrict || "");
     }, [watchedDistrict]);
-
+    // console.log(selectedDistrict);
     useEffect(() => {
         if (selectedDistrict) {
             const new_thanas = thanas.filter(
@@ -139,7 +139,7 @@ export default function CheckoutPage() {
         )
     },0)
 
-    const deliveryCost = totalWeight === 0 ? 0 : calculate_delivery_charge(totalWeight);
+    const deliveryCost = totalWeight === 0 ? 0 : calculate_delivery_charge(totalWeight,selectedDistrict);
 
     const total = subtotal + deliveryCost;
 
@@ -211,7 +211,7 @@ export default function CheckoutPage() {
                 courier: "Steadfast",
 
                 tracking_id: "",
-                delivery_status: "processing",
+                delivery_status: "pending",
 
                 estimated_delivery: null,
                 delivered_at: null,

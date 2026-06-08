@@ -11,6 +11,7 @@ import {
   HiOutlineTruck,
   HiOutlineExclamationCircle,
 } from "react-icons/hi2";
+import { Link } from "react-router";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 const fmt = (n) => `৳${Number(n).toLocaleString()}`;
@@ -403,12 +404,12 @@ export default function StatisticsPage() {
           >
             <div className="px-6 pt-5 pb-4 border-b border-gray-100 flex items-center justify-between">
               <SectionTitle title="Recent Orders" sub="Latest 5 orders" />
-              <button
+              <Link to="/dashboard/manage-orders"
                 className="text-xs font-bold px-3 py-1.5 rounded-xl transition-colors hover:bg-orange-50"
                 style={{ color: "#f04e0f" }}
               >
                 View all →
-              </button>
+              </Link>
             </div>
 
             {isLoading ? (

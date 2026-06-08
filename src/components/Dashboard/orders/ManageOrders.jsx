@@ -24,58 +24,62 @@ import FolmondiSpinner from "../../snipnner/FolmondiSpinner";
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const PRIMARY = "#f04e0f";
-const GREEN   = "#16a34a";
-const AMBER   = "#d97706";
-const BLUE    = "#2563eb";
-const RED     = "#dc2626";
+const GREEN = "#16a34a";
+const AMBER = "#d97706";
+const BLUE = "#2563eb";
+const RED = "#dc2626";
 
 
 // ── Config ────────────────────────────────────────────────────────────────────
-const ORDER_STATUSES   = ["Pending","Confirmed","Processing","Delivered","Cancelled"];
-const DELIVERY_OPTIONS = ["confirmed","processing","shipped","delivered","cancelled"];
-const PAYMENT_OPTIONS  = ["pending","paid","refunded"];
+const ORDER_STATUSES = ["Pending", "Confirmed", "Processing", "Delivered", "Cancelled"];
+const DELIVERY_OPTIONS = ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"];
+const PAYMENT_OPTIONS = ["pending", "paid", "refunded"];
 
 const STATUS_CONFIG = {
-  Pending:    { label: "Pending",    bg: "#fff7ed", color: AMBER,  dot: "#fbbf24" },
-  Processing: { label: "Processing", bg: "#eff6ff", color: BLUE,   dot: "#60a5fa" },
-  Confirmed:  { label: "Confirmed",  bg: "#f0fdf4", color: GREEN,  dot: "#4ade80" },
-  Delivered:  { label: "Delivered",  bg: "#f0fdf4", color: GREEN,  dot: GREEN     },
-  Cancelled:  { label: "Cancelled",  bg: "#fef2f2", color: RED,    dot: "#f87171" },
+  Pending: { label: "Pending", bg: "#fff7ed", color: AMBER, dot: "#fbbf24" },
+  Processing: { label: "Processing", bg: "#eff6ff", color: BLUE, dot: "#60a5fa" },
+  Confirmed: { label: "Confirmed", bg: "#f0fdf4", color: GREEN, dot: "#4ade80" },
+  Delivered: { label: "Delivered", bg: "#f0fdf4", color: GREEN, dot: GREEN },
+  Cancelled: { label: "Cancelled", bg: "#fef2f2", color: RED, dot: "#f87171" },
 };
 
 const PAYMENT_CONFIG = {
-  pending:   { label: "Pending",   bg: "#fff7ed", color: AMBER }, 
-  paid:     { label: "Paid",     bg: "#f0fdf4", color: GREEN },
-  refunded: { label: "Refunded", bg: "#eff6ff", color: BLUE  },
+  pending: { label: "Pending", bg: "#fff7ed", color: AMBER },
+  paid: { label: "Paid", bg: "#f0fdf4", color: GREEN },
+  refunded: { label: "Refunded", bg: "#eff6ff", color: BLUE },
 };
 
 const DELIVERY_CONFIG = {
-  confirmed: { label: "Confirmed",  icon: "🎫" },
-  processing:       { label: "Processing",       icon: "📦" },
-  shipped:          { label: "Shipped",           icon: "🚚" },
-  delivered:        { label: "Delivered",         icon: "✅" },
-  cancelled:        { label: "Cancelled",         icon: "❌" },
+  pending: { label: "Pending", icon: "⏳" },
+  confirmed: { label: "Confirmed", icon: "🎫" },
+  processing: { label: "Processing", icon: "📦" },
+  shipped: { label: "Shipped", icon: "🚚" },
+  delivered: { label: "Delivered", icon: "✅" },
+  cancelled: { label: "Cancelled", icon: "❌" },
 };
 
 const fmt = (n) => `৳${Number(n).toLocaleString()}`;
 
 // ── Order detail drawer ────────────────────────────────────────────────────────
 function OrderDrawer({ order, onClose, onNotify }) {
-  const [status,   setStatus]   = useState(order.order_status);
-  const [payment,  setPayment]  = useState(order?.payment?.payment_status || null);
+  const [status, setStatus] = useState(order.order_status);
+  const [payment, setPayment] = useState(order?.payment?.payment_status || null);
   const [delivery, setDelivery] = useState(order?.delivery?.delivery_status || null);
-  const [saving,   setSaving]   = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const save = async () => {
     setSaving(true);
-    const token = localStorage.getItem('folmondi_token');
     const updated_info = {
       order_status: status,
       "payment.payment_status": payment,
       "delivery.delivery_status": delivery
     };
-    try{
-      await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/orders/${order._id}`, updated_info,
+    try {
+      const token = localStorage.getItem('folmondi_token');
+
+      await axios.patch(
+        `${import.meta.env.VITE_API_BASE_URL}/orders/${order._id}`,
+        updated_info,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -90,13 +94,13 @@ function OrderDrawer({ order, onClose, onNotify }) {
       setSaving(false);
       onClose();
     }
-    catch(error){
+    catch (error) {
       console.error("Failed to update order:", error);
-        onNotify({
-          icon: "❌",
-          title: "Update Failed",
-          msg: "Failed to update order. Please try again."
-        });
+      onNotify({
+        icon: "❌",
+        title: "Update Failed",
+        msg: "Failed to update order. Please try again."
+      });
       setSaving(false);
       onClose()
     }
@@ -151,7 +155,7 @@ function OrderDrawer({ order, onClose, onNotify }) {
                 <HiOutlinePhone size={13} /> {order.customer?.phone || "N/A"}
               </div>
               <div className="flex items-start gap-2 text-sm text-gray-500">
-                <HiOutlineMapPin size={13} className="mt-0.5 shrink-0" /> 
+                <HiOutlineMapPin size={13} className="mt-0.5 shrink-0" />
                 {order.shipping_address?.address || "N/A"}
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -203,11 +207,10 @@ function OrderDrawer({ order, onClose, onNotify }) {
                   key={s}
                   type="button"
                   onClick={() => setStatus(s)}
-                  className={`py-2 px-3 rounded-xl text-xs font-bold border-2 transition-all capitalize ${
-                    status === s
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border-2 transition-all capitalize ${status === s
                       ? "border-orange-400 text-white"
                       : "border-gray-200 text-gray-500 hover:border-orange-200"
-                  }`}
+                    }`}
                   style={status === s ? { backgroundColor: 'var(--orange-hot)', borderColor: 'var(--orange-hot)' } : {}}
                 >
                   {STATUS_CONFIG[s]?.label || s}
@@ -227,11 +230,10 @@ function OrderDrawer({ order, onClose, onNotify }) {
                   key={p}
                   type="button"
                   onClick={() => setPayment(p)}
-                  className={`py-2 px-3 rounded-xl text-xs font-bold border-2 transition-all capitalize ${
-                    payment === p
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border-2 transition-all capitalize ${payment === p
                       ? "border-green-400 bg-green-500 text-white"
                       : "border-gray-200 text-gray-500 hover:border-green-200"
-                  }`}
+                    }`}
                 >
                   {PAYMENT_CONFIG[p]?.label || p}
                 </button>
@@ -247,20 +249,19 @@ function OrderDrawer({ order, onClose, onNotify }) {
             <div className="flex flex-col gap-2">
               {DELIVERY_OPTIONS.map((d, idx) => {
                 const current = DELIVERY_OPTIONS.indexOf(delivery);
-                const isPast   = idx < current;
+                const isPast = idx < current;
                 const isActive = d === delivery;
                 return (
                   <button
                     key={d}
                     type="button"
                     onClick={() => setDelivery(d)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left transition-all ${
-                      isActive
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left transition-all ${isActive
                         ? "border-orange-400 bg-orange-50"
                         : isPast
-                        ? "border-green-200 bg-green-50/50"
-                        : "border-gray-200 hover:border-orange-200"
-                    }`}
+                          ? "border-green-200 bg-green-50/50"
+                          : "border-gray-200 hover:border-orange-200"
+                      }`}
                   >
                     <span className="text-base">{DELIVERY_CONFIG[d]?.icon || "📦"}</span>
                     <span className={`text-xs font-bold ${isActive ? "text-(--range-hot)" : isPast ? "text-(--green-deep)" : "text-gray-500"}`}>
@@ -303,20 +304,20 @@ function OrderDrawer({ order, onClose, onNotify }) {
 
 // ═════════════════════════════════════════════════════════════════════════════
 export default function ManageOrders() {
-  const [orders,      setOrders]      = useState([]);
-  const [search,      setSearch]      = useState("");
+  const [orders, setOrders] = useState([]);
+  const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterPayment, setFilterPayment] = useState("all");
-  const [sortField,   setSortField]   = useState("order_date");
-  const [sortDir,     setSortDir]     = useState("desc");
+  const [sortField, setSortField] = useState("order_date");
+  const [sortDir, setSortDir] = useState("desc");
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [notifs,      setNotifs]      = useState([]);
-  const [page,        setPage]        = useState(1);
+  const [notifs, setNotifs] = useState([]);
+  const [page, setPage] = useState(1);
   const PAGE_SIZE = 10;
 
-  const { data: Orders = [], refetch , isLoading } = useQuery({
+  const { data: Orders = [], refetch, isLoading } = useQuery({
     queryKey: ["orders"],
-    queryFn: async() => {
+    queryFn: async () => {
       const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/orders`);
       // Transform data to ensure consistent structure
       const transformedOrders = res.data.map(order => ({
@@ -331,7 +332,7 @@ export default function ManageOrders() {
     }
   });
 
-  if(isLoading) <FolmondiSpinner/>
+  if (isLoading) <FolmondiSpinner />
 
   // ── Notifications ──────────────────────────────────────────────────────────
   const pushNotif = ({ icon, title, msg }) => {
@@ -361,7 +362,7 @@ export default function ManageOrders() {
     }
     if (filterStatus !== "all") list = list.filter(o => o.order_status === filterStatus);
     if (filterPayment !== "all") list = list.filter(o => o.payment_status === filterPayment);
-    
+
     list.sort((a, b) => {
       let av, bv;
       if (sortField === "total") {
@@ -374,7 +375,7 @@ export default function ManageOrders() {
         av = a[sortField];
         bv = b[sortField];
       }
-      
+
       if (sortDir === "asc") {
         return av > bv ? 1 : -1;
       } else {
@@ -388,10 +389,10 @@ export default function ManageOrders() {
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   // ── Stats ──────────────────────────────────────────────────────────────────
-  const totalRevenue  = orders.filter(o => o.payment_status === "paid").reduce((s, o) => s + (o.pricing?.total || 0), 0);
-  const pendingCount  = orders.filter(o => o.order_status === "Pending").length;
+  const totalRevenue = orders.filter(o => o.payment_status === "paid").reduce((s, o) => s + (o.pricing?.total || 0), 0);
+  const pendingCount = orders.filter(o => o.order_status === "Pending").length;
   const deliveredCount = orders.filter(o => o.order_status === "Delivered").length;
-  const unpaidCount   = orders.filter(o => o.payment_status === "pending").length;
+  const unpaidCount = orders.filter(o => o.payment_status === "pending").length;
 
   // ── Sort icon ──────────────────────────────────────────────────────────────
   const SortIcon = ({ field }) =>
@@ -434,10 +435,10 @@ export default function ManageOrders() {
 
         {/* ── Stat cards ────────────────────────────────────────────────── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard icon="৳" label="Total Revenue"   value={fmt(totalRevenue)}  color={'var(--orange-hot)'}  sub={`${orders.filter(o=>o.payment_status==="paid").length} paid orders`} />
-          <StatCard icon="🛒" label="Total Orders"    value={orders.length}      color={BLUE}     sub="All time" />
-          <StatCard icon="⏳" label="Pending Orders"  value={pendingCount}       color={AMBER}    sub="Needs action" />
-          <StatCard icon="💰" label="Unpaid Orders"   value={unpaidCount}        color={RED}      sub="Verify payment" />
+          <StatCard icon="৳" label="Total Revenue" value={fmt(totalRevenue)} color={'var(--orange-hot)'} sub={`${orders.filter(o => o.payment_status === "paid").length} paid orders`} />
+          <StatCard icon="🛒" label="Total Orders" value={orders.length} color={BLUE} sub="All time" />
+          <StatCard icon="⏳" label="Pending Orders" value={pendingCount} color={AMBER} sub="Needs action" />
+          <StatCard icon="💰" label="Unpaid Orders" value={unpaidCount} color={RED} sub="Verify payment" />
         </div>
 
         {/* ── Filters bar ───────────────────────────────────────────────── */}
@@ -462,11 +463,10 @@ export default function ManageOrders() {
               <button
                 key={s}
                 onClick={() => { setFilterStatus(s); setPage(1); }}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all capitalize ${
-                  filterStatus === s
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all capitalize ${filterStatus === s
                     ? "text-white"
                     : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                }`}
+                  }`}
                 style={filterStatus === s ? { backgroundColor: s === "all" ? PRIMARY : STATUS_CONFIG[s]?.color || PRIMARY } : {}}
               >
                 {s === "all" ? "All" : STATUS_CONFIG[s]?.label || s}
@@ -482,7 +482,7 @@ export default function ManageOrders() {
           >
             <option value="all">All Payments</option>
             {PAYMENT_OPTIONS.map(p => <option key={p} value={p}
-              style={{ backgroundColor: PAYMENT_CONFIG[p]?.bg , color: PAYMENT_CONFIG[p]?.color}}
+              style={{ backgroundColor: PAYMENT_CONFIG[p]?.bg, color: PAYMENT_CONFIG[p]?.color }}
             >{PAYMENT_CONFIG[p]?.label || p}</option>)}
           </select>
         </div>
@@ -494,15 +494,15 @@ export default function ManageOrders() {
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/80">
                   {[
-                    { label: "Order ID",  field: "_id"       },
-                    { label: "Customer",  field: null },
-                    { label: "Date",      field: "order_date"},
-                    { label: "Items",     field: null        },
-                    { label: "Total",     field: "total"    },
-                    { label: "Status",    field: null   },
-                    { label: "Payment",   field: null  },
-                    { label: "Delivery",  field: null },
-                    { label: "Actions",   field: null        },
+                    { label: "Order ID", field: "_id" },
+                    { label: "Customer", field: null },
+                    { label: "Date", field: "order_date" },
+                    { label: "Items", field: null },
+                    { label: "Total", field: "total" },
+                    { label: "Status", field: null },
+                    { label: "Payment", field: null },
+                    { label: "Delivery", field: null },
+                    { label: "Actions", field: null },
                   ].map(col => (
                     <th
                       key={col.label}
@@ -528,18 +528,18 @@ export default function ManageOrders() {
                     </td>
                   </tr>
                 ) : paged.map(order => (
-                  <OrderCol 
+                  <OrderCol
                     key={order._id}
                     order={{
                       ...order,
                       payment_status: order.payment_status,
                       delivery_status: order.delivery_status,
                       total: order.pricing?.total || 0
-                    }} 
-                    STATUS_CONFIG={STATUS_CONFIG} 
-                    DELIVERY_CONFIG={DELIVERY_CONFIG} 
-                    PAYMENT_CONFIG={PAYMENT_CONFIG} 
-                    setSelectedOrder={setSelectedOrder} 
+                    }}
+                    STATUS_CONFIG={STATUS_CONFIG}
+                    DELIVERY_CONFIG={DELIVERY_CONFIG}
+                    PAYMENT_CONFIG={PAYMENT_CONFIG}
+                    setSelectedOrder={setSelectedOrder}
                   />
                 ))}
               </tbody>
@@ -564,9 +564,8 @@ export default function ManageOrders() {
                   <button
                     key={p}
                     onClick={() => setPage(p)}
-                    className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
-                      page === p ? "text-white" : "border border-gray-200 text-gray-500 hover:border-orange-300"
-                    }`}
+                    className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${page === p ? "text-white" : "border border-gray-200 text-gray-500 hover:border-orange-300"
+                      }`}
                     style={page === p ? { backgroundColor: PRIMARY } : {}}
                   >
                     {p}

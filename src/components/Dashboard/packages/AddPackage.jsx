@@ -219,7 +219,7 @@ export default function AddPackage() {
                             disabled={isSubmitting}
                             className="flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-xl text-white bg-[var(--green-deep)] disabled:opacity-60"
                         >
-                            {isSubmitting ? "Saving..." : "Save Category"}
+                            {isSubmitting ? "Saving..." : "Save Package"}
                         </button>
                     </div>
                 </div>

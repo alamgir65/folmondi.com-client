@@ -3,7 +3,7 @@ import './Category.css';
 
 const Category = ({ categories, activeCategory, setActiveCategory }) => {
     return (
-        <div className="rounded-full mx-2 py-2 px-7 max-w-fit bg-white shadow-[0_0_12px_rgba(0,0,0,0.3)] flex items-center justify-center gap-5 overflow-x-auto no-scrollbar">
+        <div className="rounded-xl sm:rounded-full mx-2 py-2 px-7 max-w-fit bg-white shadow-[0_0_12px_rgba(0,0,0,0.3)] flex items-center justify-center gap-5 overflow-x-auto no-scrollbar">
             {
                 categories.map((cat, index) => {
                     const isActive = activeCategory === cat._id;

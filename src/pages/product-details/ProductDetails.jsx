@@ -37,11 +37,11 @@ function Stars({ rating = 5, size = "sm" }) {
 }
 
 // ─── Description Tab ───────────────────────────────────────────────────────
-function TabDescription({ product,activeTab }) {
+function TabDescription({ product, activeTab }) {
   const specs = [
     ["ক্যাটাগরি", product?.category_name || "N/A"],
     ["উৎপত্তি", product?.origin || "N/A"],
-    ["সর্বনিম্ন অর্ডার", `${product?.min_order?`${product?.min_order} ${product?.unit}`:"N/A"}`],
+    ["সর্বনিম্ন অর্ডার", `${product?.min_order ? `${product?.min_order} ${product?.unit}` : "N/A"}`],
     ["ডিসকাউন্ট", `${product?.discount || 0}%`],
   ];
 
@@ -59,8 +59,8 @@ function TabDescription({ product,activeTab }) {
               {product?.description}
             </p>
           </div> : <p className="text-sm leading-relaxed text-gray-600">
-              {product?.usefulness}
-            </p>
+            {product?.usefulness}
+          </p>
         }
 
         <ul className="space-y-2 pt-1">
@@ -181,7 +181,7 @@ export default function ProductDetails() {
   const oldPrice =
     (product?.price || 0) * (activeWeight?.quantity || 1);
 
-  const discount = Number(product.price)*Number(activeWeight?.quantity) - Number(activeWeight?.price);
+  const discount = Number(product.price) * Number(activeWeight?.quantity) - Number(activeWeight?.price);
 
   const finalOldPrice =
     currentPrice +
@@ -200,7 +200,7 @@ export default function ProductDetails() {
       package_count: qty,
       product_image: product?.images?.[0]
     }
-    if(set_product_to_LS(item_details)){
+    if (set_product_to_LS(item_details)) {
       notify();
     }
     else notify2();
@@ -230,7 +230,7 @@ export default function ProductDetails() {
       `}</style>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <Toaster/>
+        <Toaster />
         {/* Breadcrumb */}
         <div className="text-xs text-gray-400 flex items-center gap-1.5 mb-6 flex-wrap">
           <a href="#" className="hover:underline">
@@ -276,8 +276,8 @@ export default function ProductDetails() {
               <button
                 onClick={() => setWishlist(!wishlist)}
                 className={`absolute top-3.5 right-4 z-10 w-9 h-9 rounded-full bg-white flex items-center justify-center border ${wishlist
-                    ? "border-(--orange-hot)"
-                    : "border-[#f5cbb4]"
+                  ? "border-(--orange-hot)"
+                  : "border-[#f5cbb4]"
                   } shadow-sm transition-transform hover:scale-110`}
               >
                 <svg
@@ -329,7 +329,7 @@ export default function ProductDetails() {
             <div className="grid grid-cols-3 gap-3">
               {[
                 { icon: "🌿", text: "১০০% অর্গানিক" },
-                { icon: "🚚", text: `${product?.free_delivery?'ফ্রি':'দ্রুত'} ডেলিভারি`},
+                { icon: "🚚", text: `${product?.free_delivery ? 'ফ্রি' : 'দ্রুত'} ডেলিভারি` },
                 { icon: "✅", text: "গ্যারান্টিড ফ্রেশ" },
               ].map(({ icon, text }, i) => (
                 <div
@@ -469,22 +469,30 @@ export default function ProductDetails() {
             </div>
 
             {/* CTA */}
-            <div className="flex gap-3 sm:gap-8 flex-wrap">
-              <button
-                onClick={handleAddToCart}
-                className={`btn-secondary ${cartFlash ? "scale-105" : ""
-                  }`}
-              >
-                🛒 Add to Cart
-              </button>
+            {
+              product.quantity ? <div className="flex gap-3 sm:gap-8 flex-wrap">
+                <button
+                  onClick={handleAddToCart}
+                  className={`btn-secondary ${cartFlash ? "scale-105" : ""
+                    }`}
+                >
+                  🛒 Add to Cart
+                </button>
 
-              <Link 
-                onClick={handleAddToCart}
-                to={`/checkout`}
-               className="btn-primary">
-                ⚡ Order Now →
-              </Link>
-            </div>
+                <Link
+                  onClick={handleAddToCart}
+                  to={`/checkout`}
+                  className="btn-primary">
+                  ⚡ Order Now →
+                </Link>
+              </div> : <button
+                disabled
+                className="w-full py-3 px-6 rounded-lg font-semibold text-orange-100 bg-gradient-to-r from-(--orange-hot) to-(--orange-mid) opacity-70 cursor-not-allowed border border-orange-400 shadow-inner tracking-wide flex items-center justify-center gap-2"
+              >
+                <span className="text-lg">🚫</span>
+                <span>Out of Stock</span>
+              </button>
+            }
 
             {/* Delivery */}
             <div
@@ -504,7 +512,7 @@ export default function ProductDetails() {
                 {
                   bg: "#dcfce7",
                   icon: "🚚",
-                  title: `${product?.free_delivery?'ফ্রি':'দ্রুত'} ডেলিভারি`,
+                  title: `${product?.free_delivery ? 'ফ্রি' : 'দ্রুত'} ডেলিভারি`,
                   sub: "সারা বাংলাদেশে হোম ডেলিভারি",
                 },
                 {
@@ -554,8 +562,8 @@ export default function ProductDetails() {
                 key={key}
                 onClick={() => setActiveTab(key)}
                 className={`px-6 py-3 text-sm whitespace-nowrap transition-all ${activeTab === key
-                    ? "tab-underline"
-                    : "text-gray-500 hover:text-orange-500"
+                  ? "tab-underline"
+                  : "text-gray-500 hover:text-orange-500"
                   }`}
               >
                 {label}
@@ -564,7 +572,7 @@ export default function ProductDetails() {
           </div>
 
           {activeTab && (
-            <TabDescription product={product} activeTab={activeTab}/>
+            <TabDescription product={product} activeTab={activeTab} />
           )}
         </div>
       </div>

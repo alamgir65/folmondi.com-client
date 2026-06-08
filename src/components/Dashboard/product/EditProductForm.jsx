@@ -117,30 +117,44 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
       : price || "";
 
   const onSubmit = async (data) => {
+    console.log("Form data before processing:", data);
+
+    // FIX: images is already an array of URL strings when editing
     const images = await Promise.all(
       data.images.map(async (image) => {
-        if (image?.file) return await cloudinary_image_upload(image.file);
-        return image;
+        if (image?.file) return await cloudinary_image_upload(image.file); // new upload
+        if (typeof image === 'string') return image; // ✅ already a URL, keep it
+        if (image?.url) return image.url; // object with url property
+        return null;
       })
     );
 
+    // FIX: image is already a URL string when editing
     let image = product?.image;
 
-    if (data?.image?.[0]) {
-      image = await cloudinary_image_upload(data.image[0]);
+    if (data?.image) {
+      if (data.image instanceof File) {
+        // New file selected — upload it
+        image = await cloudinary_image_upload(data.image);
+      } else if (data.image?.[0] instanceof File) {
+        // File input returns array
+        image = await cloudinary_image_upload(data.image[0]);
+      } else if (typeof data.image === 'string') {
+        // ✅ Already a URL string (edit mode) — just use it
+        image = data.image;
+      }
     }
 
     const select_category = categories.find((c) => c._id === data.category);
 
     const product_data = {
-      image: image,
+      image,
       name: data.name,
       category: data.category,
       origin: data.origin,
       price: data.price,
       discount: data.discount,
       quantity: data.quantity,
-      // short_description: data.short_description,
       description: data.description,
       images,
       price_after_discount: finalPrice ? parseFloat(finalPrice) : data.price,
@@ -152,6 +166,7 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
       usefulness: data?.usefulness
     };
 
+    console.log("Submitting product data:", product_data);
     await mutateAsync(product_data);
   };
   const after_success = () => {
@@ -316,9 +331,7 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
                 accept="image/*"
                 className={`file-input file-input-bordered w-full rounded-xl ${errors.image ? "border-red-400" : ""
                   }`}
-                {...register("image", {
-                  required: "Product image is required",
-                })}
+                {...register("image")}
               />
             </Field>
           </div>

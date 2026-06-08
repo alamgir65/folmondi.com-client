@@ -1,5 +1,5 @@
 [
-    { "id": 1, "district_name": "Narsingdi", "bn_name": "নরসিংদী" },
+    { "id": 21, "district_name": "Chittagong", "bn_name": "চট্টগ্রাম" },
     { "id": 2, "district_name": "Gazipur", "bn_name": "গাজীপুর" },
     { "id": 3, "district_name": "Shariatpur", "bn_name": "শরীয়তপুর" },
     { "id": 4, "district_name": "Narayanganj", "bn_name": "নারায়ণগঞ্জ" },
@@ -19,7 +19,7 @@
     { "id": 18, "district_name": "Noakhali", "bn_name": "নোয়াখালী" },
     { "id": 19, "district_name": "Chandpur", "bn_name": "চাঁদপুর" },
     { "id": 20, "district_name": "Lakshmipur", "bn_name": "লক্ষ্মীপুর" },
-    { "id": 21, "district_name": "Chittagong", "bn_name": "চট্টগ্রাম" },
+    { "id": 1, "district_name": "Narsingdi", "bn_name": "নরসিংদী" },
     { "id": 22, "district_name": "Coxsbazar", "bn_name": "কক্সবাজার" },
     { "id": 23, "district_name": "Khagrachhari", "bn_name": "খাগড়াছড়ি" },
     { "id": 24, "district_name": "Bandarban", "bn_name": "বান্দরবান" },

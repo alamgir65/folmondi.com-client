@@ -136,8 +136,13 @@ export const set_item_to_selected_cart = (item) => {
   localStorage.setItem("folmondi_selected_cart", JSON.stringify(new_cart));
 };
 
-export const calculate_delivery_charge=(weight)=>{
-  return 60 + (Number(weight) * 10);
+export const calculate_delivery_charge=(weight, district_id)=>{
+  let base = 135;
+  if(district_id == 8) base = 115;
+  else if(district_id == 21) base = 60;
+  const total = base + ((Number(weight) - 1) * 20);
+  console.log('Delivery charge:', total);
+  return total;
 }
 
 
