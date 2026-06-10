@@ -199,7 +199,7 @@ const Footer = () => {
           </div>
           <div className="flex items-center gap-3">
             <FaEnvelope className=" shrink-0" />
-            <p className="text-sm ">fruitkingdomofficial@gmail.com</p>
+            <p className="text-sm ">pholmondi.comofficial@gmail.com</p>
           </div>
         </nav>
       </div>
@@ -218,7 +218,7 @@ const Footer = () => {
       {/* Bottom Bar */}
       <div style={{ backgroundColor: "rgba(0,0,0,0.15)", borderTop: "1px solid rgba(255,255,255,0.15)" }}>
         <div className="max-w-7xl mx-auto px-10 py-3 flex justify-center items-center text-sm">
-          <p><span className="font-thin">Developed by</span> : <a className="hover:text-(--orange-hot) font-bold" target="_blank" href={'https://alamgir65.vercel.app/'}>alamgir65</a></p>
+          <p><span className="font-thin">Developed by</span> : <a className="hover:text-(--orange-hot) font-bold" target="_blank" href={'https://alamgir65.vercel.app/'}>Alamgir Hossain (Software Engineer)</a></p>
         </div>
       </div>
       

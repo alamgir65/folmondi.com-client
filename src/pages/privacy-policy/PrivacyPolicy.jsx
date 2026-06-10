@@ -161,7 +161,7 @@ export default function PrivacyPolicy() {
           className="flex items-center justify-between flex-wrap gap-3 px-5 py-4 rounded-xl text-sm text-gray-400"
           style={{ background: "#f9fafb", border: "0.5px solid #e5e7eb" }}
         >
-          <span className="font-black text-sm" style={{ color: "#f04e0f" }}>Folmondi.com</span>
+          <span className="font-black text-sm" style={{ color: "#f04e0f" }}>Pholmondi.com</span>
           <span>Last updated: April 28, 2026</span>
           <span>
             <a href="/contact-us" className="font-semibold text-gray-600 hover:underline">

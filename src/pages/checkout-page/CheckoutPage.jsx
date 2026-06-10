@@ -40,7 +40,7 @@ const DELIVERY_OPTIONS = [
 
 const PAYMENT_METHODS = [
     { id: "cod", label: "Cash on Delivery", icon: "💵" },
-    { id: "bkash", label: "bKash", icon: "📱" },
+    // { id: "bkash", label: "bKash", icon: "📱" },
 ];
 
 const inputCls = (err) =>

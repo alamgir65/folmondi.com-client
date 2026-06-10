@@ -20,6 +20,7 @@ import ImageUploader from "../../../utils/ImageUploader";
 import { cloudinary_image_upload } from "../../../utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { Link } from "react-router";
 
 
 // ── Main Component ─────────────────────────────────────────────────────────
@@ -139,12 +140,12 @@ export default function AddProductForm() {
           >
             Add Another Product
           </button>
-          <button
+          <Link to="/dashboard/all-products"
             onClick={handleAddAnother}
             className="px-6 py-2.5 rounded-xl text-sm font-bold border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
           >
             Go to Inventory
-          </button>
+          </Link>
         </div>
       </div>
     );

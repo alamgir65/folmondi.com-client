@@ -29,7 +29,7 @@ const CONTACT_INFO = [
   {
     icon:    <HiEnvelope size={20} />,
     label:   "Email Us",
-    lines:   ["fruitkingdomofficial@gmail.com", ""],
+    lines:   ["pholmondi.comofficial@gmail.com", ""],
     iconBg:  "#dbeafe",
     iconClr: C.blueTrust,
   },

@@ -158,8 +158,8 @@ export default function TermsAndConditions() {
           className="flex items-center justify-between flex-wrap gap-3 mt-10 px-5 py-4 rounded-xl text-sm text-gray-400"
           style={{ background: "#f9fafb", border: "0.5px solid #e5e7eb" }}
         >
-          <span className="font-black text-sm" style={{ color: "#f04e0f" }}>Folmondi.com</span>
-          <span>Last updated: May 2025</span>
+          <span className="font-black text-sm" style={{ color: "#f04e0f" }}>Pholmondi.com</span>
+          <span>Last updated: May 2026</span>
           <span>
             Questions?{" "}
             <a href="mailto:fruitkingdomofficial@gmail.com" className="font-600 text-gray-600 hover:underline">
