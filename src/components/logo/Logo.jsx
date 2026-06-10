@@ -7,7 +7,7 @@ import logo4 from '../../assets/logo2.jpeg';
 const Logo = ({width,bg,footer=false}) => {
     return (
         <div>
-            <img width={width} src={footer? logo3 :( bg? logo3 : logo4)} alt='logo' />
+            <img width={width} src={footer? logo3 :( bg? logo3 : logo3)} alt='logo' />
         </div>
     );
 };
