@@ -23,9 +23,9 @@ export default function AdminLogin() {
     setLoading(true);
     setLoginError("");
     try {
-      console.log("Login data:", data);
+      // console.log("Login data:", data);
       const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/admin/login`, data)
-      console.log(res);
+      // console.log(res);
       // notify(res?.data?.message)
       localStorage.setItem('folmondi_token', res.data.token);
       // Redirect dashboard

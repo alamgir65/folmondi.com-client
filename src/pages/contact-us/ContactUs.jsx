@@ -69,7 +69,7 @@ export default function ContactUs() {
 
   const onSubmit = async (data) => {
     setIsLoading(true);
-    console.log(data);
+    // console.log(data);
     try{
       await axios.post(`${import.meta.env.VITE_API_BASE_URL}/contact`, data);
       setIsLoading(false);
@@ -77,7 +77,7 @@ export default function ContactUs() {
       reset();
     }
     catch(err){
-      console.log(err);
+      // console.log(err);
       alert('Something went wrong!')
       setIsLoading(false);
     }

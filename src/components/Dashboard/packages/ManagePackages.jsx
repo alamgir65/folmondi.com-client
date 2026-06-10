@@ -49,7 +49,7 @@ const ManagePackages = () => {
         return list;
       },[search,filter,packages])
 
-    console.log(productsList);
+    // console.log(productsList);
 
     const { mutateAsync, isPending } = useMutation({
         mutationFn: async (id) => {

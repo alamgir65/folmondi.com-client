@@ -47,12 +47,12 @@ export default function CreateAdmin() {
             return res.data;
         },
         onSuccess: (data) => {
-            console.log('Admin added successfully from onsuccess:', data);
+            // console.log('Admin added successfully from onsuccess:', data);
             setIsSuccess(true);
             mutationReset();
         },
         onError: (error) => {
-            console.error('Error adding category:', error);
+            // console.error('Error adding category:', error);
         }
 
     })

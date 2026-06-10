@@ -11,7 +11,7 @@ export default function Products() {
   const [products, setProducts] = useState([]);
 
   // ── Categories Query ─────────────────
-  const { data: categories = [] } = useQuery({
+  const { data: categories = [], isLoading : isCategoriesLoading } = useQuery({
     queryKey: ["all_categories"],
     queryFn: async () => {
       const res = await axios.get(
@@ -54,6 +54,10 @@ export default function Products() {
     { _id: -1, name: "All", image: logo },
     ...categories,
   ];
+
+  if(isCategoriesLoading){
+    return <div className="flex justify-center items-center h-64">Loading categories...</div>;
+  }
 
   return (
     <div className="bg-gray-50 max-w-7xl mx-auto px-2 sm:px-4">

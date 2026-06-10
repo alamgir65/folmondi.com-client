@@ -93,11 +93,11 @@ const Sidebar = () => {
           <div>
             <hr />
 
-            <MenuItem
+            {/* <MenuItem
               icon={FcSettings}
               label='Profile'
               address='/dashboard/profile'
-            />
+            /> */}
             <MenuItem
               icon={FcSettings}
               label='Create Admin'

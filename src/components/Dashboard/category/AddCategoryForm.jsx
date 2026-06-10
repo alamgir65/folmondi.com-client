@@ -44,12 +44,12 @@ export default function AddCategoryForm() {
       );
     },
     onSuccess: (data) => {
-      console.log('Category added successfully from onsuccess:', data);
+      // console.log('Category added successfully from onsuccess:', data);
       setIsSuccess(true);
       mutationReset();
     },
     onError: (error) => {
-      console.error('Error adding category:', error);
+      // console.error('Error adding category:', error);
       alert('Failed to add category. Please try again.');
     }
 
@@ -57,7 +57,7 @@ export default function AddCategoryForm() {
 
 
   const onSubmit = async (data) => {
-    console.log(data);
+    // console.log(data);
 
     const image = await cloudinary_image_upload(data?.image[0]);
 
@@ -67,7 +67,7 @@ export default function AddCategoryForm() {
       image: image
     };
 
-    console.log(category_data);
+    // console.log(category_data);
     await mutateAsync(category_data);
   };
 

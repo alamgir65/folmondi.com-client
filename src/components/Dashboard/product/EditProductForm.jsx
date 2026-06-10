@@ -117,7 +117,7 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
       : price || "";
 
   const onSubmit = async (data) => {
-    console.log("Form data before processing:", data);
+    // console.log("Form data before processing:", data);
 
     // FIX: images is already an array of URL strings when editing
     const images = await Promise.all(
@@ -166,7 +166,7 @@ export default function EditProductForm({ product_id, setEditRow, onCancel }) {
       usefulness: data?.usefulness
     };
 
-    console.log("Submitting product data:", product_data);
+    // console.log("Submitting product data:", product_data);
     await mutateAsync(product_data);
   };
   const after_success = () => {

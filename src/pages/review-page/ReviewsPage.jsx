@@ -276,7 +276,7 @@ function WriteReviewModal({ onClose }) {
         onClose();
       }, 1500);
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       alert("Something went wrong!");
     } finally {
       setLoading(false);

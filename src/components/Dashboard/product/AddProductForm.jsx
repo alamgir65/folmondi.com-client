@@ -61,7 +61,7 @@ export default function AddProductForm() {
       );
     },
     onSuccess: (data) => {
-      console.log('Product added successfully:', data);
+      // console.log('Product added successfully:', data);
       setIsSuccess(true);
       mutationReset();
     },
@@ -108,7 +108,7 @@ export default function AddProductForm() {
       delivery_time: data.delivery_time,
       usefulness: data.usefulness
     };
-    console.log(product_data);
+    // console.log(product_data);
     // setIsSuccess(true);
     await mutateAsync(product_data);
 

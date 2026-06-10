@@ -6,7 +6,7 @@ import { get_product_from_LS } from "../../utils";
 
 const MobileMenuBar = () => {
   const cart = get_product_from_LS().length;
-  console.log(cart);
+  // console.log(cart);
   return (
     <div className="fixed bottom-0 left-0 w-full bg-white shadow-lg z-50 md:hidden">
       <div className="flex justify-around items-center py-2 mobile-menu-bar">

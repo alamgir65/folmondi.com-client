@@ -64,7 +64,7 @@ export default function AddPackage() {
 
 
     const onSubmit = async (data) => {
-        console.log(data);
+        // console.log(data);
 
         const p = await axios.get(
             `${import.meta.env.VITE_API_BASE_URL}/product/${data?.product_id}`
@@ -73,7 +73,7 @@ export default function AddPackage() {
         const product = p?.data;
         const main_amount = Number(data.quantity) * Number(product?.price);
         const dis_amount = Number(data.price);
-        console.log(main_amount, dis_amount);
+        // console.log(main_amount, dis_amount);
         // return;
 
         const category_data = {
@@ -83,7 +83,7 @@ export default function AddPackage() {
             product_name: product?.name || "",
             discount: discount_calculate(main_amount, dis_amount),
         };
-        console.log(category_data);
+        // console.log(category_data);
 
         await mutateAsync(category_data);
     };

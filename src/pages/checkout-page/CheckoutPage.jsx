@@ -236,7 +236,7 @@ export default function CheckoutPage() {
             setIsSuccess(true);
 
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             Swal.fire({
                 icon: "error",
                 title: "Something went wrong",
