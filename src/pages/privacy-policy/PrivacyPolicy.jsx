@@ -144,7 +144,7 @@ export default function PrivacyPolicy() {
           className="text-sm text-gray-600 leading-relaxed rounded-r-xl px-5 py-4"
           style={{ background: "#fff7ed", borderLeft: "3px solid #f04e0f" }}
         >
-          By using Folmondi.com, you agree to the collection and use of information described in
+          By using Pholmondi.com, you agree to the collection and use of information described in
           this policy. We are committed to protecting your privacy and handling your data with care.
         </div>
 

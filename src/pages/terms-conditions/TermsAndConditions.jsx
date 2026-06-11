@@ -61,7 +61,7 @@ const sections = [
     iconBg: "#f3f4f6",
     title: "7. Changes to these terms",
     points: [
-      "We may update these terms from time to time. The date at the bottom of this page shows when they were last updated. Continued use of Folmondi.com after changes constitutes acceptance of the new terms.",
+      "We may update these terms from time to time. The date at the bottom of this page shows when they were last updated. Continued use of Pholmondi.com after changes constitutes acceptance of the new terms.",
     ],
   },
 ];
@@ -83,7 +83,7 @@ export default function TermsAndConditions() {
           <p className="text-xs font-bold text-white/75 uppercase tracking-widest mb-2">Legal</p>
           <h1 className="text-3xl font-black text-white mb-2">Terms &amp; Conditions</h1>
           <p className="text-white/80 text-sm leading-relaxed max-w-xl">
-            Please read these terms carefully before placing an order on Folmondi.com.
+            Please read these terms carefully before placing an order on Pholmondi.com.
             By using this website you agree to these terms.
           </p>
         </div>
@@ -133,8 +133,8 @@ export default function TermsAndConditions() {
             <SectionHeader icon={sections[2].icon} iconBg={sections[2].iconBg} title={sections[2].title} />
             <div className="grid grid-cols-2 gap-3 mb-4">
               {[
-                { area: "Inside Dhaka",    time: "1–2 days" },
-                { area: "Outside Dhaka",   time: "2–4 days" },
+                { area: "Inside Chattagram City",    time: "1–2 days" },
+                { area: "Outside Chattagram",   time: "2–4 days" },
               ].map(d => (
                 <div key={d.area} className="bg-gray-50 rounded-xl p-4">
                   <p className="text-xs font-700 text-gray-400 uppercase tracking-wide mb-1">{d.area}</p>
@@ -162,8 +162,8 @@ export default function TermsAndConditions() {
           <span>Last updated: May 2026</span>
           <span>
             Questions?{" "}
-            <a href="mailto:fruitkingdomofficial@gmail.com" className="font-600 text-gray-600 hover:underline">
-              fruitkingdomofficial@gmail.com
+            <a href="mailto:pholmondi.comofficial@gmail.com" className="font-600 text-gray-600 hover:underline">
+              pholmondi.comofficial@gmail.com
             </a>
           </span>
         </div>

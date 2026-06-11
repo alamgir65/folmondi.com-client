@@ -78,7 +78,7 @@ export default function AdminLogin() {
               </label>
               <input
                 type="email"
-                placeholder="admin@folmondi.com"
+                placeholder="admin@pholmondi.com"
                 className="w-full h-11 px-4 text-sm rounded-xl bg-gray-50 transition-colors focus:outline-none"
                 style={{
                   border: errors.email ? "1.5px solid #f87171" : "1.5px solid #e5e7eb",

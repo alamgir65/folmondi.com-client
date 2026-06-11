@@ -36,7 +36,7 @@ export default function AboutUs() {
   const steps = [
     {
       title: "You place an order",
-      desc: "Choose your fruits, quantity, and delivery date on Folmondi.com or the app.",
+      desc: "Choose your fruits, quantity, and delivery date on Pholmondi.com or the app.",
     },
     {
       title: "We notify the farm",
@@ -78,7 +78,7 @@ export default function AboutUs() {
       >
         <div className="absolute w-64 h-64 rounded-full bg-white/5 -top-16 -right-12 pointer-events-none" />
         <div className="max-w-3xl mx-auto relative z-10">
-          <h1 className="text-3xl font-black text-white mb-2">About Folmondi.com</h1>
+          <h1 className="text-3xl font-black text-white mb-2">About Pholmondi.com</h1>
           <p className="text-white/80 text-sm leading-relaxed max-w-xl">
             Bangladesh's first dedicated fruit marketplace — bringing farm-fresh produce straight to your doorstep
             with full traceability, zero compromise.
