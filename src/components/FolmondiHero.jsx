@@ -271,11 +271,11 @@ export default function FolmondiHero() {
                 display: "inline-block",
               }}>
                 <div style={{ fontSize: "0.65rem", color: "#9ca3af", fontWeight: 500 }}>আজকের বিশেষ</div>
-                <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#1f2937", fontFamily: "'Playfair Display', serif" }}>রাজশাহীর আম</div>
+                <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#1f2937", fontFamily: "'Playfair Display', serif" }}>{products[0]?.name || "রাজশাহীর আম"}</div>
                 <div style={{ display: "flex", alignItems: "center", gap: 5, justifyContent: "center", marginTop: 3 }}>
-                  <span style={{ fontSize: "0.75rem", color: "#f04e0f", fontWeight: 700 }}>৳ 180/kg</span>
-                  <span style={{ fontSize: "0.68rem", color: "#9ca3af", textDecoration: "line-through" }}>৳ 250</span>
-                  <span style={{ background: "#dcfce7", color: "#16a34a", fontSize: "0.65rem", fontWeight: 700, borderRadius: 20, padding: "2px 7px" }}>28% OFF</span>
+                  <span style={{ fontSize: "0.75rem", color: "#f04e0f", fontWeight: 700 }}>৳ {products[0]?.price || 180}/kg</span>
+                  <span style={{ fontSize: "0.68rem", color: "#9ca3af", textDecoration: "line-through" }}>৳ {products[0]?.price_after_discount}/kg</span>
+                  <span style={{ background: "#dcfce7", color: "#16a34a", fontSize: "0.65rem", fontWeight: 700, borderRadius: 20, padding: "2px 7px" }}>{products[0]?.discount || 0}% OFF</span>
                 </div>
               </div>
             </div>
