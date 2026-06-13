@@ -15,7 +15,7 @@ const notify = () => toast.success('Product Deleted!');
 
 
 const fmt = (n) => `৳${n.toLocaleString()}`;
-
+const token = localStorage.getItem('folmondi_token');
 
 const AllProducts = () => {
   const queryClient = useQueryClient();
@@ -49,10 +49,24 @@ const AllProducts = () => {
 
   // ── Delete Mutation ────────
   const deleteMutation = useMutation({
-    mutationFn: (id) => axios.delete(`${API}/product/${id}`),
+    mutationFn: async (id) => {
+      const res = await axios.delete(
+        `${API}/product/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return res.data;
+    },
+
     onSuccess: () => {
-      notify()
-      queryClient.invalidateQueries({ queryKey: ["products"] });
+      notify();
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+      });
     },
   });
 
@@ -65,16 +79,15 @@ const AllProducts = () => {
   const categoryList = ["All", ...categories.map((c) => c.name)];
 
 
-  const visible = useMemo(()=>{
+  const visible = useMemo(() => {
     let list = [...products];
-    if(search)
-    {
+    if (search) {
       const s = search.toLocaleLowerCase();
       list = list.filter((p) => p?.name?.toLocaleLowerCase().includes(s) || p?.category_name?.toLocaleLowerCase().includes(s))
     }
-    if(filter !== "All") list = list.filter((p) => p?.category_name === filter);
+    if (filter !== "All") list = list.filter((p) => p?.category_name === filter);
     return list;
-  },[search,filter,products])
+  }, [search, filter, products])
 
 
   if (isLoading) return <p className="text-center mt-10">Loading...</p>;
@@ -83,7 +96,7 @@ const AllProducts = () => {
 
   return (
     <div className="space-y-6">
-      <Toaster/>
+      <Toaster />
       {/* Header */}
       <div className="flex justify-between items-center flex-wrap gap-4">
         <div>
@@ -130,7 +143,7 @@ const AllProducts = () => {
           <table className="w-full text-sm">
             <thead>
               <tr style={{ background: "#f9fafb" }}>
-                {["Product", "Category", "Price (1kg)","Discount","Stock", "Actions"].map((h) => (
+                {["Product", "Category", "Price (1kg)", "Discount", "Stock", "Actions"].map((h) => (
                   <th
                     key={h}
                     className="px-5 py-3.5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap"
@@ -166,13 +179,12 @@ const AllProducts = () => {
 
                     <td className="px-5 py-3.5">
                       <span
-                        className={`font-bold ${
-                          p.quantity === 0
-                            ? "text-red-500"
-                            : p.quantity <= 20
+                        className={`font-bold ${p.quantity === 0
+                          ? "text-red-500"
+                          : p.quantity <= 20
                             ? "text-(--orange-hot)"
                             : "text-gray-700"
-                        }`}
+                          }`}
                       >
                         {p.quantity} units
                       </span>
@@ -181,8 +193,8 @@ const AllProducts = () => {
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-2">
                         <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-blue-200"
-                          onClick={()=>setEditRow(p._id)}
-                          >
+                          onClick={() => setEditRow(p._id)}
+                        >
                           <HiOutlinePencilSquare size={16} />
                         </button>
 

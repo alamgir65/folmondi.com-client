@@ -1,17 +1,21 @@
-import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useState } from 'react';
 import { HiOutlineCheckCircle, HiOutlinePencilSquare, HiOutlineTrash } from 'react-icons/hi2';
 import { Modal } from '../../../utils/Modal';
 import EditCategoryForm from './EditCategoryForm';
 import { Link } from 'react-router';
+import toast, { Toaster } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_BASE_URL;
+const token = localStorage.getItem('folmondi_token');
+const notify = () => toast.success('Category Deleted!');
 
 const Categories = () => {
     const [delete_id, set_delete_id] = useState(null);
     const [edit_id, set_edit_id] = useState(null);
     const [isSuccess, setIsSuccess] = useState(null);
+    const queryClient = useQueryClient();
 
     // ── Categories Query ───────
     const { data: categories = [] } = useQuery({
@@ -26,44 +30,60 @@ const Categories = () => {
 
 
     const { mutateAsync, isPending } = useMutation({
+        // mutationFn: async (id) => {
+        //     const res = await axios.delete(`${API}/category/${id}`);
+        //     return res.data;
+        // },
+
         mutationFn: async (id) => {
-            const res = await axios.delete(`${API}/category/${id}`);
+            const res = await axios.delete(
+                `${API}/category/${id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
             return res.data;
         },
 
         onSuccess: () => {
             setIsSuccess(true);
+            notify();
             set_delete_id(null);
-            QueryClient.invalidateQueries({ queryKey: ["categories"] });
+            queryClient.invalidateQueries({
+        queryKey: ["categories"],
+      });
         },
         onError: (error) => {
             console.error("Error deleting category:", error);
         },
     });
 
-    if (isSuccess) {
-        return (
-            <Modal size={'md'}>
-                <div className="flex flex-col items-center justify-center min-h-[60vh] gap-5 text-center px-4">
-                    <div className="w-20 h-20 rounded-full flex items-center justify-center bg-green-100">
-                        <HiOutlineCheckCircle size={46} className="text-green-600" />
-                    </div>
+    // if (isSuccess) {
+    //     return (
+    //         <Modal size={'md'}>
+    //             <div className="flex flex-col items-center justify-center min-h-[60vh] gap-5 text-center px-4">
+    //                 <div className="w-20 h-20 rounded-full flex items-center justify-center bg-green-100">
+    //                     <HiOutlineCheckCircle size={46} className="text-green-600" />
+    //                 </div>
 
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-1">
-                            Category Deleted!
-                        </h2>
-                        <p className="text-sm text-gray-400">
-                            Your category has been deleted successfully.
-                        </p>
-                    </div>
-                </div>
-                <div className="flex justify-center gap-3">
-                    <button onClick={() => setIsSuccess(false)} className='btn-primary'>ok</button>
-                </div>
-            </Modal>
-        );
-    }
+    //                 <div>
+    //                     <h2 className="text-2xl font-bold text-gray-800 mb-1">
+    //                         Category Deleted!
+    //                     </h2>
+    //                     <p className="text-sm text-gray-400">
+    //                         Your category has been deleted successfully.
+    //                     </p>
+    //                 </div>
+    //             </div>
+    //             <div className="flex justify-center gap-3">
+    //                 <button onClick={() => setIsSuccess(false)} className='btn-primary'>ok</button>
+    //             </div>
+    //         </Modal>
+    //     );
+    // }
 
     //   console.log('Categories', categories);
 
@@ -74,6 +94,7 @@ const Categories = () => {
 
     return (
         <div className='space-y-6'>
+            <Toaster />
             {/* Header */}
             <div className="flex justify-between items-center flex-wrap gap-4">
                 <div>

@@ -1,5 +1,6 @@
 import React from "react";
 import { FaHome, FaShoppingBag, FaShoppingCart, FaPhone } from "react-icons/fa";
+import { RiContactsFill } from "react-icons/ri";
 import { Link } from "react-router";
 import "./MobileMenuBar.css";
 import { get_product_from_LS } from "../../utils";
@@ -37,7 +38,7 @@ const MobileMenuBar = () => {
 
         {/* Contact */}
         <Link to="/contact-us" className="flex flex-col items-center text-gray-500">
-          <FaPhone size={20} />
+          <RiContactsFill size={20} />
           <span className="text-xs mt-1">Contact</span>
         </Link>
 
