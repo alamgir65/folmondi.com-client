@@ -72,8 +72,8 @@ function DotsSpinner({ s }) {
 }
 
 export default function FolmondiSpinner({
-  size     = "md",
-  variant  = "pulse",
+  size     = "sm",
+  variant  = "dots",
   text     = null,
   fullPage = false,
 }) {

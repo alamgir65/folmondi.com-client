@@ -43,10 +43,10 @@ export default function ProductCard({ product }) {
                 </div>
             </Link>
             <Toaster/>
-            <div className="card-body p-4 gap-3">
+            <div className="card-body p-4 gap-1">
                 {/* Name */}
                 <div className="flex justify-between gap-2">
-                    <h3 className="font-bold text-lg text-base-content leading-tight">
+                    <h3 className="font-bold text-md text-base-content leading-tight">
                     {product.name}
                 </h3>
                 {
@@ -55,10 +55,10 @@ export default function ProductCard({ product }) {
                 </div>
 
                 {/* Price */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                     {/* <span className="text-base font-bold">
                             প্রতি কেজি - </span> */}
-                    <span className="font-bold text-lg text-(--orange-hot)">
+                    <span className="font-bold text-md text-(--orange-hot)">
                         ৳{product?.price_after_discount}
                         {/* ৳{product.variants[selectedVariant].price.toLocaleString()} */}
                     </span>
@@ -68,8 +68,8 @@ export default function ProductCard({ product }) {
                 </div>
                 {/* Price */}
                 <div className="flex items-center gap-2">
-                    <span className="text-base font-bold text-(--base-color)">
-                            সর্বনিম্ন অর্ডার - {product?.min_order} Kg
+                    <span className="text-md font-bold text-(--base-color)">
+                            সর্বনিম্ন অর্ডার - {product?.min_order} {product?.unit}
                     </span>
                 </div>
 

@@ -5,6 +5,7 @@ import "./Products.css";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import logo from "../../assets/logo.png";
+import FolmondiSpinner from "../snipnner/FolmondiSpinner";
 
 export default function Products() {
   const [activeCategory, setActiveCategory] = useState(-1);
@@ -56,7 +57,9 @@ export default function Products() {
   ];
 
   if(isCategoriesLoading){
-    return <div className="flex justify-center items-center h-64">Loading categories...</div>;
+    return <div className="flex items-center justify-center">
+      <FolmondiSpinner/>
+    </div>
   }
 
   return (
