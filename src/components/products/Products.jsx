@@ -18,7 +18,9 @@ export default function Products() {
       const res = await axios.get(
         `${import.meta.env.VITE_API_BASE_URL}/categories`
       );
-      return res.data;
+      const categories2 = res.data;
+      categories2.sort((a, b) => b.priority - a.priority);
+      return categories2;
     },
   });
   // ── Products Fetch ───────────────────

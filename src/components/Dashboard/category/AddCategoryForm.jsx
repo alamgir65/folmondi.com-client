@@ -27,6 +27,7 @@ export default function AddCategoryForm() {
       name: "",
       description: "",
       image: null,
+      priority: "",
     },
   });
 
@@ -64,7 +65,8 @@ export default function AddCategoryForm() {
     const category_data = {
       name: data.name,
       description: data.description,
-      image: image
+      image: image,
+      priority: data.priority
     };
 
     // console.log(category_data);
@@ -153,6 +155,22 @@ export default function AddCategoryForm() {
                   minLength: {
                     value: 2,
                     message: "Minimum 2 characters",
+                  },
+                })}
+              />
+            </Field>
+
+            {/* Priority */}
+            <Field label="Category Priority" required error={errors.priority}>
+              <input
+                type="number"
+                placeholder="e.g. 1"
+                className={`input input-bordered w-full rounded-xl ${errors.priority ? "border-red-400" : ""}`}
+                {...register("priority", {
+                  required: "Category priority is required",
+                  min: {
+                    value: 1,
+                    message: "Priority must be a positive number",
                   },
                 })}
               />

@@ -18,7 +18,9 @@ const Categories = () => {
         queryKey: ["categories"],
         queryFn: async () => {
             const res = await axios.get(`${API}/categories`);
-            return res.data;
+            const categories = res.data;
+            categories.sort((a, b) => b.priority - a.priority);
+            return categories;
         },
     });
 

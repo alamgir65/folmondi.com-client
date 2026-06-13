@@ -14,7 +14,7 @@ import { Modal } from "../../../utils/Modal";
 
 const API = import.meta.env.VITE_API_BASE_URL;
 
-const EditCategoryForm = ({  category_id,onClose, onCancel }) => {
+const EditCategoryForm = ({ category_id, onClose, onCancel }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const queryClient = useQueryClient();
 
@@ -44,6 +44,7 @@ const EditCategoryForm = ({  category_id,onClose, onCancel }) => {
       reset({
         name: category.name || "",
         description: category.description || "",
+        priority: category.priority || "",
       });
     }
   }, [category, reset]);
@@ -86,6 +87,7 @@ const EditCategoryForm = ({  category_id,onClose, onCancel }) => {
       name: data.name,
       description: data.description,
       image,
+      priority: data.priority,
     };
 
     await mutateAsync(category_data);
@@ -138,6 +140,22 @@ const EditCategoryForm = ({  category_id,onClose, onCancel }) => {
               {...register("name", {
                 required: "Category name is required",
                 minLength: { value: 2, message: "Minimum 2 characters" },
+              })}
+            />
+          </Field>
+
+          {/* Priority */}
+          <Field label="Category Priority" required error={errors.priority}>
+            <input
+              type="number"
+              placeholder="e.g. 1"
+              className={`input input-bordered w-full rounded-xl ${errors.priority ? "border-red-400" : ""}`}
+              {...register("priority", {
+                required: "Category priority is required",
+                min: {
+                  value: 1,
+                  message: "Priority must be a positive number",
+                },
               })}
             />
           </Field>
